@@ -1,0 +1,73 @@
+
+#pragma once
+
+// =====================================================
+
+#include <string>
+#include <vector>
+#include <list>
+
+// =====================================================
+
+/**
+ * @file
+ * @brief Базовый класс для интерпретаторов конфигурации.
+ */
+
+// =====================================================
+
+namespace configParserStruct
+{
+
+  /**
+   * @brief
+   * Базовый класс для интерпретаторов конфигурации.
+  */
+  class parser
+  {
+    protected:
+      virtual void setVariableValueString( const std::string &VarName, const std::string &Value ) = 0;
+
+    public:
+      virtual ~parser() {}
+
+      virtual void setVariableValue( const std::string &VarName, const std::string &Value );
+      virtual void setVariableValue( const std::string &VarName, int Value );
+      virtual void setVariableValue( const std::string &VarName, double Value );
+
+      virtual void exec( const std::string &ConfigText ) = 0;
+      virtual void execFile( const std::string &FileName );
+
+      virtual bool isVariableExist( const std::string &VarName ) const = 0;
+      
+      virtual std::vector< std::string > listOfVariables() const = 0;
+      virtual std::vector< std::string > listOfVariablesStruct() const = 0;
+
+      virtual std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const = 0;
+      virtual double doubleVariable( const std::string &VarName, double DefaultValue = 0 ) const;
+      virtual int integerVariable( const std::string &VarName, int DefaultValue = 0 ) const;
+      template <class Enum> Enum enumVariable( const std::string &VarName ) const;
+      template <class Enum> Enum enumVariable( const std::string &VarName, Enum DefaultValue ) const;
+      
+      static std::list<std::string> readFileContent( const std::string &FileName );
+      static std::string joinStringList( const std::list<std::string> &List, const std::string &JoinString );
+  };
+
+  // =====================================================
+  
+  template <class Enum> Enum parser::enumVariable( const std::string &VarName ) const
+  { 
+    return static_cast<Enum>( integerVariable(VarName) ); 
+  }
+
+  template <class Enum> Enum parser::enumVariable( const std::string &VarName, Enum DefaultValue ) const 
+  { 
+    return static_cast<Enum>( integerVariable(VarName,DefaultValue) ); 
+  }   
+
+  // =====================================================
+  
+
+}
+
+

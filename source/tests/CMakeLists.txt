@@ -3,7 +3,9 @@ cmake_minimum_required( VERSION 2.6 )
 project( selfTest ) 
 
 set ( tests_source_files
+        gtest_stringcast.cpp
         gtest_cmdargs.cpp
+        gtest_parser.cpp
     )
 
   #include_directories( "${PROJECT_SOURCE_DIR}/..//" )

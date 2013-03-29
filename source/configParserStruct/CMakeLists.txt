@@ -4,6 +4,7 @@ project( configParserLib )
 
 set( configparser_source_files 
       cmdargs.cpp
+      parser.cpp
    )
 
 add_library( configParser ${LIBRARY_TYPE} ${configparser_source_files} )
