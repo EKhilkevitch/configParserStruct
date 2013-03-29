@@ -6,9 +6,8 @@ set ( tests_source_files
         gtest_stringcast.cpp
         gtest_cmdargs.cpp
         gtest_parser.cpp
+        gtest_pythonparser.cpp
     )
-
-  #include_directories( "${PROJECT_SOURCE_DIR}/..//" )
 
 find_library( gtest  NAMES gtest )
 find_library( gtest_main  NAMES gtest_main )

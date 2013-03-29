@@ -26,7 +26,7 @@ namespace configParserStruct
   class parser
   {
     protected:
-      virtual void setVariableValueString( const std::string &VarName, const std::string &Value ) = 0;
+      virtual void setVariableValueString( const std::string &VarName, const std::string &Value );
 
     public:
       virtual ~parser() {}

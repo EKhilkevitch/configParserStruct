@@ -4,10 +4,10 @@
 #include "configParserStruct/parser.h"
 #include "configParserStruct/stringcast.h"
 
+#include <cassert>
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
-#include <fstream>
 #include <stdexcept>
 
 // =====================================================
@@ -67,6 +67,13 @@ void configParserStruct::parser::execFile( const std::string &FileName )
   const std::list<std::string> &FileContent = readFileContent( FileName );
   const std::string &FileContentString = joinStringList( FileContent, "" );
   exec( FileContentString ); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::parser::setVariableValueString( const std::string &VarName, const std::string &Value ) 
+{
+  assert( ! "You must implement this function OR reimplement setVariableValue() functions" );
 }
 
 // -----------------------------------------------------
