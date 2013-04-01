@@ -99,9 +99,11 @@ TEST( pythonParser, setVariableValue )
 
   pythonParser Parser;
   Parser.setVariableValue( "x", 1 );
+  Parser.setVariableValue( "z", "abc" );
   
   EXPECT_EQ( 1, Parser.integerVariable("x") );
   EXPECT_TRUE( Parser.isVariableExist("x") );
+  EXPECT_EQ( std::string("abc"), Parser.stringVariable("z") );
 
   Parser.exec(TestProgram);
   

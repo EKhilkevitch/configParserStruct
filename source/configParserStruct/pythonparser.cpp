@@ -2,10 +2,12 @@
 // =====================================================
 
 #include "configParserStruct/pythonparser.h"
+#include "configParserStruct/stringcast.h"
 
 #include <stdexcept>
 #include <cassert>
 #include <cstdlib>
+#include <iostream>
 
 #include <python2.6/Python.h>
 
@@ -69,7 +71,7 @@ void configParserStruct::pythonParser::runString( const std::string &Program )
 {
   std::string PrefixString;
   for ( std::map<std::string,std::string>::const_iterator i = ExternalVariables.begin(); i != ExternalVariables.end(); ++i )
-    PrefixString += i->first + " = \"" + i->second + "\"\n";
+    PrefixString += i->first + " = " + i->second + "\n";
 
   PyRun_String( ( PrefixString + Program ).c_str(), Py_file_input, castToDictionary(Dictionary), castToDictionary(Dictionary) );
 }
@@ -124,6 +126,9 @@ void configParserStruct::pythonParser::clearDictionary()
       
 bool configParserStruct::pythonParser::isVariableExist( const std::string &VarName ) const
 {
+  std::map< std::string, std::string >::const_iterator ExternalVarIterator = ExternalVariables.find( VarName );
+  if ( ExternalVarIterator != ExternalVariables.end() )
+    return true;
   return finalClassPyobject( VarName ) != NULL;
 }
 
@@ -189,12 +194,12 @@ std::vector< std::string > configParserStruct::pythonParser::listOfVariablesStru
 
 std::string configParserStruct::pythonParser::stringVariable( const std::string &VarName, const std::string &DefaultValue ) const
 {
-  if ( Dictionary == NULL )
-    return DefaultValue;
-
   std::map< std::string, std::string >::const_iterator ExternalVarIterator = ExternalVariables.find( VarName );
   if ( ExternalVarIterator != ExternalVariables.end() )
-    return ExternalVarIterator->second;
+    return dequoteString( ExternalVarIterator->second );
+  
+  if ( Dictionary == NULL )
+    return DefaultValue;
 
   void *PResult = finalClassPyobject( VarName ); //PyDict_GetItemString( Dictionary, VarName.c_str() );
   if ( PResult == NULL )
@@ -205,9 +210,47 @@ std::string configParserStruct::pythonParser::stringVariable( const std::string 
 
 // -----------------------------------------------------
       
-void configParserStruct::pythonParser::setVariableValueString( const std::string &VarName, const std::string &Value )
+void configParserStruct::pythonParser::setVariableValue( const std::string &VarName, const std::string &Value )
 {
-  ExternalVariables[ VarName ] = Value;
+  ExternalVariables[ VarName ] = quoteString( Value );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::pythonParser::setVariableValue( const std::string &VarName, int Value )
+{
+  ExternalVariables[ VarName ] = convertToString(Value);
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::pythonParser::setVariableValue( const std::string &VarName, double Value )
+{
+  ExternalVariables[ VarName ] = convertToString(Value);
+}
+      
+// -----------------------------------------------------
+
+std::string configParserStruct::pythonParser::quoteString( const std::string &String )
+{
+  return pythonQuotes() + String + pythonQuotes();
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::pythonParser::dequoteString( const std::string &String )
+{
+  const std::string &Quotes = pythonQuotes();
+  size_t QuotesLength = Quotes.length();
+
+  unsigned FirstQuotesIndex = String.find( Quotes );
+  unsigned LastQuotesIndex = String.rfind( Quotes );
+
+  if ( FirstQuotesIndex == 0 && LastQuotesIndex == String.length() - QuotesLength )
+    return String.substr( QuotesLength, String.length() - 2*QuotesLength );
+
+  return String;
+
 }
 
 // =====================================================

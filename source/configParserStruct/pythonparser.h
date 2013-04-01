@@ -34,12 +34,17 @@ namespace configParserStruct
       static std::string pyobjectString( void *Object ); // arg is pointer to Pyobject
       static std::list<std::string> splitName( const std::string &Name );
 
-    protected:
-      void setVariableValueString( const std::string &VarName, const std::string &Value );
+      static std::string pythonQuotes() { return "'''"; }
+      static std::string quoteString( const std::string &String );
+      static std::string dequoteString( const std::string &String );
 
     public:
       pythonParser( const std::string &ConfigText = std::string() );
       ~pythonParser();
+      
+      void setVariableValue( const std::string &VarName, const std::string &Value );
+      void setVariableValue( const std::string &VarName, int Value );
+      void setVariableValue( const std::string &VarName, double Value );
 
       void exec( const std::string &ConfigText );
 
