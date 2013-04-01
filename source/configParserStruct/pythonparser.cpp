@@ -250,7 +250,6 @@ std::string configParserStruct::pythonParser::dequoteString( const std::string &
     return String.substr( QuotesLength, String.length() - 2*QuotesLength );
 
   return String;
-
 }
 
 // =====================================================

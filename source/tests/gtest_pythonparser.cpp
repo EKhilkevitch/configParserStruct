@@ -2,7 +2,9 @@
 // =========================================================
 
 #include <gtest/gtest.h>
+
 #include <cstdio>
+#include <algorithm>
 
 #include "configParserStruct/pythonparser.h"
 
@@ -109,6 +111,30 @@ TEST( pythonParser, setVariableValue )
   
   EXPECT_EQ( 1, Parser.integerVariable("x") );
   EXPECT_EQ( 2, Parser.integerVariable("y") );
+}
+
+// ---------------------------------------------------------
+
+TEST( pythonParser, listOfVariables )
+{
+  const std::string TestProgram = 
+    "c = a + 1\n"
+    "d = 0.3\n"
+    "e = 'abc'\n"
+    "";
+
+  pythonParser Parser;
+  Parser.setVariableValue( "a", 1 );
+  Parser.setVariableValue( "b", "abc" );
+
+  std::vector<std::string> List;
+
+  List = Parser.listOfVariables();
+  EXPECT_EQ( 2, List.size() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("a"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("b"))  != List.end() );
+  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("b")) != List.end() );
+
 }
 
 // =========================================================
