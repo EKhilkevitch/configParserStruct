@@ -33,10 +33,11 @@ namespace configParserStruct
       void* finalClassPyobject( const std::string &Name ) const; // return PyObject
       static std::string pyobjectString( void *Object ); // arg is pointer to Pyobject
       static std::list<std::string> splitName( const std::string &Name );
+      static containerForVariables listOfVariables( void *Object ); // arg is pointer to Pyobject
 
       static std::string pythonQuotes() { return "'''"; }
-      static std::string quoteString( const std::string &String );
-      static std::string dequoteString( const std::string &String );
+      static std::string quoteString( const std::string &String, const std::string &Quotes );
+      static std::string dequoteString( const std::string &String, const std::string &Quotes );
 
     public:
       pythonParser( const std::string &ConfigText = std::string() );
@@ -50,8 +51,7 @@ namespace configParserStruct
 
       bool isVariableExist( const std::string &VarName ) const;
       
-      std::vector< std::string > listOfVariables() const;
-      std::vector< std::string > listOfVariablesStruct() const;
+      containerForVariables listOfVariables() const;
 
       std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const;
   };

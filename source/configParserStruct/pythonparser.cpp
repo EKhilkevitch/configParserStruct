@@ -13,7 +13,7 @@
 
 // =====================================================
 
-static inline PyObject* castToDictionary( void *Arg )
+static inline PyObject* castToPyObject( void *Arg )
 {
   return static_cast<PyObject*>(Arg);
 }
@@ -62,7 +62,7 @@ void configParserStruct::pythonParser::recreateDictionary()
   clearDictionary();
   
   Dictionary = (void*)( PyDict_New() );
-  PyDict_SetItemString( castToDictionary(Dictionary), "__builtins__", PyEval_GetBuiltins() );
+  PyDict_SetItemString( castToPyObject(Dictionary), "__builtins__", PyEval_GetBuiltins() );
 }
 
 // -----------------------------------------------------
@@ -73,7 +73,7 @@ void configParserStruct::pythonParser::runString( const std::string &Program )
   for ( std::map<std::string,std::string>::const_iterator i = ExternalVariables.begin(); i != ExternalVariables.end(); ++i )
     PrefixString += i->first + " = " + i->second + "\n";
 
-  PyRun_String( ( PrefixString + Program ).c_str(), Py_file_input, castToDictionary(Dictionary), castToDictionary(Dictionary) );
+  PyRun_String( ( PrefixString + Program ).c_str(), Py_file_input, castToPyObject(Dictionary), castToPyObject(Dictionary) );
 }
 
 // -----------------------------------------------------
@@ -117,7 +117,7 @@ void configParserStruct::pythonParser::clearDictionary()
 {
   if ( Dictionary != NULL )
   {
-    Py_DECREF( castToDictionary(Dictionary) );
+    Py_DECREF( castToPyObject(Dictionary) );
     Dictionary = NULL;
   }
 }
@@ -139,7 +139,7 @@ void* configParserStruct::pythonParser::finalClassPyobject( const std::string &N
   if ( Dictionary == NULL )
     return NULL;
 
-  PyObject *Object = castToDictionary(Dictionary);
+  PyObject *Object = castToPyObject(Dictionary);
   const std::list<std::string> &NameFields = splitName(Name);
 
   for ( std::list<std::string>::const_iterator Field = NameFields.begin(); Field != NameFields.end(); ++Field )
@@ -178,16 +178,53 @@ std::list<std::string> configParserStruct::pythonParser::splitName( const std::s
 
 // -----------------------------------------------------
 
-std::vector< std::string > configParserStruct::pythonParser::listOfVariables() const
+configParserStruct::pythonParser::containerForVariables configParserStruct::pythonParser::listOfVariables( void *Object )
 {
-  return std::vector< std::string >();
+  containerForVariables Result;
+  
+  if ( Object == NULL )
+    return Result;
+
+  PyObject *Dict = castToPyObject(Object);
+
+  if ( ! PyDict_Check( Dict ) )
+    return Result;
+
+  PyObject *KeysList = PyDict_Keys( Dict );
+  Py_ssize_t KeysListSize = PyList_Size( KeysList );
+
+  for ( unsigned Index = 0; Index < KeysListSize; Index++ )
+  {
+    PyObject *Key = PyList_GetItem( KeysList, Index );
+    PyObject *KeyRepr = PyObject_Repr( Key );
+    std::string KeyString = dequoteString( PyString_AsString( KeyRepr ), "'" );
+    PyObject *Item = PyDict_GetItem( Dict, Key );
+    if ( PyDict_Check(Item) )
+    {
+      containerForVariables ListOfItemsinSubDict = listOfVariables( Item );
+      for ( containerForVariables::const_iterator i = ListOfItemsinSubDict.begin(); i != ListOfItemsinSubDict.end(); ++i )
+        Result.insert( KeyString + structSeparator() + *i );
+    } else {
+      Result.insert( KeyString );
+    } 
+  }
+
+  return Result;
 }
 
 // -----------------------------------------------------
 
-std::vector< std::string > configParserStruct::pythonParser::listOfVariablesStruct() const
+configParserStruct::pythonParser::containerForVariables configParserStruct::pythonParser::listOfVariables() const
 {
-  return std::vector< std::string >();
+  containerForVariables Result;
+  for ( std::map< std::string, std::string >::const_iterator i = ExternalVariables.begin(); i != ExternalVariables.end(); ++i )
+    Result.insert( i->first );
+  
+  containerForVariables DictItems = listOfVariables( Dictionary );
+  for ( containerForVariables::const_iterator i = DictItems.begin(); i != DictItems.end(); ++i )
+    Result.insert( *i );
+
+  return Result;
 }
 
 // -----------------------------------------------------
@@ -196,7 +233,7 @@ std::string configParserStruct::pythonParser::stringVariable( const std::string 
 {
   std::map< std::string, std::string >::const_iterator ExternalVarIterator = ExternalVariables.find( VarName );
   if ( ExternalVarIterator != ExternalVariables.end() )
-    return dequoteString( ExternalVarIterator->second );
+    return dequoteString( ExternalVarIterator->second, pythonQuotes() );
   
   if ( Dictionary == NULL )
     return DefaultValue;
@@ -212,7 +249,7 @@ std::string configParserStruct::pythonParser::stringVariable( const std::string 
       
 void configParserStruct::pythonParser::setVariableValue( const std::string &VarName, const std::string &Value )
 {
-  ExternalVariables[ VarName ] = quoteString( Value );
+  ExternalVariables[ VarName ] = quoteString( Value, pythonQuotes() );
 }
 
 // -----------------------------------------------------
@@ -231,16 +268,15 @@ void configParserStruct::pythonParser::setVariableValue( const std::string &VarN
       
 // -----------------------------------------------------
 
-std::string configParserStruct::pythonParser::quoteString( const std::string &String )
+std::string configParserStruct::pythonParser::quoteString( const std::string &String, const std::string &Quotes )
 {
-  return pythonQuotes() + String + pythonQuotes();
+  return Quotes + String + Quotes;
 }
 
 // -----------------------------------------------------
 
-std::string configParserStruct::pythonParser::dequoteString( const std::string &String )
+std::string configParserStruct::pythonParser::dequoteString( const std::string &String, const std::string &Quotes )
 {
-  const std::string &Quotes = pythonQuotes();
   size_t QuotesLength = Quotes.length();
 
   unsigned FirstQuotesIndex = String.find( Quotes );

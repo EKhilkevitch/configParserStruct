@@ -5,6 +5,7 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <iostream>
 
 #include "configParserStruct/pythonparser.h"
 
@@ -119,22 +120,71 @@ TEST( pythonParser, listOfVariables )
 {
   const std::string TestProgram = 
     "c = a + 1\n"
-    "d = 0.3\n"
+    "dd = 0.3\n"
     "e = 'abc'\n"
+    "f = { 'k1' : 1, 'k2' : 'i2', 3 : 'i3' }\n"
     "";
 
   pythonParser Parser;
   Parser.setVariableValue( "a", 1 );
   Parser.setVariableValue( "b", "abc" );
 
-  std::vector<std::string> List;
+  pythonParser::containerForVariables List;
 
   List = Parser.listOfVariables();
   EXPECT_EQ( 2, List.size() );
   EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("a"))  != List.end() );
   EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("b"))  != List.end() );
-  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("b")) != List.end() );
+  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("c")) != List.end() );
+  
+  Parser.exec(TestProgram);
+  List = Parser.listOfVariables();
 
+#if 0
+  for ( pythonParser::containerForVariables::const_iterator i = List.begin(); i != List.end(); ++i )
+    std::cerr << *i << std::endl;
+#endif
+
+  EXPECT_TRUE( List.size() >= 5 );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("a"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("b"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("c"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("dd"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("e"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("f.k1"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("f.k2"))  != List.end() );
+  EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("f.3"))  != List.end() );
+  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("z")) != List.end() );
+}
+
+// ---------------------------------------------------------
+
+TEST( pythonParser, listOfVariablesStruct )
+{
+  const std::string TestProgram = 
+    "a = 0.3\n"
+    "f = { 'k1' : 1, 'k2' : 'i2', 3 : 'i3' }\n"
+    "ggg = { 'k3' : 0 }\n"
+    "h = dict()\n"
+    "";
+
+  pythonParser Parser;
+  pythonParser::containerForVariables List;
+ 
+  Parser.exec(TestProgram);
+  List = Parser.listOfVariablesStruct();
+ 
+#if 0
+  for ( pythonParser::containerForVariables::const_iterator i = List.begin(); i != List.end(); ++i )
+    std::cerr << *i << std::endl;
+#endif
+
+  EXPECT_TRUE( List.size() >= 2 );
+  EXPECT_TRUE(  std::find(List.begin(),List.end(),std::string("f"))  != List.end() );
+  EXPECT_TRUE(  std::find(List.begin(),List.end(),std::string("ggg"))  != List.end() );
+  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("h"))  != List.end() );
+  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("a"))  != List.end() );
+  EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("i"))  != List.end() );
 }
 
 // =========================================================

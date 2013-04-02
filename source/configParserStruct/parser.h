@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <list>
 
 // =====================================================
@@ -25,6 +26,9 @@ namespace configParserStruct
   */
   class parser
   {
+    public:
+      typedef std::set<std::string> containerForVariables;
+
     protected:
       virtual void setVariableValueString( const std::string &VarName, const std::string &Value );
 
@@ -40,8 +44,8 @@ namespace configParserStruct
 
       virtual bool isVariableExist( const std::string &VarName ) const = 0;
       
-      virtual std::vector< std::string > listOfVariables() const = 0;
-      virtual std::vector< std::string > listOfVariablesStruct() const = 0;
+      virtual containerForVariables listOfVariables() const = 0;
+      virtual containerForVariables listOfVariablesStruct() const;
 
       virtual std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const = 0;
       virtual double doubleVariable( const std::string &VarName, double DefaultValue = 0 ) const;
@@ -51,6 +55,8 @@ namespace configParserStruct
       
       static std::list<std::string> readFileContent( const std::string &FileName );
       static std::string joinStringList( const std::list<std::string> &List, const std::string &JoinString );
+
+      static std::string structSeparator() { return "."; }
   };
 
   // =====================================================

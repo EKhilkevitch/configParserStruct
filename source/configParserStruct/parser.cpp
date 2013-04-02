@@ -9,6 +9,7 @@
 #include <cerrno>
 #include <cstring>
 #include <stdexcept>
+#include <iostream>
 
 // =====================================================
       
@@ -111,6 +112,30 @@ int configParserStruct::parser::integerVariable( const std::string &VarName, int
 { 
   const std::string &Value = stringVariable( VarName, convertToString(DefaultValue) );
   return convertFromString<int>( Value ); 
+}
+
+// -----------------------------------------------------
+
+configParserStruct::parser::containerForVariables configParserStruct::parser::listOfVariablesStruct() const
+{
+  const containerForVariables Variables = listOfVariables();
+  containerForVariables Result;
+
+  for ( containerForVariables::const_iterator i = Variables.begin(); i != Variables.end(); ++i )
+  {
+    size_t LastPointPos = std::string::npos;
+    do
+    {
+      LastPointPos = i->rfind( structSeparator(), LastPointPos );
+      if ( LastPointPos == std::string::npos || LastPointPos == 0 )
+        break;
+      std::string StructName = i->substr( 0, LastPointPos );
+      Result.insert( StructName );
+      LastPointPos -= 1;
+    } while ( true );
+  }
+
+  return Result;
 }
 
 // =====================================================
