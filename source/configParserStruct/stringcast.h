@@ -23,7 +23,7 @@ namespace configParserStruct
   {
     std::stringstream Stream;
     Stream << String;
-    T Result;
+    T Result = T();
     Stream >> Result;
     return Result;
   }

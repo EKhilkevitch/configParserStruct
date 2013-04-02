@@ -6,6 +6,7 @@
 #include "configParserStruct/parser.h"
 
 #include <map>
+#include <utility>
 
 // =====================================================
 
@@ -16,6 +17,9 @@ namespace configParserStruct
   {
     private:
       std::map< std::string, std::string > Variables;
+
+    private:
+      void execOneLine( std::string &String );
     
     protected:
       void setVariableValueString( const std::string &VarName, const std::string &Value );
@@ -29,6 +33,10 @@ namespace configParserStruct
       containerForVariables listOfVariables() const;
 
       std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const;
+      
+      static std::string stripSpaces( const std::string &String );
+      static std::pair<std::string,std::string> splitLineOnNameandValue( const std::string &String );
+
   };
 
   // =====================================================

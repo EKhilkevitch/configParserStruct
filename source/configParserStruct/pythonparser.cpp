@@ -158,24 +158,7 @@ void* configParserStruct::pythonParser::finalClassPyobject( const std::string &N
 
 std::list<std::string> configParserStruct::pythonParser::splitName( const std::string &Name )
 {
-  const char SplitChar = '.';
-
-  std::list< std::string > List;
-
-  size_t PrevPos = 0;
-  while ( true )
-  {
-    size_t Pos = Name.find( SplitChar, PrevPos );
-    if ( Pos == std::string::npos )
-    {
-      List.push_back( std::string( Name.begin()+PrevPos, Name.end() ) );
-      return List;
-    } else {
-      List.push_back( std::string( Name.begin()+PrevPos, Name.begin() + Pos ) );
-      PrevPos = Pos + 1;
-    }
-  }
-
+  return splitString( Name, structSeparator() );
 }
 
 // -----------------------------------------------------

@@ -63,6 +63,25 @@ std::string configParserStruct::parser::joinStringList( const std::list<std::str
 
 // -----------------------------------------------------
       
+std::list<std::string> configParserStruct::parser::splitString( const std::string &String, const std::string &PossibleSeparators )
+{
+  std::list<std::string> Result;
+
+  size_t Position = 0;
+  while ( true )
+  {
+    size_t NextPosition = String.find_first_of( PossibleSeparators, Position );
+    Result.push_back( String.substr( Position, NextPosition - Position ) );
+    if ( NextPosition == std::string::npos )
+      break;
+    Position = NextPosition + 1; 
+  }
+
+  return Result;
+}
+
+// -----------------------------------------------------
+      
 void configParserStruct::parser::execFile( const std::string &FileName ) 
 { 
   const std::list<std::string> &FileContent = readFileContent( FileName );

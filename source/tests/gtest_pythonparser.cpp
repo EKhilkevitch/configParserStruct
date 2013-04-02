@@ -72,6 +72,7 @@ TEST( pythonParser, stringVariable )
   ASSERT_EQ( "abc", Parser.stringVariable("y") );
   ASSERT_EQ( "1", Parser.stringVariable("x") );
   ASSERT_EQ( "", Parser.stringVariable("z") );
+  ASSERT_EQ( "Z", Parser.stringVariable("z","Z") );
 }
 
 // ---------------------------------------------------------
