@@ -84,8 +84,10 @@ void configParserStruct::pythonParser::checkError()
   if ( Error != NULL )
   {
     std::string ExceptionString;
-    PyObject *ErrType, *ErrValue, *TraceBack;
+    PyObject *ErrType = NULL, *ErrValue = NULL, *TraceBack = NULL;
     PyErr_Fetch( &ErrType, &ErrValue, &TraceBack );
+
+    int LineNumber = reinterpret_cast<PyTracebackObject*>( TraceBack )->tb_lineno;
 
     if ( ErrValue != NULL )
       ExceptionString = pyobjectString( ErrValue );
@@ -94,7 +96,7 @@ void configParserStruct::pythonParser::checkError()
     Py_XDECREF(ErrValue);
     Py_XDECREF(TraceBack);
 
-    throw std::runtime_error( ExceptionString );
+    throw std::runtime_error( ExceptionString + " (error at line " + convertToString(LineNumber) + ")" );
   }
 }
 

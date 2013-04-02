@@ -6,6 +6,7 @@ set( configparser_source_files
       cmdargs.cpp
       parser.cpp
       pythonparser.cpp
+      simpleparser.cpp
    )
 
 include( FindPythonLibs )

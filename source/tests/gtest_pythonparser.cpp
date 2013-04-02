@@ -187,6 +187,26 @@ TEST( pythonParser, listOfVariablesStruct )
   EXPECT_FALSE( std::find(List.begin(),List.end(),std::string("i"))  != List.end() );
 }
 
+// ---------------------------------------------------------
+
+TEST( pythonParser, incorrectProgram )
+{
+  const std::string TestProgram = 
+    "a = 0.3\n"
+    "b = xyz\n"
+    "";
+
+  pythonParser Parser;
+
+  try
+  {
+    Parser.exec( TestProgram );
+    FAIL() << "No exception!";
+  } catch ( ... )
+  {
+  }
+}
+
 // =========================================================
 
 
