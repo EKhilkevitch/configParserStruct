@@ -7,6 +7,7 @@ set( configparser_source_files
       parser.cpp
       pythonparser.cpp
       simpleparser.cpp
+      mutex.cpp
    )
 
 include( FindPythonLibs )
