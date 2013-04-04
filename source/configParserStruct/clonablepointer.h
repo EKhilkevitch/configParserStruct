@@ -63,6 +63,7 @@ namespace configParserStruct
     Pointer(NULL)
   {
     *this = Arg;
+    assert( Pointer != NULL );
   }
 
   // -----------------------------------------------------

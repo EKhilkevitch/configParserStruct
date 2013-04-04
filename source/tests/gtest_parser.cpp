@@ -5,6 +5,7 @@
 
 #include <cstdio>
 #include <vector>
+#include <list>
 
 #include "configParserStruct/parser.h"
 
@@ -34,30 +35,30 @@ TEST( parser, joinStringList )
 
 TEST( parser, splitString )
 {
-  std::vector<std::string> Result = listToVector( parser::splitString( "abc.def.efg.h", "." ) );
-  ASSERT_EQ( 4, Result.size() );
-  EXPECT_EQ( "abc", Result.at(0) );
-  EXPECT_EQ( "def", Result.at(1) );
-  EXPECT_EQ( "efg", Result.at(2) );
-  EXPECT_EQ( "h", Result.at(3) );
+  std::vector<std::string> Result1 = listToVector( parser::splitString( "abc.def.efg.h", "." ) );
+  ASSERT_EQ( 4, Result1.size() );
+  EXPECT_EQ( "abc", Result1.at(0) );
+  EXPECT_EQ( "def", Result1.at(1) );
+  EXPECT_EQ( "efg", Result1.at(2) );
+  EXPECT_EQ( "h", Result1.at(3) );
 
-  Result = listToVector( parser::splitString( "xyz", "." ) );
-  ASSERT_EQ( 1, Result.size() );
-  EXPECT_EQ( "xyz", Result.at(0) );
+  std::vector<std::string> Result2 = listToVector( parser::splitString( "xyz", "." ) );
+  ASSERT_EQ( 1, Result2.size() );
+  EXPECT_EQ( "xyz", Result2.at(0) );
 
-  Result = listToVector( parser::splitString( "ab;cd,ef.gh", ".,;" ) );
-  ASSERT_EQ( 4, Result.size() );
-  EXPECT_EQ( "ab", Result.at(0) );
-  EXPECT_EQ( "cd", Result.at(1) );
-  EXPECT_EQ( "ef", Result.at(2) );
-  EXPECT_EQ( "gh", Result.at(3) );
+  std::vector<std::string> Result3 = listToVector( parser::splitString( "ab;cd,ef.gh", ".,;" ) );
+  ASSERT_EQ( 4, Result3.size() );
+  EXPECT_EQ( "ab", Result3.at(0) );
+  EXPECT_EQ( "cd", Result3.at(1) );
+  EXPECT_EQ( "ef", Result3.at(2) );
+  EXPECT_EQ( "gh", Result3.at(3) );
   
-  Result = listToVector( parser::splitString( ".abc.d.", "." ) );
-  ASSERT_EQ( 4, Result.size() );
-  EXPECT_EQ( "", Result.at(0) );
-  EXPECT_EQ( "abc", Result.at(1) );
-  EXPECT_EQ( "d", Result.at(2) );
-  EXPECT_EQ( "", Result.at(3) );
+  std::vector<std::string> Result4 = listToVector( parser::splitString( ".abc.d.", "." ) );
+  ASSERT_EQ( 4, Result4.size() );
+  EXPECT_EQ( "", Result4.at(0) );
+  EXPECT_EQ( "abc", Result4.at(1) );
+  EXPECT_EQ( "d", Result4.at(2) );
+  EXPECT_EQ( "", Result4.at(3) );
 }
 
 // ---------------------------------------------------------
@@ -75,10 +76,10 @@ TEST( parser, readFileContent )
   std::fclose(File);
 
   std::list<std::string> Content = parser::readFileContent(TestFileName);
-  ASSERT_EQ( 3, Content.size() );
+  EXPECT_EQ( 3, Content.size() );
 
   std::string ContentString = parser::joinStringList( Content, "" );
-  ASSERT_EQ( "abc\ndef\nghi\n", ContentString );
+  EXPECT_EQ( "abc\ndef\nghi\n", ContentString );
 
   std::remove( TestFileName.c_str() );
 }
