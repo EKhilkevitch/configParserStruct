@@ -8,7 +8,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "configParserStruct/structparserutil.h"
+#include "configParserStruct/structparserconst.h"
 
 // ====================================================
 
@@ -18,22 +18,11 @@
 #  define EXTERN extern
 #endif
 
-EXTERN int parserwrap( void );
-EXTERN int yyparse( void );
-EXTERN int yylex( void );
-EXTERN void yyerror( const char *const String );
+EXTERN int strprs_parse( void );
+EXTERN int strprs_lex( void );
+EXTERN void strprs_error( const char *const String );
 
 EXTERN unsigned lexCurrentLineNumber( void );
-
-#if 0
-EXTERN void yyparserSetParsedProg( struct parserProgram *const Program );
-EXTERN struct parserProgram* yyparserProgram( void );
-
-static unsigned setOperationInProgram( const enum parserOperation Operation, const char* const SetVariable, const unsigned ExprReault,
-  struct parserProgram *const Program );
-
-static enum parserOperation convertCmpTypeToOperation( const enum parserCmpType CmpType );
-#endif
 
 // ====================================================
 
@@ -80,19 +69,18 @@ static enum parserOperation convertCmpTypeToOperation( const enum parserCmpType 
 
 parserCommands : parserCommands parserCommand delimiter
 	       | parserCommand delimiter
-	       | error { yyerrok; yyclearin; yyerror("invalid parserCommand"); }
+	       | error { yyerrok; yyclearin; strprs_error("invalid parserCommand"); }
 	       ;
 
 delimiter      : ';' 
                | TOKEN_NEWLINE
                ;
 
-
 parserCommand  : expression {  }
 	       |
 	       ;
 
-expression     : exprSet    { $$ = $1; }
+expression     : exprSet    { popValueFromStack(); }
                | fullId '=' {  } '{' structFields '}' {  }
 	       ;
 
@@ -127,12 +115,12 @@ exprMul        : exprMul '*' exprSign    {  }
 
 exprSign       : exprAtom              {  }
 	       | '-' exprAtom          {  }
-	       | '+' exprAtom          { }
+	       | '+' exprAtom          { addValuesFromStack(); }
 	       ;
 
 exprAtom       : fullId             {  } 
-	       | TOKEN_REALNUMBER   {  } 
-	       | TOKEN_INTNUMBER    {  }
+	       | TOKEN_REALNUMBER   { pushRealNumberToStack( $1 ); } 
+	       | TOKEN_INTNUMBER    { pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       {  }
                | TOKEN_ID {  } '(' arglist ')' 
                                     {  }
@@ -165,7 +153,7 @@ fullId         : fullId '.' TOKEN_ID     {  }
 
 // ==================================================
 
-void yyerror( const char *const String )
+void strprs_error( const char *const String )
 {
 #if 0
   if ( yyparserProgram()->NumberOfErrorLine < 0 )
@@ -180,7 +168,7 @@ void yyerror( const char *const String )
 
 // ==================================================
 
-int yywrap( void )
+int strprs_wrap( void )
 {
   return 1;
 } 

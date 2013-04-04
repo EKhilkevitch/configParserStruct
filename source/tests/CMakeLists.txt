@@ -10,6 +10,8 @@ set ( tests_source_files
         gtest_simpleparser.cpp
         gtest_structparser.cpp
         gtest_structparserutil.cpp
+        gtest_structparserinput.cpp
+        gtest_structparsercompiler.cpp
     )
 
 find_library( gtest  NAMES gtest )
