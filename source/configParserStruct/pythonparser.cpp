@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <python2.6/Python.h>
+#include <Python.h>
 
 // =====================================================
 

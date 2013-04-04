@@ -27,6 +27,8 @@ set( configparser_source_files
 include( FindPythonLibs )
 find_package( PythonLibs REQUIRED )
 
+include_directories( ${PYTHON_INCLUDE_PATH} )
+
 add_library( configParser ${LIBRARY_TYPE} ${configparser_source_files} )
 target_link_libraries( configParser ${PYTHON_LIBRARIES} )
 

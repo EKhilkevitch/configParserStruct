@@ -28,6 +28,7 @@ void addValuesFromStack();
 #include <string>
 
 #include "configParserStruct/stringcast.h"
+#include "configParserStruct/clonablepointer.h"
 
 namespace configParserStruct
 {
@@ -35,7 +36,8 @@ namespace configParserStruct
   {
     class program;
     class undefVariableValue;
-
+    class nopCommand;
+    
     // =====================================================
    
     class commandAction
@@ -51,15 +53,10 @@ namespace configParserStruct
     class command 
     {
       private:
-        commandAction *Action;
+        clonablePointer<commandAction,nopCommand> Action;
 
       public:
-        command();
-        command( const commandAction &A );
-        command( const command &C );
-        command& operator=( const command &C );
-        ~command();
-
+        command( const commandAction &A ) : Action(A) {}
         void execute( program *Program ) const { Action->execute(Program); }
     };
     
@@ -80,15 +77,15 @@ namespace configParserStruct
     class variable
     {
       private:
-        variableValue *Value;
+        clonablePointer<variableValue,undefVariableValue> Value;
         std::string Name;
 
       public:
-        variable();
-        variable( const variableValue &V, const std::string &Name = std::string() );
-        variable( const variable& V );
-        variable& operator=( const variable& V );
-        ~variable();
+        variable() {}
+
+        variable( const variableValue &V, const std::string &N = std::string() ) :
+          Value(V), 
+          Name(N) {}
 
         const std::string& name() const { return Name; }
 
@@ -103,22 +100,18 @@ namespace configParserStruct
     {
       private:
         std::vector< command > Commands;
-        std::map< std::string, variable > Variables;
+        std::map< std::string, unsigned > VariablesInStack;
         std::vector< variable > Stack;
-
-      private:
-        program( const program& );
-        program& operator=( const program& );
 
       public:
         program();
         ~program();
 
-        unsigned pushCommand( const commandAction &A ) { Commands.push_back(command(C)); }
+        unsigned pushCommand( const commandAction &A );
 
-        void pushVariable( const variableValue &V ) { pushVariable(variable(V)); }
-        void pushVariable( const variable &V ) { Stack.push_back(V); }
-        variable popVariable();
+        void pushVariable( const variableValue &V );
+        void pushVariable( const variable &V );
+        const variable popVariable();
     };
   
     // =====================================================
@@ -187,7 +180,7 @@ namespace configParserStruct
         void execute( program *Program ) const;
         commandAction* clone() const { return new addCommand(); }
     };
-
+    
     // =====================================================
 
   }
