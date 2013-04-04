@@ -28,16 +28,22 @@ static inline pthread_mutex_t* castToMutex( void *Pointer ) { return static_cast
 configParserStruct::mutex::mutex() : 
   Mutex(NULL)
 {
+#if __unix__
   Mutex = new pthread_mutex_t();
   pthread_mutex_init( castToMutex(Mutex), NULL );
+#endif
 }
 
 // -----------------------------------------------------
 
 configParserStruct::mutex::~mutex()
 {
+
+#if __unix__
   if ( Mutex != NULL )
     pthread_mutex_destroy( castToMutex(Mutex) );
+#endif
+
   delete castToMutex(Mutex);
   Mutex = NULL;
 }
@@ -47,7 +53,9 @@ configParserStruct::mutex::~mutex()
 void configParserStruct::mutex::lock()
 {
   assert( Mutex != NULL );
+#if __unix__
   pthread_mutex_lock( castToMutex(Mutex) );
+#endif
 }
 
 // -----------------------------------------------------
@@ -55,7 +63,9 @@ void configParserStruct::mutex::lock()
 void configParserStruct::mutex::unlock()
 {
   assert( Mutex != NULL );
+#if __unix__
   pthread_mutex_unlock( castToMutex(Mutex) );
+#endif
 }
 
 // =====================================================
