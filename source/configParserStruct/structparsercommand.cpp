@@ -59,9 +59,9 @@ void configParserStruct::structParser::popCommand::execute( program *Program ) c
 
 void configParserStruct::structParser::addCommand::execute( program *Program ) const
 {
-  variable Var1 = Program->popVariable();
-  variable Var2 = Program->popVariable();
-  variable Result = createVariable( Var1.number() + Var2.number() );
+  const variable &Var1 = Program->popVariable();
+  const variable &Var2 = Program->popVariable();
+  const variable &Result = createVariable( Var1.number() + Var2.number() );
   Program->pushVariable( Result );
 }
 
