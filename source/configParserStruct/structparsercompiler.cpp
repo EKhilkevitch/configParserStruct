@@ -57,44 +57,5 @@ configParserStruct::structParser::program::~program()
 {
 }
 
-// -----------------------------------------------------
-
-unsigned configParserStruct::structParser::program::pushCommand( const commandAction &A ) 
-{ 
-  command Cmd( A );
-  Commands.push_back( Cmd ); 
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::structParser::program::pushVariable( const variableValue &V ) 
-{ 
-  variable Var( V );
-  pushVariable( Var ); 
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::structParser::program::pushVariable( const variable &Var ) 
-{ 
-  Stack.push_back( Var ); 
-}
-
-// -----------------------------------------------------
-
-const configParserStruct::structParser::variable configParserStruct::structParser::program::popVariable()
-{
-  if ( Stack.empty() )
-    return variable();
-
-  variable Variable = Stack.back();
-  Stack.pop_back();
-  return Variable;
-}
-
-// =====================================================
-
-
-
 // =====================================================
 

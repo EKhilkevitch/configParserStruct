@@ -19,6 +19,8 @@ set( configparser_source_files
       structparserutil.cpp
       structparserinput.cpp
       structparsercompiler.cpp
+      structparsercommand.cpp
+      structparservars.cpp
       structparser.cpp
       ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c
       ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c
