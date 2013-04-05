@@ -41,6 +41,14 @@ const configParserStruct::structParser::command& configParserStruct::structParse
 }
 
 // -----------------------------------------------------
+
+void configParserStruct::structParser::commandsList::clear()
+{
+  Commands.clear();
+  CurrentCommandIndex = 0;
+}
+
+// -----------------------------------------------------
         
 unsigned configParserStruct::structParser::commandsList::executeOneCommand( program *Program )
 {

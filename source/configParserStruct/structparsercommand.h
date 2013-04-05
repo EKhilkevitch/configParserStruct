@@ -58,6 +58,8 @@ namespace configParserStruct
         unsigned push( const commandAction &Action );
         void set( unsigned Index, const command &Cmd );
 
+        void clear();
+
         size_t size() const { return Commands.size(); }
         const command& currentCommand() const;
         unsigned currentCommandIndex() const { return CurrentCommandIndex; }

@@ -10,7 +10,6 @@ extern "C" {
 
 #include <stdlib.h>
 
-void structParserSetInputString( const char *String );
 size_t getNextPartFromInputString( char *const Buffer, const size_t MaxSize );
 
 #if __cplusplus
@@ -27,6 +26,10 @@ namespace configParserStruct
 {
   namespace structParser
   {
+    
+    // =====================================================
+
+    void setInputString( const std::string &String );
 
     // =====================================================
     
@@ -37,9 +40,9 @@ namespace configParserStruct
         unsigned Position;
 
       public:
-        inputString( const char *S = NULL );
+        inputString( const std::string &S = std::string() );
 
-        void set( const char *Str );
+        void set( const std::string &Str );
         void reset() { Position = 0; }
         const std::string get() const { return String; }
 

@@ -34,26 +34,17 @@ namespace configParserStruct
         const variable topStackVariable() const { return Stack.top(); }
         size_t stackSize() const { return Stack.size(); }
 
-        const variable getNamedVariable( const std::string &Name ) { return Variables.get(Name); }
+        const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
         void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
+
+        void clear();
+
+        void build( const std::string &ProgramText );
+        void execute() { Commands.execute( this ); }
     };
   
     // =====================================================
     
-    class interpreter
-    {
-      private:
-        program Program;
-
-      public:
-        interpreter() {}
-        
-        void build( const std::string &String );
-        void execute();
-    };
-    
-    // =====================================================
-
   }
 }
 

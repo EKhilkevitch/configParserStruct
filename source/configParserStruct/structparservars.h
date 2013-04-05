@@ -5,7 +5,7 @@
 
 #include <string>
 #include <map>
-#include <stack>
+#include <vector>
 
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/clonablepointer.h"
@@ -62,6 +62,8 @@ namespace configParserStruct
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
+
+        void clear() { Variables.clear(); }
     };
     
     // =====================================================
@@ -69,7 +71,7 @@ namespace configParserStruct
     class variablesStack
     {
       private:
-        std::stack< variable > Stack;
+        std::vector< variable > Stack;
 
       public:
         variablesStack() {}
@@ -79,6 +81,7 @@ namespace configParserStruct
         const variable top() const;
 
         size_t size() const { return Stack.size(); }
+        void clear() { Stack.clear(); }
     };
     
     // =====================================================

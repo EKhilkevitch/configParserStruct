@@ -13,7 +13,7 @@ static configParserStruct::structParser::inputString ParserString;
 
 // =====================================================
 
-void structParserSetInputString( const char *String )
+void configParserStruct::structParser::setInputString( const std::string &String )
 {
   ParserString.set( String );
 }
@@ -27,7 +27,7 @@ size_t getNextPartFromInputString( char *const Buffer, const size_t MaxSize )
 
 // =====================================================
       
-configParserStruct::structParser::inputString::inputString( const char *S ) : 
+configParserStruct::structParser::inputString::inputString( const std::string &S ) : 
   Position(0) 
 { 
   set(S); 
@@ -35,9 +35,9 @@ configParserStruct::structParser::inputString::inputString( const char *S ) :
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::inputString::set( const char *String )
+void configParserStruct::structParser::inputString::set( const std::string &String )
 {
-  this->String = ( String == NULL ) ? "" : String;
+  this->String = String;
   this->Position = 0;
 }
 

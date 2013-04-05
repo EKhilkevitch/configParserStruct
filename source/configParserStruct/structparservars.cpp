@@ -24,7 +24,7 @@ const configParserStruct::structParser::variable configParserStruct::structParse
 
 void configParserStruct::structParser::variablesStack::push( const variable &Var )
 {
-  Stack.push( Var );
+  Stack.push_back( Var );
 }
 
 // -----------------------------------------------------
@@ -34,8 +34,8 @@ const configParserStruct::structParser::variable configParserStruct::structParse
   if ( Stack.empty() )
     return variable();
 
-  variable Top = Stack.top();
-  Stack.pop();
+  variable Top = Stack.back();
+  Stack.pop_back();
   return Top;
 }
 
@@ -45,7 +45,7 @@ const configParserStruct::structParser::variable configParserStruct::structParse
 {
   if ( Stack.empty() )
     return variable();
-  return Stack.top();
+  return Stack.back();
 }
 
 // =====================================================
