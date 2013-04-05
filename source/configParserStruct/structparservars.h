@@ -54,43 +54,6 @@ namespace configParserStruct
     template <> variable createVariable( const char* const &Arg );
     
     // =====================================================
-    
-    class variablesList
-    {
-      private:
-        std::map< std::string, variable > Variables;
-
-      public:
-        variablesList() {}
-
-        void set( const std::string &Name, const variable &Var );
-        const variable get( const std::string &Name ) const;
-
-        std::list<std::string> listOfNames() const;
-        size_t size() const { return Variables.size(); }
-
-        void clear() { Variables.clear(); }
-    };
-    
-    // =====================================================
-    
-    class variablesStack
-    {
-      private:
-        std::vector< variable > Stack;
-
-      public:
-        variablesStack() {}
-
-        void push( const variable &Var );
-        const variable pop();
-        const variable top() const;
-
-        size_t size() const { return Stack.size(); }
-        void clear() { Stack.clear(); }
-    };
-    
-    // =====================================================
 
     class undefVariableValue : public variableValue
     {
@@ -148,8 +111,49 @@ namespace configParserStruct
 
         void addItem( const std::string &Key, const variable &Value );
         const variable getItem( const std::string &Key ) const;
+        variable* getItemPointer( const std::string &Key );
+        size_t numberOfItems() const { return Dict.size(); }
+        void clear() { Dict.clear(); }
+        const std::list<std::string> listOfKeys() const;
+    };
+        
+    // =====================================================
+    
+    class variablesList
+    {
+      private:
+        dictVariableValue Dict;
+
+      public:
+        variablesList() {}
+
+        void set( const std::string &Name, const variable &Var ) { Dict.addItem( Name, Var ); }
+        const variable get( const std::string &Name ) const { return Dict.getItem( Name ); }
+
+        std::list<std::string> listOfNames() const { return Dict.listOfKeys(); }
+        size_t size() const { return Dict.numberOfItems(); }
+
+        void clear() { Dict.clear(); }
     };
     
+    // =====================================================
+    
+    class variablesStack
+    {
+      private:
+        std::vector< variable > Stack;
+
+      public:
+        variablesStack() {}
+
+        void push( const variable &Var );
+        const variable pop();
+        const variable top() const;
+
+        size_t size() const { return Stack.size(); }
+        void clear() { Stack.clear(); }
+    };
+
     // =====================================================
     
     template <> inline variable createVariable( const double &Arg )

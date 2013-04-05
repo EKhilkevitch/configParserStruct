@@ -181,6 +181,8 @@ TEST( program, opEq )
   program Program;
   Program.rebuildAndExecute( "a = b = c = d = 5; a += 2; b -= 2; c *= 2; d /= 2;" );
 
+//  std::cout << Program.toString();
+
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( 7.0, Program.getNamedVariable("a").number(), 1e-5 );
   EXPECT_NEAR( 3.0, Program.getNamedVariable("b").number(), 1e-5 );

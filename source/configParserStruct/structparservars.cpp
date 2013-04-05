@@ -45,29 +45,22 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   return Iterator->second;
 }
 
-// =====================================================
-
-void configParserStruct::structParserUtil::variablesList::set( const std::string &Name, const variable &Var )
-{
-  Variables[ Name ] = Var;
-}
-
 // -----------------------------------------------------
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesList::get( const std::string &Name ) const
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::dictVariableValue::getItemPointer( const std::string &Key ) 
 {
-  std::map< std::string, variable >::const_iterator Iterator = Variables.find( Name );
-  if ( Iterator == Variables.end() )
-    return variable();
-  return Iterator->second;
+  std::map< std::string, variable >::iterator Iterator = Dict.find( Key );
+  if ( Iterator == Dict.end() )
+    return NULL;
+  return &Iterator->second;
 }
 
 // -----------------------------------------------------
         
-std::list<std::string> configParserStruct::structParserUtil::variablesList::listOfNames() const
+const std::list<std::string> configParserStruct::structParserUtil::dictVariableValue::listOfKeys() const
 {
   std::list<std::string> List;
-  for ( std::map< std::string, variable >::const_iterator i = Variables.begin(); i != Variables.end(); ++i )
+  for ( std::map< std::string, variable >::const_iterator i = Dict.begin(); i != Dict.end(); ++i )
     List.push_back( i->first );
   return List;
 }
