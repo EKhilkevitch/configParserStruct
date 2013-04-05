@@ -8,6 +8,7 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 #include <cassert>
 
 // =====================================================
@@ -15,6 +16,14 @@
 static configParserStruct::structParserUtil::program *Program = NULL;
 
 // =====================================================
+
+template <class T> static inline void pushOperator()
+{
+  if ( Program != NULL )
+    Program->pushCommand( T() );
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::structParserUtil::setStructPrserProgram( program *const Program )
 {
@@ -65,10 +74,26 @@ void assignVariableValueFromStack( const char *Name )
 
 // -----------------------------------------------------
 
-void addValuesFromStack()
+void operatorOnStackTop( int OperatorType )
 {
-  if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::addCommand() );
+  using namespace configParserStruct;
+  using namespace structParserUtil;
+
+#define CASE_OF_PUSH_COMMAND( Operator, Command ) \
+  case Operator: pushOperator< configParserStruct::structParserUtil::Command >(); break;
+
+  switch ( OperatorType )
+  {
+    CASE_OF_PUSH_COMMAND( '+', addCommand );
+    CASE_OF_PUSH_COMMAND( '-', subCommand );
+    CASE_OF_PUSH_COMMAND( '*', mulCommand );
+    CASE_OF_PUSH_COMMAND( '/', divCommand );
+    default:
+      pushOperator< configParserStruct::structParserUtil::nopCommand >();
+  }
+
+#undef PUSH_COMMAND
+
 }
 
 // =====================================================

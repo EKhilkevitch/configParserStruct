@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include "configParserStruct/structparserconst.h"
+#include "configParserStruct/structparsercompiler.h"
 
 // ====================================================
 
@@ -103,18 +104,18 @@ exprCmp        : exprCmp TOKEN_CMP exprAdd { }
                | exprAdd              {  }  
 
 
-exprAdd        : exprAdd '+' exprMul  { addValuesFromStack(); }
-	       | exprAdd '-' exprMul  {  }
+exprAdd        : exprAdd '+' exprMul  { operatorOnStackTop('+'); }
+	       | exprAdd '-' exprMul  { operatorOnStackTop('-'); }
 	       | exprMul              {  }
 	       ;
 
-exprMul        : exprMul '*' exprSign    {  }
-	       | exprMul '/' exprSign    {  }
+exprMul        : exprMul '*' exprSign    { operatorOnStackTop('*'); }
+	       | exprMul '/' exprSign    { operatorOnStackTop('/'); }
 	       | exprSign                {  }
 	       ;
 
 exprSign       : exprAtom              {  }
-	       | '-' exprAtom          {  }
+	       | '-' { pushRealNumberToStack(0); } exprAtom { operatorOnStackTop('-'); }
 	       | '+' exprAtom          {  }
 	       ;
 

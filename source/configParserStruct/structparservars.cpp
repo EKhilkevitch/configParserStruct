@@ -29,6 +29,16 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   return Iterator->second;
 }
 
+// -----------------------------------------------------
+        
+std::list<std::string> configParserStruct::structParserUtil::variablesList::listOfNames() const
+{
+  std::list<std::string> List;
+  for ( std::map< std::string, variable >::const_iterator i = Variables.begin(); i != Variables.end(); ++i )
+    List.push_back( i->first );
+  return List;
+}
+
 // =====================================================
 
 void configParserStruct::structParserUtil::variablesStack::push( const variable &Var )

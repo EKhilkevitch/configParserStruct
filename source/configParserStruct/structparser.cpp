@@ -65,5 +65,16 @@ int configParserStruct::structParser::integerVariable( const std::string &VarNam
   return round( doubleVariable( VarName, DefaultValue ) );
 }
 
+// -----------------------------------------------------
+      
+configParserStruct::structParser::containerForVariables configParserStruct::structParser::listOfVariables() const
+{
+  containerForVariables Result;
+  const std::list<std::string> &List = Program->variableNames();
+  for ( std::list<std::string>::const_iterator i = List.begin(); i != List.end(); ++i )
+    Result.insert( *i );
+  return Result;
+}
+
 // =====================================================
 

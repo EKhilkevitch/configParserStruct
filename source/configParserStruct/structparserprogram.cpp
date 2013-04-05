@@ -6,6 +6,8 @@
 #include "configParserStruct/structparserinput.h"
 #include "configParserStruct/mutex.h"
 
+#include <sstream>
+
 extern "C" int strprs_parse();
 
 // =====================================================
@@ -55,6 +57,35 @@ void configParserStruct::structParserUtil::program::build( const std::string &Pr
   }
     
   Mutex.unlock();
+}
+        
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::program::rebuildAndExecute( const std::string &ProgramText )
+{
+  clear();
+  build( ProgramText );
+  execute();
+}
+
+// -----------------------------------------------------
+        
+std::string configParserStruct::structParserUtil::program::toString() const
+{
+  std::stringstream Stream;
+
+  Stream << "Program: " << Commands.size() << " commands, " << Variables.size() << " named variabled" << std::endl;
+
+  Stream << std::endl << "Commands:" << std::endl;
+  for ( unsigned i = 0; i < Commands.size(); i++ )
+    Stream << "  " << Commands.getCommand(i).toString() << std::endl;
+  
+  Stream << std::endl << "Variables:" << std::endl;
+  std::list<std::string> Names = Variables.listOfNames();
+  for ( std::list<std::string>::const_iterator i = Names.begin(); i != Names.end(); ++i )
+    Stream << "  " << *i << " = " << Variables.get( *i ).string() << std::endl;
+
+  return Stream.str();
 }
 
 // =====================================================

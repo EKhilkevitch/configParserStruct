@@ -24,9 +24,10 @@ namespace configParserStruct
     class commandAction
     {
       public:
-        virtual ~commandAction() {}
+        virtual ~commandAction() {};
         virtual commandAction* clone() const = 0;
         virtual void execute( program *Program ) const = 0; 
+        virtual std::string toString() const = 0;
     };
     
     // =====================================================
@@ -41,6 +42,7 @@ namespace configParserStruct
         command( const commandAction &A ) : Action(A) {}
         void execute( program *Program ) const { Action->execute(Program); }
         const std::type_info& actionType() const { return typeid(*Action); }
+        const std::string toString() const { return Action->toString(); }
     };
     
     // =====================================================
@@ -62,6 +64,7 @@ namespace configParserStruct
 
         size_t size() const { return Commands.size(); }
         const command& currentCommand() const;
+        const command& getCommand( unsigned Index ) const { return Commands.at(Index); }
         unsigned currentCommandIndex() const { return CurrentCommandIndex; }
 
         void resetCurrentCommandIndex() { CurrentCommandIndex = 0; }
@@ -77,6 +80,7 @@ namespace configParserStruct
       public:
         void execute( program* ) const {}
         commandAction* clone() const { return new nopCommand(); }
+        std::string toString() const { return "nop"; }
     };
 
     // -----------------------------------------------------
@@ -90,6 +94,7 @@ namespace configParserStruct
         pushValueCommand( const variable &V ) : Variable(V) {}
         void execute( program *Program ) const; 
         commandAction* clone() const { return new pushValueCommand(Variable); }
+        std::string toString() const { return "push value " + Variable.string() + ""; }
     };
     
     // -----------------------------------------------------
@@ -102,6 +107,7 @@ namespace configParserStruct
         pushVariableCommand( const std::string &N ) : Name(N) {}
         void execute( program *Program ) const; 
         commandAction* clone() const { return new pushVariableCommand(Name); }
+        std::string toString() const { return "push variable " + Name + ""; }
     };
 
     // -----------------------------------------------------
@@ -111,6 +117,7 @@ namespace configParserStruct
       public:
         void execute( program *Program ) const; 
         commandAction* clone() const { return new popCommand(); }
+        std::string toString() const { return "pop"; }
     };
     
     // -----------------------------------------------------
@@ -120,6 +127,37 @@ namespace configParserStruct
       public:
         void execute( program *Program ) const;
         commandAction* clone() const { return new addCommand(); }
+        std::string toString() const { return "add"; }
+    };
+
+    // -----------------------------------------------------
+
+    class subCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new subCommand(); }
+        std::string toString() const { return "sub"; }
+    };
+
+    // -----------------------------------------------------
+
+    class mulCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new mulCommand(); }
+        std::string toString() const { return "mul"; }
+    };
+
+    // -----------------------------------------------------
+
+    class divCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new divCommand(); }
+        std::string toString() const { return "div"; }
     };
     
     // -----------------------------------------------------
@@ -132,6 +170,7 @@ namespace configParserStruct
         assignCommand( const std::string &N ) : Name(N) {}
         void execute( program *Program ) const;
         commandAction* clone() const { return new assignCommand(Name); }
+        std::string toString() const { return "assign " + Name; }
     };
 
     // =====================================================

@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
 
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/clonablepointer.h"
@@ -63,6 +64,9 @@ namespace configParserStruct
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
+
+        std::list<std::string> listOfNames() const;
+        size_t size() const { return Variables.size(); }
 
         void clear() { Variables.clear(); }
     };

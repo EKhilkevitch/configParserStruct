@@ -6,6 +6,7 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
+#include <cstdio>
 
 // =====================================================
 
@@ -58,11 +59,15 @@ size_t configParserStruct::structParserUtil::inputString::putNextPartToBuffer( c
 {
   if ( Buffer == NULL || Size <= 0 )
     return 0;
-  
+ 
+  std::memset( Buffer, 'Z', Size );
   Buffer[ Size - 1 ] = Buffer[ 0 ] = '\0';
 
   std::string NextPart = takeNextPart(Size);
   std::strncpy( Buffer, NextPart.c_str(), Size );
+
+//  std::printf( "putNextPartToBuffer: Size = %i, NextPart = %s, Buffer = %s\n", Size, NextPart.c_str(), Buffer );
+
   return NextPart.length();
 }
 

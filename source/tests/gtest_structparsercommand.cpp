@@ -65,6 +65,10 @@ TEST( command, pushValueCommand )
 
   EXPECT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 3, Program.topStackVariable().number(), 1e-5 );
+  
+  pushValueCommand( createVariable(0.0) ).execute(&Program);
+  EXPECT_EQ( 2, Program.stackSize() );
+  EXPECT_NEAR( 0, Program.topStackVariable().number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
@@ -121,6 +125,20 @@ TEST( command, addCommand )
 
   ASSERT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 7, Program.topStackVariable().number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( command, subCommand )
+{
+  program Program;
+
+  pushValueCommand( createVariable(3) ).execute( &Program );
+  pushValueCommand( createVariable(4) ).execute( &Program );
+  subCommand().execute( &Program );
+
+  ASSERT_EQ( 1, Program.stackSize() );
+  EXPECT_NEAR( -1, Program.topStackVariable().number(), 1e-5 );
 }
 
 // ---------------------------------------------------------

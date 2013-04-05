@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <cstdio>
+#include <cstring>
 #include <algorithm>
 #include <iostream>
 
@@ -47,6 +48,7 @@ TEST( inputString, putNextPartToBuffer )
   String.set( "1234567890" );
 
   char Buffer[ 2048 ];
+  std::memset( Buffer, '\0', sizeof(Buffer) );
 
   EXPECT_EQ( 3, String.putNextPartToBuffer(Buffer,3) );
   EXPECT_EQ( "123", std::string(Buffer) );
@@ -54,7 +56,22 @@ TEST( inputString, putNextPartToBuffer )
   EXPECT_EQ( 0,  String.putNextPartToBuffer(Buffer,0) );
   EXPECT_EQ( 7,  String.putNextPartToBuffer(Buffer,10) );
   EXPECT_EQ( "4567890", std::string(Buffer) );
+}
 
+// ---------------------------------------------------------
+
+TEST( inputString, putNextPartToBuffer_2 )
+{
+  inputString String;
+  String.set( "1234567890" );
+
+  char Buffer[ 2048 ];
+  
+  std::memset( Buffer, '\0', sizeof(Buffer) );
+  Buffer[ 3 ] = 'Z';
+  
+  EXPECT_EQ( 3, String.putNextPartToBuffer(Buffer,3) );
+  EXPECT_EQ( "123Z", std::string(Buffer) );
 }
 
 // =========================================================

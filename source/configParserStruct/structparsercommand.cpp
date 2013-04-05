@@ -105,6 +105,36 @@ void configParserStruct::structParserUtil::addCommand::execute( program *Program
 }
 
 // -----------------------------------------------------
+
+void configParserStruct::structParserUtil::subCommand::execute( program *Program ) const
+{
+  const variable &Var1 = Program->popStackVariable();
+  const variable &Var2 = Program->popStackVariable();
+  const variable &Result = createVariable( Var2.number() - Var1.number() );
+  Program->pushStackVariable( Result );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::mulCommand::execute( program *Program ) const
+{
+  const variable &Var1 = Program->popStackVariable();
+  const variable &Var2 = Program->popStackVariable();
+  const variable &Result = createVariable( Var2.number() * Var1.number() );
+  Program->pushStackVariable( Result );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::divCommand::execute( program *Program ) const
+{
+  const variable &Var1 = Program->popStackVariable();
+  const variable &Var2 = Program->popStackVariable();
+  const variable &Result = createVariable( Var2.number() / Var1.number() );
+  Program->pushStackVariable( Result );
+}
+
+// -----------------------------------------------------
         
 void configParserStruct::structParserUtil::assignCommand::execute( program *Program ) const
 {
