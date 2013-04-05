@@ -62,7 +62,7 @@ TEST( program, clear )
 
 // ---------------------------------------------------------
 
-TEST( program, variable )
+TEST( program, numericVariable )
 {
   program Program;
   Program.build( "x = 1" );
@@ -82,6 +82,19 @@ TEST( program, variable )
   EXPECT_NEAR( 3.3,  Program.getNamedVariable("x").number(), 1e-5 );
   EXPECT_NEAR( 4e2,  Program.getNamedVariable("y").number(), 1e-5 );
   EXPECT_NEAR( 0.01, Program.getNamedVariable("z").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, stringVariable )
+{
+  program Program;
+  Program.rebuildAndExecute( "x = 'abc'; y = \"zz\";" );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( 2, Program.variableNames().size() );
+  EXPECT_EQ( "abc", Program.getNamedVariable("x").string() );
+  EXPECT_EQ( "zz",  Program.getNamedVariable("y").string() );
 }
 
 // ---------------------------------------------------------

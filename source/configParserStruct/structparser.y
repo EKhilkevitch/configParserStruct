@@ -77,22 +77,21 @@ delimiter      : ';'
                | TOKEN_NEWLINE
                ;
 
-parserCommand  : expression {  }
+parserCommand  : expression { popValueFromStack(); }
 	       |
 	       ;
 
-expression     : exprSet    { popValueFromStack(); }
+expression     : exprSet    {  }
                | fullId '=' {  } '{' structFields '}' {  }
 	       ;
 
-exprSet        : fullId '=' exprSet  { assignVariableValueFromStack($1); }
+exprSet        : fullId '=' exprSet { assignVariableValueFromStack($1); }
                | fullId { pushVariableValueToStack($1); } TOKEN_ADDEQ exprSet { operatorOnStackTop('+'); assignVariableValueFromStack($1); }
                | fullId { pushVariableValueToStack($1); } TOKEN_SUBEQ exprSet { operatorOnStackTop('-'); assignVariableValueFromStack($1); }
                | fullId { pushVariableValueToStack($1); } TOKEN_MULEQ exprSet { operatorOnStackTop('*'); assignVariableValueFromStack($1); }
                | fullId { pushVariableValueToStack($1); } TOKEN_DIVEQ exprSet { operatorOnStackTop('/'); assignVariableValueFromStack($1); }
                | exprThr {  }
                ;
-
 
 exprThr        : exprCmp  {    } 
                      '?' exprCmp {  }
@@ -122,7 +121,7 @@ exprSign       : exprAtom              {  }
 exprAtom       : fullId             { pushVariableValueToStack( $1 ); } 
 	       | TOKEN_REALNUMBER   { pushRealNumberToStack( $1 ); } 
 	       | TOKEN_INTNUMBER    { pushIntegerNumberToStack( $1 ); }
-               | TOKEN_STRING       {  }
+               | TOKEN_STRING       { pushStringToStack( $1 ); }
                | TOKEN_ID {  } '(' arglist ')' 
                                     {  }
 	       | '(' exprSet ')'    {  }
@@ -147,7 +146,7 @@ structField    : '.' TOKEN_ID '=' exprSet {  }
                ;
 
 fullId         : fullId '.' TOKEN_ID     {  }
-               | TOKEN_ID                { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH-1 ); }
+               | TOKEN_ID                { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH ); }
                ;
 
 %%

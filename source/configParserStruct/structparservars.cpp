@@ -14,6 +14,39 @@ bool configParserStruct::structParserUtil::variable::isDefined() const
 
 // =====================================================
 
+const std::string configParserStruct::structParserUtil::dictVariableValue::string() const
+{
+  std::string Result;
+  Result += "{ ";
+  for ( std::map< std::string, variable >::const_iterator i = Dict.begin(); i != Dict.end(); ++i )
+  {
+    if ( i != Dict.begin() )
+      Result += ", ";
+    Result += "." + i->first + " = " + i->second.string();
+  }
+  Result += " }";
+  return Result;
+};
+        
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::dictVariableValue::addItem( const std::string &Key, const variable &Value )
+{
+  Dict[ Key ] = Value;
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::dictVariableValue::getItem( const std::string &Key ) const
+{
+  std::map< std::string, variable >::const_iterator Iterator = Dict.find( Key );
+  if ( Iterator == Dict.end() )
+    return variable();
+  return Iterator->second;
+}
+
+// =====================================================
+
 void configParserStruct::structParserUtil::variablesList::set( const std::string &Name, const variable &Var )
 {
   Variables[ Name ] = Var;

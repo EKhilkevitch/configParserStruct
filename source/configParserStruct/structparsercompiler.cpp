@@ -42,7 +42,7 @@ void popValueFromStack()
 
 void pushRealNumberToStack( double Number )
 {
-  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::createVariable<double>( Number );
+  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::createVariable( Number );
   if ( Program != NULL )
     Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
 }
@@ -52,6 +52,15 @@ void pushRealNumberToStack( double Number )
 void pushIntegerNumberToStack( int Number )
 {
   pushRealNumberToStack( Number );
+}
+
+// -----------------------------------------------------
+
+void pushStringToStack( const char *String )
+{
+  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::createVariable( String );
+  if ( Program != NULL )
+    Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
 }
 
 // -----------------------------------------------------
