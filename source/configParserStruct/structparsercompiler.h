@@ -14,9 +14,26 @@ void popValueFromStack();
 void pushRealNumberToStack( double Number );
 void pushIntegerNumberToStack( int Number );
 void addValuesFromStack();
+void pushVariableValueToStack( const char *Name );
+void assignVariableValueFromStack( const char *Name );
 
 #if __cplusplus
 }
+#endif
+
+// =====================================================
+
+#if __cplusplus
+namespace configParserStruct
+{
+  namespace structParser
+  {
+    class program;
+
+    void setStructPrserProgram( program *const Program );
+  }
+}
+
 #endif
 
 // =====================================================

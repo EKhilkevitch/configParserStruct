@@ -65,6 +65,7 @@ namespace configParserStruct
         void resetCurrentCommandIndex() { CurrentCommandIndex = 0; }
         bool isAllCommandsDone() const { return CurrentCommandIndex >= Commands.size(); }
         unsigned executeOneCommand( program *Program );
+        void execute( program *Program );
     };
     
     // =====================================================
@@ -78,17 +79,29 @@ namespace configParserStruct
 
     // -----------------------------------------------------
     
-    class pushCommand : public commandAction
+    class pushValueCommand : public commandAction
     {
       private:
         variable Variable;
 
       public:
-        pushCommand( const variable &V ) : Variable(V) {}
+        pushValueCommand( const variable &V ) : Variable(V) {}
         void execute( program *Program ) const; 
-        commandAction* clone() const { return new pushCommand(Variable); }
+        commandAction* clone() const { return new pushValueCommand(Variable); }
     };
     
+    // -----------------------------------------------------
+    
+    class pushVariableCommand : public commandAction
+    {
+      private:
+        std::string Name;
+      public:
+        pushVariableCommand( const std::string &N ) : Name(N) {}
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new pushVariableCommand(Name); }
+    };
+
     // -----------------------------------------------------
     
     class popCommand : public commandAction
@@ -107,6 +120,18 @@ namespace configParserStruct
         commandAction* clone() const { return new addCommand(); }
     };
     
+    // -----------------------------------------------------
+    
+    class assignCommand : public commandAction
+    {
+      private:
+        std::string Name;
+      public:
+        assignCommand( const std::string &N ) : Name(N) {}
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new assignCommand(Name); }
+    };
+
     // =====================================================
 
   }

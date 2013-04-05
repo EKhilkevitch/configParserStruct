@@ -84,7 +84,7 @@ expression     : exprSet    { popValueFromStack(); }
                | fullId '=' {  } '{' structFields '}' {  }
 	       ;
 
-exprSet        : fullId '=' exprSet  {  }
+exprSet        : fullId '=' exprSet  { assignVariableValueFromStack($1); }
                | fullId TOKEN_ADDEQ exprSet {   }
                | fullId TOKEN_MULEQ exprSet {   }
                | fullId TOKEN_SUBEQ exprSet {   }
@@ -103,7 +103,7 @@ exprCmp        : exprCmp TOKEN_CMP exprAdd { }
                | exprAdd              {  }  
 
 
-exprAdd        : exprAdd '+' exprMul  {  }
+exprAdd        : exprAdd '+' exprMul  { addValuesFromStack(); }
 	       | exprAdd '-' exprMul  {  }
 	       | exprMul              {  }
 	       ;
@@ -115,10 +115,10 @@ exprMul        : exprMul '*' exprSign    {  }
 
 exprSign       : exprAtom              {  }
 	       | '-' exprAtom          {  }
-	       | '+' exprAtom          { addValuesFromStack(); }
+	       | '+' exprAtom          {  }
 	       ;
 
-exprAtom       : fullId             {  } 
+exprAtom       : fullId             { pushVariableValueToStack( $1 ); } 
 	       | TOKEN_REALNUMBER   { pushRealNumberToStack( $1 ); } 
 	       | TOKEN_INTNUMBER    { pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       {  }
@@ -146,7 +146,7 @@ structField    : '.' TOKEN_ID '=' exprSet {  }
                ;
 
 fullId         : fullId '.' TOKEN_ID     {  }
-               | TOKEN_ID                {  }
+               | TOKEN_ID                { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH-1 ); }
                ;
 
 %%
