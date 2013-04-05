@@ -148,6 +148,33 @@ TEST( program, unarySign )
   EXPECT_NEAR(  -4, Program.getNamedVariable("z").number(), 1e-5 );
 }
 
+// ---------------------------------------------------------
+
+TEST( program, braces )
+{
+  program Program;
+  Program.rebuildAndExecute( "x = 2*3+1; y=2*(3+1);" );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 7.0, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 8.0, Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_NEAR( 0.0, Program.getNamedVariable("z").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, opEq )
+{
+  program Program;
+  Program.rebuildAndExecute( "a = b = c = d = 5; a += 2; b -= 2; c *= 2; d /= 2;" );
+
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 7.0, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 3.0, Program.getNamedVariable("b").number(), 1e-5 );
+  EXPECT_NEAR( 10,  Program.getNamedVariable("c").number(), 1e-5 );
+  EXPECT_NEAR( 2.5, Program.getNamedVariable("d").number(), 1e-5 );
+}
+
 // =========================================================
 
 

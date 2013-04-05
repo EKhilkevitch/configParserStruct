@@ -55,7 +55,7 @@ static void lexProcessLexerPragma( const char *const String );
 <LEXER_PRAGMA>[^*\n]*   { lexProcessLexerPragma(strprs_text); }
 
 
-{DELIM}         { lextUpdateLineNumber(); /* DISABLE_UNUSUAL_FUNC_WARNING( strprs_unput ); DISABLE_UNUSUAL_FUNC_WARNING( input ); */ }
+{DELIM}         { lextUpdateLineNumber(); }
 
 ";"             {  return ';';              }
 "."             {  return '.';              }
@@ -69,10 +69,10 @@ static void lexProcessLexerPragma( const char *const String );
 "<>"            {  }
 "!="            {  }
 
-"+="            {    }
-"-="            {    }
-"*="            {    }
-"/="            {    }
+"+="            { return TOKEN_ADDEQ; }
+"-="            { return TOKEN_SUBEQ; }
+"*="            { return TOKEN_MULEQ; }
+"/="            { return TOKEN_DIVEQ; }
 "="             { return '=';               }
 
 "("             {  return '(';              }
@@ -80,7 +80,7 @@ static void lexProcessLexerPragma( const char *const String );
 
 "+"             {  return '+';              }
 "-"             {  return '-';              }
-"**"            {        }
+"**"            {  return TOKEN_POW;  }
 "^"             {        }
 "*"             {  return '*';              }
 "/"             {  return '/';              }

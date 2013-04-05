@@ -86,11 +86,11 @@ expression     : exprSet    { popValueFromStack(); }
 	       ;
 
 exprSet        : fullId '=' exprSet  { assignVariableValueFromStack($1); }
-               | fullId TOKEN_ADDEQ exprSet {   }
-               | fullId TOKEN_MULEQ exprSet {   }
-               | fullId TOKEN_SUBEQ exprSet {   }
-               | fullId TOKEN_DIVEQ exprSet {   }
-               | exprThr             {  }
+               | fullId { pushVariableValueToStack($1); } TOKEN_ADDEQ exprSet { operatorOnStackTop('+'); assignVariableValueFromStack($1); }
+               | fullId { pushVariableValueToStack($1); } TOKEN_SUBEQ exprSet { operatorOnStackTop('-'); assignVariableValueFromStack($1); }
+               | fullId { pushVariableValueToStack($1); } TOKEN_MULEQ exprSet { operatorOnStackTop('*'); assignVariableValueFromStack($1); }
+               | fullId { pushVariableValueToStack($1); } TOKEN_DIVEQ exprSet { operatorOnStackTop('/'); assignVariableValueFromStack($1); }
+               | exprThr {  }
                ;
 
 
