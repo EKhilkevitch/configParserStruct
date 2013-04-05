@@ -14,7 +14,7 @@
 
 namespace configParserStruct
 {
-  namespace structParser
+  namespace structParserUtil
   {
     class undefVariableValue;
     
@@ -44,6 +44,7 @@ namespace configParserStruct
         const std::string string() const { return Value->string(); }
         double number() const { return Value->number(); }
         bool boolean() const { return Value->boolean(); }
+        bool isDefined() const;
     };
 
     template <class T> variable createVariable( const T &Arg );

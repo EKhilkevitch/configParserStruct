@@ -26,7 +26,7 @@ void assignVariableValueFromStack( const char *Name );
 #if __cplusplus
 namespace configParserStruct
 {
-  namespace structParser
+  namespace structParserUtil
   {
     class program;
 

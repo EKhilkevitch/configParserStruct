@@ -9,11 +9,11 @@
 
 // =====================================================
 
-static configParserStruct::structParser::inputString ParserString;
+static configParserStruct::structParserUtil::inputString ParserString;
 
 // =====================================================
 
-void configParserStruct::structParser::setInputString( const std::string &String )
+void configParserStruct::structParserUtil::setInputString( const std::string &String )
 {
   ParserString.set( String );
 }
@@ -27,7 +27,7 @@ size_t getNextPartFromInputString( char *const Buffer, const size_t MaxSize )
 
 // =====================================================
       
-configParserStruct::structParser::inputString::inputString( const std::string &S ) : 
+configParserStruct::structParserUtil::inputString::inputString( const std::string &S ) : 
   Position(0) 
 { 
   set(S); 
@@ -35,7 +35,7 @@ configParserStruct::structParser::inputString::inputString( const std::string &S
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::inputString::set( const std::string &String )
+void configParserStruct::structParserUtil::inputString::set( const std::string &String )
 {
   this->String = String;
   this->Position = 0;
@@ -43,7 +43,7 @@ void configParserStruct::structParser::inputString::set( const std::string &Stri
 
 // -----------------------------------------------------
 
-const std::string configParserStruct::structParser::inputString::takeNextPart( size_t Size )
+const std::string configParserStruct::structParserUtil::inputString::takeNextPart( size_t Size )
 {
   if ( Position >= String.length() )
     return std::string();
@@ -54,7 +54,7 @@ const std::string configParserStruct::structParser::inputString::takeNextPart( s
 
 // -----------------------------------------------------
 
-size_t configParserStruct::structParser::inputString::putNextPartToBuffer( char *Buffer, size_t Size )
+size_t configParserStruct::structParserUtil::inputString::putNextPartToBuffer( char *Buffer, size_t Size )
 {
   if ( Buffer == NULL || Size <= 0 )
     return 0;

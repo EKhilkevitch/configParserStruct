@@ -10,7 +10,7 @@
 
 namespace configParserStruct
 {
-  namespace structParser
+  namespace structParserUtil
   {
     
     // =====================================================

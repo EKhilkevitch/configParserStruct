@@ -12,11 +12,11 @@
 
 // =====================================================
 
-static configParserStruct::structParser::program *Program = NULL;
+static configParserStruct::structParserUtil::program *Program = NULL;
 
 // =====================================================
 
-void configParserStruct::structParser::setStructPrserProgram( program *const Program )
+void configParserStruct::structParserUtil::setStructPrserProgram( program *const Program )
 {
   ::Program = Program;
 }
@@ -26,16 +26,16 @@ void configParserStruct::structParser::setStructPrserProgram( program *const Pro
 void popValueFromStack()
 {
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParser::popCommand() );
+    Program->pushCommand( configParserStruct::structParserUtil::popCommand() );
 }
 
 // -----------------------------------------------------
 
 void pushRealNumberToStack( double Number )
 {
-  configParserStruct::structParser::variable Variable = configParserStruct::structParser::createVariable<double>( Number );
+  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::createVariable<double>( Number );
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParser::pushValueCommand( Variable ) );
+    Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
 }
 
 // -----------------------------------------------------
@@ -51,7 +51,7 @@ void pushVariableValueToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParser::pushVariableCommand( StrName ) );
+    Program->pushCommand( configParserStruct::structParserUtil::pushVariableCommand( StrName ) );
 }
 
 // -----------------------------------------------------
@@ -60,7 +60,7 @@ void assignVariableValueFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParser::assignCommand( StrName ) );
+    Program->pushCommand( configParserStruct::structParserUtil::assignCommand( StrName ) );
 }
 
 // -----------------------------------------------------
@@ -68,7 +68,7 @@ void assignVariableValueFromStack( const char *Name )
 void addValuesFromStack()
 {
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParser::addCommand() );
+    Program->pushCommand( configParserStruct::structParserUtil::addCommand() );
 }
 
 // =====================================================

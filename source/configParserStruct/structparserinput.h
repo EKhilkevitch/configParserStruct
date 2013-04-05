@@ -24,7 +24,7 @@ size_t getNextPartFromInputString( char *const Buffer, const size_t MaxSize );
 
 namespace configParserStruct
 {
-  namespace structParser
+  namespace structParserUtil
   {
     
     // =====================================================

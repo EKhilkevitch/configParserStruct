@@ -3,16 +3,25 @@
 
 #include "configParserStruct/structparservars.h"
 
+#include <typeinfo>
+
 // =====================================================
 
-void configParserStruct::structParser::variablesList::set( const std::string &Name, const variable &Var )
+bool configParserStruct::structParserUtil::variable::isDefined() const 
+{ 
+  return typeid(*Value) != typeid(undefVariableValue); 
+}
+
+// =====================================================
+
+void configParserStruct::structParserUtil::variablesList::set( const std::string &Name, const variable &Var )
 {
   Variables[ Name ] = Var;
 }
 
 // -----------------------------------------------------
 
-const configParserStruct::structParser::variable configParserStruct::structParser::variablesList::get( const std::string &Name ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesList::get( const std::string &Name ) const
 {
   std::map< std::string, variable >::const_iterator Iterator = Variables.find( Name );
   if ( Iterator == Variables.end() )
@@ -22,14 +31,14 @@ const configParserStruct::structParser::variable configParserStruct::structParse
 
 // =====================================================
 
-void configParserStruct::structParser::variablesStack::push( const variable &Var )
+void configParserStruct::structParserUtil::variablesStack::push( const variable &Var )
 {
   Stack.push_back( Var );
 }
 
 // -----------------------------------------------------
 
-const configParserStruct::structParser::variable configParserStruct::structParser::variablesStack::pop()
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesStack::pop()
 {
   if ( Stack.empty() )
     return variable();
@@ -41,7 +50,7 @@ const configParserStruct::structParser::variable configParserStruct::structParse
 
 // -----------------------------------------------------
 
-const configParserStruct::structParser::variable configParserStruct::structParser::variablesStack::top() const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesStack::top() const
 {
   if ( Stack.empty() )
     return variable();

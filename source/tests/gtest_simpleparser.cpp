@@ -102,8 +102,10 @@ TEST( simpleParser, listOfVariables )
   
   simpleParser::containerForVariables List = Parser.listOfVariables();
 
+#if 0
   for ( parser::containerForVariables::const_iterator i = List.begin(); i != List.end(); ++i )
     std::cerr << *i << std::endl;
+#endif
 
   EXPECT_EQ( 2, List.size() );
   EXPECT_TRUE( std::find(List.begin(),List.end(),std::string("a"))  != List.end() );

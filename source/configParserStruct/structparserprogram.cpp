@@ -14,19 +14,19 @@ static configParserStruct::mutex Mutex;
 
 // =====================================================
 
-configParserStruct::structParser::program::program()
+configParserStruct::structParserUtil::program::program()
 {
 }
 
 // -----------------------------------------------------
 
-configParserStruct::structParser::program::~program()
+configParserStruct::structParserUtil::program::~program()
 {
 }
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::program::clear()
+void configParserStruct::structParserUtil::program::clear()
 {
   Commands.clear();
   Variables.clear();
@@ -35,7 +35,7 @@ void configParserStruct::structParser::program::clear()
 
 // -----------------------------------------------------
         
-void configParserStruct::structParser::program::build( const std::string &ProgramText )
+void configParserStruct::structParserUtil::program::build( const std::string &ProgramText )
 {
   clear();
 

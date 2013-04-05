@@ -9,7 +9,7 @@
 
 // =====================================================
 
-unsigned configParserStruct::structParser::commandsList::push( const command &Cmd )
+unsigned configParserStruct::structParserUtil::commandsList::push( const command &Cmd )
 {
   Commands.push_back( Cmd );
   return Commands.size() - 1;
@@ -17,7 +17,7 @@ unsigned configParserStruct::structParser::commandsList::push( const command &Cm
 
 // -----------------------------------------------------
 
-unsigned configParserStruct::structParser::commandsList::push( const commandAction &Action )
+unsigned configParserStruct::structParserUtil::commandsList::push( const commandAction &Action )
 {
   command Cmd(Action);
   return push(Cmd);
@@ -25,14 +25,14 @@ unsigned configParserStruct::structParser::commandsList::push( const commandActi
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::commandsList::set( unsigned Index, const command &Cmd )
+void configParserStruct::structParserUtil::commandsList::set( unsigned Index, const command &Cmd )
 {
   Commands.at(Index) = Cmd;
 }
 
 // -----------------------------------------------------
 
-const configParserStruct::structParser::command& configParserStruct::structParser::commandsList::currentCommand() const
+const configParserStruct::structParserUtil::command& configParserStruct::structParserUtil::commandsList::currentCommand() const
 {
   static const command NopCommand;
   if ( CurrentCommandIndex < Commands.size() )
@@ -42,7 +42,7 @@ const configParserStruct::structParser::command& configParserStruct::structParse
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::commandsList::clear()
+void configParserStruct::structParserUtil::commandsList::clear()
 {
   Commands.clear();
   CurrentCommandIndex = 0;
@@ -50,7 +50,7 @@ void configParserStruct::structParser::commandsList::clear()
 
 // -----------------------------------------------------
         
-unsigned configParserStruct::structParser::commandsList::executeOneCommand( program *Program )
+unsigned configParserStruct::structParserUtil::commandsList::executeOneCommand( program *Program )
 {
   if ( Program == NULL )
     throw std::invalid_argument("Program must be not NULL");
@@ -62,7 +62,7 @@ unsigned configParserStruct::structParser::commandsList::executeOneCommand( prog
         
 // -----------------------------------------------------
 
-void configParserStruct::structParser::commandsList::execute( program *Program )
+void configParserStruct::structParserUtil::commandsList::execute( program *Program )
 {
   if ( Program == NULL )
     throw std::invalid_argument("Program must be not NULL");
@@ -73,7 +73,7 @@ void configParserStruct::structParser::commandsList::execute( program *Program )
 
 // =====================================================
 
-void configParserStruct::structParser::pushValueCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::pushValueCommand::execute( program *Program ) const
 {
   assert( Program != NULL );
   Program->pushStackVariable( Variable );
@@ -81,7 +81,7 @@ void configParserStruct::structParser::pushValueCommand::execute( program *Progr
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::pushVariableCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::pushVariableCommand::execute( program *Program ) const
 {
   const variable &Var = Program->getNamedVariable( Name );
   Program->pushStackVariable( Var );
@@ -89,14 +89,14 @@ void configParserStruct::structParser::pushVariableCommand::execute( program *Pr
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::popCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::popCommand::execute( program *Program ) const
 {
   Program->popStackVariable();
 }
 
 // -----------------------------------------------------
 
-void configParserStruct::structParser::addCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::addCommand::execute( program *Program ) const
 {
   const variable &Var1 = Program->popStackVariable();
   const variable &Var2 = Program->popStackVariable();
@@ -106,7 +106,7 @@ void configParserStruct::structParser::addCommand::execute( program *Program ) c
 
 // -----------------------------------------------------
         
-void configParserStruct::structParser::assignCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::assignCommand::execute( program *Program ) const
 {
   const variable &Var = Program->topStackVariable();
   Program->setNamedVariable( Name, Var );

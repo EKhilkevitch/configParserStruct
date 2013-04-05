@@ -10,21 +10,23 @@
 namespace configParserStruct
 {
 
-  namespace structParserUtil
-  {
-    class program;
-  };
+  namespace structParserUtil { class program; };
 
   class structParser : public parser
   {
     private:
       structParserUtil::program *Program;
 
+    private:
+      structParser( const structParser& );
+      structParser& operator=( const structParser& );
+
     protected:
       void setVariableValueString( const std::string &VarName, const std::string &Value ) {}
 
     public:
       structParser( const std::string &ConfigText = std::string() );
+      ~structParser();
 
       void exec( const std::string &ConfigText );
       bool isVariableExist( const std::string &VarName ) const;

@@ -12,7 +12,7 @@
 #include "configParserStruct/structparsercommand.h"
 
 using namespace configParserStruct;
-using namespace structParser;
+using namespace structParserUtil;
 
 // =========================================================
 
