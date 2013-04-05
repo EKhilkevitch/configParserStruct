@@ -48,6 +48,7 @@ namespace configParserStruct
 
     template <class T> variable createVariable( const T &Arg );
     template <> variable createVariable( const double &Arg );
+    template <> variable createVariable( const int &Arg );
     
     // =====================================================
     
@@ -76,6 +77,8 @@ namespace configParserStruct
         void push( const variable &Var );
         const variable pop();
         const variable top() const;
+
+        size_t size() const { return Stack.size(); }
     };
     
     // =====================================================
@@ -113,6 +116,13 @@ namespace configParserStruct
       return variable( Value );
     }
     
+    // -----------------------------------------------------
+    
+    template <> inline variable createVariable( const int &Arg )
+    {
+      return createVariable<double>( Arg );
+    }
+
     // =====================================================
 
   }

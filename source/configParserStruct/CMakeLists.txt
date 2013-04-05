@@ -21,6 +21,7 @@ set( configparser_source_files
       structparsercompiler.cpp
       structparsercommand.cpp
       structparservars.cpp
+      structparserprogram.cpp
       structparser.cpp
       ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c
       ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c
@@ -29,7 +30,11 @@ set( configparser_source_files
 include( FindPythonLibs )
 find_package( PythonLibs REQUIRED )
 
-include_directories( ${PYTHON_INCLUDE_PATH} )
+include_directories( "${PYTHON_INCLUDE_PATH}/.." )
+set( PYTHON_VERSION ${PYTHON_INCLUDE_PATH} )
+string( REGEX REPLACE "^.*ython" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
+string( REGEX REPLACE "[\\/]+$" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} '-DPYTHON_INCLUDE_HEADER=<python${PYTHON_VERSION}/Python.h>'") 
 
 add_library( configParser ${LIBRARY_TYPE} ${configparser_source_files} )
 target_link_libraries( configParser ${PYTHON_LIBRARIES} )

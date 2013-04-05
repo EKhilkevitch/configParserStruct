@@ -9,9 +9,6 @@
 
 #include "configParserStruct/structparsercompiler.h"
 
-using namespace configParserStruct;
-using namespace structParser;
-
 // =========================================================
 
 

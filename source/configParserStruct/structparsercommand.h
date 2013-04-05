@@ -4,6 +4,7 @@
 // =====================================================
 
 #include <vector>
+#include <typeinfo>
 
 #include "configParserStruct/clonablepointer.h"
 #include "configParserStruct/structparservars.h"
@@ -36,8 +37,10 @@ namespace configParserStruct
         clonablePointer<commandAction,nopCommand> Action;
 
       public:
+        command() {}
         command( const commandAction &A ) : Action(A) {}
         void execute( program *Program ) const { Action->execute(Program); }
+        const std::type_info& actionType() const { return typeid(*Action); }
     };
     
     // =====================================================
@@ -55,9 +58,13 @@ namespace configParserStruct
         unsigned push( const commandAction &Action );
         void set( unsigned Index, const command &Cmd );
 
+        size_t size() const { return Commands.size(); }
+        const command& currentCommand() const;
+        unsigned currentCommandIndex() const { return CurrentCommandIndex; }
+
         void resetCurrentCommandIndex() { CurrentCommandIndex = 0; }
         bool isAllCommandsDone() const { return CurrentCommandIndex >= Commands.size(); }
-        unsigned executeNextCommand( program *Program );
+        unsigned executeOneCommand( program *Program );
     };
     
     // =====================================================

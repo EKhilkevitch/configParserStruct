@@ -9,7 +9,11 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <Python.h>
+#ifndef PYTHON_INCLUDE_HEADER
+#  error "PYTHON_INCLUDE_HEADER must be defined!"
+#endif
+
+#include PYTHON_INCLUDE_HEADER
 
 // =====================================================
 

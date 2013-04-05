@@ -2,7 +2,7 @@
 // =====================================================
 
 #include "configParserStruct/structparsercommand.h"
-#include "configParserStruct/structparsercompiler.h"
+#include "configParserStruct/structparserprogram.h"
 
 #include <stdexcept>
 #include <cassert>
@@ -31,8 +31,18 @@ void configParserStruct::structParser::commandsList::set( unsigned Index, const 
 }
 
 // -----------------------------------------------------
+
+const configParserStruct::structParser::command& configParserStruct::structParser::commandsList::currentCommand() const
+{
+  static const command NopCommand;
+  if ( CurrentCommandIndex < Commands.size() )
+    return Commands.at( CurrentCommandIndex );
+  return NopCommand;
+}
+
+// -----------------------------------------------------
         
-unsigned configParserStruct::structParser::commandsList::executeNextCommand( program *Program )
+unsigned configParserStruct::structParser::commandsList::executeOneCommand( program *Program )
 {
   if ( CurrentCommandIndex < Commands.size() )
     Commands.at( CurrentCommandIndex ).execute( Program );
