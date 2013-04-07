@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <typeinfo>
 
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/clonablepointer.h"
@@ -46,6 +47,7 @@ namespace configParserStruct
         double number() const { return Value->number(); }
         bool boolean() const { return Value->boolean(); }
         bool isDefined() const;
+        const std::type_info& valueType() const { return typeid(*Value); }
         template <class VarT> const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
         template <class VarT> VarT& value() { return dynamic_cast<VarT&>( *Value ); }
     };
@@ -54,6 +56,7 @@ namespace configParserStruct
     template <> variable createVariable( const double &Arg );
     template <> variable createVariable( const int &Arg );
     template <> variable createVariable( const char* const &Arg );
+    template <> variable createVariable( const std::string &Arg );
     
     // =====================================================
 
@@ -176,6 +179,13 @@ namespace configParserStruct
     template <> inline variable createVariable( const char* const &Arg )
     {
       std::string String = ( Arg == NULL ) ? "" : Arg;
+      return createVariable( String );
+    }    
+
+    // -----------------------------------------------------
+    
+    template <> inline variable createVariable( const std::string &Arg )
+    {
       stringVariableValue Value( Arg );
       return variable( Value );
     }

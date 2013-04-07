@@ -32,7 +32,17 @@ const std::string configParserStruct::structParserUtil::dictVariableValue::strin
 
 void configParserStruct::structParserUtil::dictVariableValue::addItem( const std::string &Key, const variable &Value )
 {
-  Dict[ Key ] = Value;
+  size_t DelimiterPos = Key.find_first_of(".");
+  if ( DelimiterPos == std::string::npos )
+  {
+    Dict[ Key ] = Value;
+  } else {
+    std::string ItemKey = Key.substr( 0, DelimiterPos );
+    std::string ItemName = Key.substr( DelimiterPos+1, std::string::npos );
+    if ( Dict[ItemKey].valueType() != typeid(dictVariableValue) )
+      Dict[ItemKey] = dictVariableValue();
+    Dict[ItemKey].value<dictVariableValue>().addItem( ItemName, Value );
+  }
 }
 
 // -----------------------------------------------------

@@ -144,7 +144,7 @@ structField    : '.' TOKEN_ID '=' exprSet { setDictFieldFromStack($2); }
                | '.' TOKEN_ID '=' { pushDictToStack(); } '{' structFields '}' { setDictFieldFromStack($2); }
                ;
 
-fullId         : fullId '.' TOKEN_ID     {  }
+fullId         : fullId '.' TOKEN_ID     { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); strncat( $$, ".", 2 ); strncat( $$, $3, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); }
                | TOKEN_ID                { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH ); }
                ;
 
