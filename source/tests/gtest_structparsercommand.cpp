@@ -203,7 +203,7 @@ TEST( command, jumpToCommand )
 
 // ---------------------------------------------------------
 
-TEST( command, callFunction )
+TEST( command, callCommand )
 {
   program Program;
   for ( unsigned i = 0; i < 10U; i++ )
@@ -213,7 +213,7 @@ TEST( command, callFunction )
   jumpToCommand(2).execute( &Program );
   EXPECT_EQ( 1, Program.currentCommandIndex() );
 
-  callFunction( "func" ).execute( &Program );
+  callCommand( "func" ).execute( &Program );
   EXPECT_EQ( 4, Program.currentCommandIndex() );
   EXPECT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 2, Program.topStackVariable().number(), 1e-5 );
@@ -221,7 +221,7 @@ TEST( command, callFunction )
 
 // ---------------------------------------------------------
 
-TEST( command, retFromFunction )
+TEST( command, retCommand )
 {
   program Program;
   
@@ -230,11 +230,11 @@ TEST( command, retFromFunction )
   Program.pushCommand( pushValueCommand( createVariable(3.3) ) ); // 2
   Program.pushCommand( pushValueCommand( createVariable(1.0) ) ); // 3
   Program.pushCommand( addCommand() ); // 4
-  Program.pushCommand( retFromFunction() ); // 5
+  Program.pushCommand( retCommand() ); // 5
   Program.pushCommand( assignVariableCommand("a") ); // 6
   Program.pushCommand( assignVariableCommand("b") ); // 7
   Program.pushCommand( assignVariableCommand("c") ); // 8
-  Program.pushCommand( callFunction("func") ); // 9
+  Program.pushCommand( callCommand("func") ); // 9
   Program.pushCommand( assignVariableCommand("e") ); // 10
   Program.pushCommand( assignVariableCommand("f") ); // 11
   Program.setCurrentCommandIndex(9);
@@ -258,7 +258,6 @@ TEST( command, retFromFunction )
   Program.executeOneCommand();
   EXPECT_EQ( 2, Program.stackSize() );
   EXPECT_NEAR( 4.3, Program.topStackVariable().number(), 1e-5 );
-  EXPECT_NEAR( 0, Program.getNamedVariable("e").number(), 1e-5 );
 
   Program.executeOneCommand();
   EXPECT_EQ( 10, Program.currentCommandIndex() );
@@ -273,7 +272,40 @@ TEST( command, retFromFunction )
   EXPECT_NEAR( 4.3, Program.topStackVariable().number(), 1e-5 );
   EXPECT_NEAR( 4.3, Program.getNamedVariable("e").number(), 1e-5 );
   EXPECT_NEAR( 0, Program.getNamedVariable("f").number(), 1e-5 );
+}
 
+// ---------------------------------------------------------
+
+TEST( command, pushVarFrameCommand )
+{
+  program Program;
+  EXPECT_EQ( 1, Program.functionLevel() );
+
+  pushVarFrameCommand().execute( &Program );
+  EXPECT_EQ( 2, Program.functionLevel() );
+}
+
+// ---------------------------------------------------------
+
+TEST( command, pushArgumentCommand )
+{
+  program Program;
+  pushVarFrameCommand().execute( &Program );
+  EXPECT_EQ( 0, Program.getNamedVariable("$N").integer() );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  pushValueCommand( createVariable(3) ).execute( &Program );
+  pushArgumentCommand().execute( &Program );
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( 1, Program.getNamedVariable("$N").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("$1").integer() ); 
+  
+  pushValueCommand( createVariable(4) ).execute( &Program );
+  pushArgumentCommand().execute( &Program );
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( 2, Program.getNamedVariable("$N").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("$1").integer() ); 
+  EXPECT_EQ( 4, Program.getNamedVariable("$2").integer() ); 
 }
 
 // =========================================================

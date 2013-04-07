@@ -4,9 +4,12 @@
 #include "configParserStruct/structparserprogram.h"
 #include "configParserStruct/structparsercompiler.h"
 #include "configParserStruct/structparserinput.h"
+#include "configParserStruct/stringcast.h"
+#include "configParserStruct/mutex.h"
 #include "configParserStruct/mutex.h"
 
 #include <sstream>
+#include <cassert>
 
 extern "C" int strprs_parse();
 extern "C" void lexResetLineNumber();
@@ -31,11 +34,21 @@ configParserStruct::structParserUtil::program::~program()
 
 // -----------------------------------------------------
 
+void configParserStruct::structParserUtil::program::pushFunctionArgument( const variable &V )
+{
+  variable NumberOfArgs = Variables.getFromTopOfStack( "$N" );
+  Variables.set( "$" + convertToString( NumberOfArgs.integer() + 1 ), V );
+  Variables.set( "$N", createVariable( NumberOfArgs.integer() + 1 ) );
+}
+
+// -----------------------------------------------------
+        
 void configParserStruct::structParserUtil::program::clear()
 {
   Commands.clear();
   Variables.clear();
   Stack.clear();
+  
   ErrorLine = -1;
 }
 

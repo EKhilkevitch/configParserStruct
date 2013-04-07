@@ -29,6 +29,7 @@ namespace configParserStruct
         virtual variableValue* clone() const = 0;
         virtual const std::string string() const = 0;
         virtual double number() const = 0;
+        virtual int integer() const = 0;
         virtual bool boolean() const = 0;
     };
     
@@ -45,6 +46,7 @@ namespace configParserStruct
 
         const std::string string() const { return Value->string(); }
         double number() const { return Value->number(); }
+        int integer() const { return Value->integer(); }
         bool boolean() const { return Value->boolean(); }
         bool isDefined() const;
         const std::type_info& valueType() const { return typeid(*Value); }
@@ -57,7 +59,7 @@ namespace configParserStruct
     template <> variable createVariable( const int &Arg );
     template <> variable createVariable( const char* const &Arg );
     template <> variable createVariable( const std::string &Arg );
-    
+
     // =====================================================
 
     class undefVariableValue : public variableValue
@@ -68,6 +70,7 @@ namespace configParserStruct
         variableValue* clone() const { return new undefVariableValue(*this); }
         const std::string string() const { return std::string(); }
         double number() const { return 0; }
+        int integer() const { return 0; }
         bool boolean() const { return false; }
     };
     
@@ -82,7 +85,23 @@ namespace configParserStruct
         variableValue* clone() const { return new realVariableValue(*this); }
         const std::string string() const { return convertToString(Value); }
         double number() const { return Value; }
+        int integer() const { return Value; }
         bool boolean() const { return Value != 0.0; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class integerVariableValue : public variableValue
+    {
+      private:
+        int Value;
+      public:
+        integerVariableValue( int V ) : Value(V) {}
+        variableValue* clone() const { return new integerVariableValue(*this); }
+        const std::string string() const { return convertToString(Value); }
+        double number() const { return Value; }
+        int integer() const { return Value; }
+        bool boolean() const { return Value != 0; }
     };
     
     // -----------------------------------------------------
@@ -96,6 +115,7 @@ namespace configParserStruct
         variableValue* clone() const { return new stringVariableValue(*this); }
         const std::string string() const { return Value; }
         double number() const { return convertFromString<double>(Value); }
+        int integer() const { return convertFromString<int>(Value); }
         bool boolean() const { return Value.empty(); }
     };
     
@@ -111,6 +131,7 @@ namespace configParserStruct
         variableValue* clone() const { return new commandAddressVariableValue(*this); }
         const std::string string() const { return convertToString(CommandIndex); }
         double number() const { return CommandIndex; }
+        int integer() const { return CommandIndex; }
         bool boolean() const { return true; }
         unsigned address() const { return CommandIndex; }
     };
@@ -128,6 +149,7 @@ namespace configParserStruct
 
         const std::string string() const;
         double number() const { return Dict.size(); }
+        int integer() const { return Dict.size(); }
         bool boolean() const { return ! Dict.empty(); }
 
         void addItem( const std::string &Key, const variable &Value );
@@ -141,7 +163,7 @@ namespace configParserStruct
         static std::pair<std::string,std::string> splitKey( const std::string &Key );
         static std::string dictSeparator() { return "."; }
     };
-        
+            
     // =====================================================
     
     class variablesList
@@ -164,6 +186,35 @@ namespace configParserStruct
     
     // =====================================================
     
+    class variablesListStack 
+    {
+      private:
+        typedef std::list< variablesList > varListStack;
+
+        varListStack Stack;
+
+      public:
+        variablesListStack() { clear(); }
+
+        void set( const std::string &Name, const variable &Var );
+        const variable get( const std::string &Name ) const;
+        const variable getFromTopOfStack( const std::string &Name ) { return Stack.back().get(Name); }
+
+        void pushNewList() { Stack.push_back( variablesList() ); }
+        void popList();
+        
+        std::list<std::string> listOfNames() const;
+        std::list<std::string> listOfNamesInAllStack() const;
+        size_t size() const { return Stack.size(); }
+
+        void clear();
+
+        static std::string globalPrefix() { return "::"; }
+        static std::string globalName( const std::string &Name ); 
+    };
+    
+    // =====================================================
+    
     class variablesStack
     {
       private:
@@ -175,6 +226,7 @@ namespace configParserStruct
         void push( const variable &Var );
         const variable pop();
         const variable top() const;
+        variable* topPointer();
 
         size_t size() const { return Stack.size(); }
         void clear() { Stack.clear(); }
@@ -192,7 +244,8 @@ namespace configParserStruct
     
     template <> inline variable createVariable( const int &Arg )
     {
-      return createVariable<double>( Arg );
+      integerVariableValue Value( Arg );
+      return variable( Value );
     }
     
     // -----------------------------------------------------

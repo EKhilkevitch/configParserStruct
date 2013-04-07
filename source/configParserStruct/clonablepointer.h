@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <typeinfo>
 
 // =====================================================
 
@@ -30,6 +31,8 @@ namespace configParserStruct
       const T& operator*() const  { return *Pointer; }
       T* operator->()             { return Pointer; }
       const T* operator->() const { return Pointer; }
+
+      const std::type_info& type() const { return typeid(*Pointer); }
   };
     
   // =====================================================
@@ -47,6 +50,7 @@ namespace configParserStruct
   {
     Pointer = Arg.clone();
     assert( Pointer != NULL );
+    assert( type() == typeid(Arg) );
   }
   
   // -----------------------------------------------------
@@ -75,6 +79,7 @@ namespace configParserStruct
       delete Pointer;
       Pointer = Arg.Pointer->clone();
     }
+    assert( type() == Arg.type() );
     return *this;
   }
   

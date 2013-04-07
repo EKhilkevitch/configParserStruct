@@ -19,7 +19,7 @@ namespace configParserStruct
     {
       private:
         commandsList Commands;
-        variablesList Variables;
+        variablesListStack Variables;
         variablesStack Stack;
         int ErrorLine;
 
@@ -40,9 +40,14 @@ namespace configParserStruct
         const variable topStackVariable() const { return Stack.top(); }
         size_t stackSize() const { return Stack.size(); }
 
+        void pushVariableFrame() { Variables.pushNewList(); }
+        void pushFunctionArgument( const variable &V );
+        void popVariableFrame() { Variables.popList(); }
+        size_t functionLevel() const { return Variables.size(); }
+
         const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
         void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
-        std::list<std::string> variableNames() const { return Variables.listOfNamesIncludeSubdict(); }
+        std::list<std::string> variableNames() const { return Variables.listOfNamesInAllStack(); }
         const variable getLastExpressionReuslt() const { return Variables.get( lastResultVariableName() ); }
         
         void setErrorLine( int Line ) { ErrorLine = Line; }

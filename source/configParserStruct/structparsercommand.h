@@ -123,25 +123,55 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    class callFunction : public commandAction
+    class callCommand : public commandAction
     {
       private:
         std::string Name;
       public:
-        callFunction( const std::string &N ) : Name(N) {}
+        callCommand( const std::string &N ) : Name(N) {}
         void execute( program *Program ) const; 
-        commandAction* clone() const { return new callFunction(*this); }
+        commandAction* clone() const { return new callCommand(*this); }
         std::string toString() const { return "call " + Name; }
     };
     
     // -----------------------------------------------------
     
-    class retFromFunction : public commandAction
+    class retCommand : public commandAction
     {
       public:
         void execute( program *Program ) const; 
-        commandAction* clone() const { return new retFromFunction(); }
+        commandAction* clone() const { return new retCommand(); }
         std::string toString() const { return "ret"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class pushVarFrameCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new pushVarFrameCommand(); }
+        std::string toString() const { return "push variable frame"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class popVarFrameCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new popVarFrameCommand(); }
+        std::string toString() const { return "pop variable frame"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class pushArgumentCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new pushArgumentCommand(); }
+        std::string toString() const { return "push argument"; }
     };
     
     // -----------------------------------------------------

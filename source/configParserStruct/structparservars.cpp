@@ -4,6 +4,7 @@
 #include "configParserStruct/structparservars.h"
 
 #include <typeinfo>
+#include <set>
 
 // =====================================================
 
@@ -134,6 +135,103 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   if ( Stack.empty() )
     return variable();
   return Stack.back();
+}
+
+// -----------------------------------------------------
+        
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::variablesStack::topPointer()
+{
+  if ( Stack.empty() )
+    return NULL;
+  return &Stack.back();
+}
+
+// =====================================================
+
+void configParserStruct::structParserUtil::variablesListStack::set( const std::string &Name, const variable &Var )
+{
+  assert( ! Stack.empty() );
+
+  const std::string &GlobalName = globalName(Name);
+
+  if ( GlobalName.empty() )
+    Stack.back().set( Name, Var );
+  else
+    Stack.front().set( GlobalName, Var );
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesListStack::get( const std::string &Name ) const
+{
+  assert( ! Stack.empty() );
+
+  const std::string &GlobalName = globalName(Name);
+
+  if ( GlobalName.empty() )
+  {
+    for ( varListStack::const_reverse_iterator s = Stack.rbegin(); s != Stack.rend(); ++s )
+    {
+      variable Variable = s->get( Name );
+      if ( Variable.isDefined() )
+        return Variable;
+    }
+    return variable();
+  } else {
+    return Stack.front().get( GlobalName );
+  }
+}
+
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::variablesListStack::popList()
+{
+  if ( Stack.size() > 1 )
+    Stack.pop_back();
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::variablesListStack::clear()
+{
+  Stack.clear();
+  Stack.push_back( variablesList() );
+}
+
+// -----------------------------------------------------
+
+std::list<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNames() const
+{
+  std::set<std::string> Result;
+  for ( varListStack::const_iterator s = Stack.begin(); s != Stack.end(); ++s )
+  {
+    std::list<std::string> Names = s->listOfNames();
+    Result.insert( Names.begin(), Names.end() );
+  }
+  return std::list<std::string>( Result.begin(), Result.end() );
+}
+
+// -----------------------------------------------------
+
+std::list<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNamesInAllStack() const
+{
+  std::set<std::string> Result;
+  for ( varListStack::const_iterator s = Stack.begin(); s != Stack.end(); ++s )
+  {
+    std::list<std::string> Names = s->listOfNamesIncludeSubdict();
+    Result.insert( Names.begin(), Names.end() );
+  }
+  return std::list<std::string>( Result.begin(), Result.end() );
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::structParserUtil::variablesListStack::globalName( const std::string &Name )
+{
+  size_t Pos = Name.find( globalPrefix() );
+  if ( Pos == 0 )
+    return Name.substr( globalPrefix().size(), std::string::npos );
+  return std::string();
 }
 
 // =====================================================

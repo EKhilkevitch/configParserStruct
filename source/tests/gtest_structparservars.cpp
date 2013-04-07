@@ -88,6 +88,59 @@ TEST( variable, dictVariableValue_getItem )
   EXPECT_NEAR( 6, Value.getItem("w.r.t").number(), 1e-5 );
 }
 
+// ---------------------------------------------------------
+
+TEST( variable, variablesListStack_globalName )
+{
+  ASSERT_EQ( "xyz", variablesListStack::globalName("::xyz") );
+  ASSERT_EQ( "", variablesListStack::globalName("xyz") );
+}
+
+// ---------------------------------------------------------
+
+TEST( variable, variablesListStack )
+{
+
+  variablesListStack List;
+  ASSERT_EQ( 1, List.size() );
+
+  List.clear();
+  ASSERT_EQ( 1, List.size() );
+
+  List.set( "a", createVariable(1) );
+  List.set( "b", createVariable(2) );
+
+  EXPECT_EQ( 2, List.listOfNames().size() );
+  EXPECT_NEAR( 1, List.get("a").number(), 1e-5 );
+  EXPECT_NEAR( 2, List.get("b").number(), 1e-5 );
+  EXPECT_NEAR( 1, List.getFromTopOfStack("a").number(), 1e-5 );
+
+  List.pushNewList();
+  ASSERT_EQ( 2, List.size() );
+  EXPECT_NEAR( 1, List.get("a").number(), 1e-5 );
+  EXPECT_NEAR( 2, List.get("b").number(), 1e-5 );
+  EXPECT_NEAR( 0, List.getFromTopOfStack("a").number(), 1e-5 );
+
+  List.set( "a", createVariable(3) );
+  EXPECT_NEAR( 3, List.get("a").number(),  1e-5 );
+  EXPECT_NEAR( 1, List.get("::a").number(), 1e-5 );
+  EXPECT_NEAR( 2, List.get("b").number(),  1e-5 );
+  EXPECT_NEAR( 3, List.getFromTopOfStack("a").number(), 1e-5 );
+  
+  List.set( "::a", createVariable(4) );
+  EXPECT_NEAR( 3, List.get("a").number(),  1e-5 );
+  EXPECT_NEAR( 4, List.get("::a").number(), 1e-5 );
+  EXPECT_NEAR( 3, List.getFromTopOfStack("a").number(), 1e-5 );
+
+  List.popList();
+  ASSERT_EQ( 1, List.size() );
+  EXPECT_NEAR( 4, List.get("a").number(), 1e-5 );
+  EXPECT_NEAR( 2, List.get("b").number(), 1e-5 );
+ 
+  List.popList();
+  ASSERT_EQ( 1, List.size() );
+}
+
 // =========================================================
 
 

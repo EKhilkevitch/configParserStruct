@@ -96,7 +96,7 @@ void configParserStruct::structParserUtil::popCommand::execute( program *Program
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::callFunction::execute( program *Program ) const
+void configParserStruct::structParserUtil::callCommand::execute( program *Program ) const
 {
   const variable Function = Program->getNamedVariable( Name );
   if ( Function.valueType() == typeid(commandAddressVariableValue) )
@@ -112,7 +112,7 @@ void configParserStruct::structParserUtil::callFunction::execute( program *Progr
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::retFromFunction::execute( program *Program ) const
+void configParserStruct::structParserUtil::retCommand::execute( program *Program ) const
 {
   const variable Result = Program->popStackVariable();
   const variable RetAddress = Program->popStackVariable();
@@ -120,6 +120,28 @@ void configParserStruct::structParserUtil::retFromFunction::execute( program *Pr
   if ( RetAddress.valueType() == typeid(commandAddressVariableValue) )
     Program->setCurrentCommandIndex( RetAddress.value<commandAddressVariableValue>().address() - 1 );
   Program->pushStackVariable( Result );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::pushVarFrameCommand::execute( program *Program ) const
+{
+  Program->pushVariableFrame();
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::pushArgumentCommand::execute( program *Program ) const
+{
+  const variable Argument = Program->popStackVariable();
+  Program->pushFunctionArgument( Argument );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::popVarFrameCommand::execute( program *Program ) const
+{
+  Program->popVariableFrame();
 }
 
 // -----------------------------------------------------
