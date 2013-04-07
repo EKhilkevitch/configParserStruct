@@ -136,6 +136,24 @@ void finalizeExpressionStack( void )
 
 // -----------------------------------------------------
 
+void beginOfFunction( const char *Name )
+{
+  if ( Program == NULL )
+    return;
+  Program->pushCommand( markerCommand() );
+}
+
+// -----------------------------------------------------
+
+void endOfFunction( void )
+{
+  Program->pushCommand( popVarFrameCommand() );
+  Program->pushCommand( retCommand() );
+  //Program->replaceCommandMarkerToJump();
+}
+
+// -----------------------------------------------------
+
 void setStructParserError( void )
 {
   if ( Program != NULL && Program->errorLine() < 0 )

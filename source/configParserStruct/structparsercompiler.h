@@ -15,6 +15,8 @@ void pushRealNumberToStack( double Number );
 void pushIntegerNumberToStack( int Number );
 void pushStringToStack( const char *String );
 void pushDictToStack( void );
+void beginOfFunction( const char *Name );
+void endOfFunction( void );
 void pushVariableValueToStack( const char *Name );
 void assignVariableValueFromStack( const char *Name );
 void setDictFieldFromStack( const char *Name );

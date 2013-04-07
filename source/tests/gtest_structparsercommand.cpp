@@ -283,6 +283,9 @@ TEST( command, pushVarFrameCommand )
 
   pushVarFrameCommand().execute( &Program );
   EXPECT_EQ( 2, Program.functionLevel() );
+
+  popVarFrameCommand().execute( &Program );
+  EXPECT_EQ( 1, Program.functionLevel() );
 }
 
 // ---------------------------------------------------------
@@ -307,6 +310,10 @@ TEST( command, pushArgumentCommand )
   EXPECT_EQ( 3, Program.getNamedVariable("$1").integer() ); 
   EXPECT_EQ( 4, Program.getNamedVariable("$2").integer() ); 
 }
+
+// ---------------------------------------------------------
+
+
 
 // =========================================================
 

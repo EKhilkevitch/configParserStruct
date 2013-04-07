@@ -51,6 +51,7 @@ EXTERN void strprs_error( const char *String );
 %token TOKEN_SUBEQ
 %token TOKEN_MULEQ
 %token TOKEN_DIVEQ
+%token TOKEN_FUNCTION
 
 %type  <ExprValue> exprSet
 %type  <ExprValue> exprThr
@@ -81,6 +82,7 @@ parserCommand  : expression { finalizeExpressionStack(); }
 
 expression     : exprSet    {  }
                | fullId '=' { pushDictToStack(); } '{' structFields '}' { assignVariableValueFromStack($1);  }
+               | fullId '=' TOKEN_FUNCTION {  } '{'  '}' {  }
 	       ;
 
 exprSet        : fullId '=' exprSet { assignVariableValueFromStack($1); }

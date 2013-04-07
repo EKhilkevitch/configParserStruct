@@ -92,6 +92,8 @@ static void lexProcessLexerPragma( const char *const String );
 "{"             { return '{';               }
 "}"             { return '}';               }
 
+"func"          { return TOKEN_FUNCTION;    }
+
 {INTNUM}        {  
                    strprs_lval.RealNumber = atol(strprs_text); 
 		   return TOKEN_REALNUMBER; 

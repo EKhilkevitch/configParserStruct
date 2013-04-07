@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <typeinfo>
+#include <cstdlib>
 
 #include "configParserStruct/clonablepointer.h"
 #include "configParserStruct/structparservars.h"
@@ -59,6 +60,7 @@ namespace configParserStruct
         unsigned push( const command &Cmd );
         unsigned push( const commandAction &Action );
         void set( unsigned Index, const command &Cmd );
+        void replaceMarker( const commandAction &Action );
 
         void clear();
 
@@ -84,6 +86,16 @@ namespace configParserStruct
         std::string toString() const { return "nop"; }
     };
 
+    // -----------------------------------------------------
+    
+    class markerCommand : public commandAction
+    {
+      public:
+        void execute( program* ) const { std::abort(); }
+        commandAction* clone() const { return new markerCommand(); }
+        std::string toString() const { return "<MARKER>"; }
+    };
+    
     // -----------------------------------------------------
     
     class pushValueCommand : public commandAction
