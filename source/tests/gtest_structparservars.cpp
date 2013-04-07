@@ -27,6 +27,17 @@ TEST( variable, variable )
 
 // ---------------------------------------------------------
 
+TEST( variable, dictVariableValue_splitKey )
+{
+  EXPECT_EQ( "abc", dictVariableValue::splitKey("abc").first );
+  EXPECT_EQ( "", dictVariableValue::splitKey("abc").second );
+  
+  EXPECT_EQ( "abc", dictVariableValue::splitKey("abc.xyz").first );
+  EXPECT_EQ( "xyz", dictVariableValue::splitKey("abc.xyz").second );
+}
+
+// ---------------------------------------------------------
+
 TEST( variable, dictVariableValue_addItem )
 {
   dictVariableValue Value;
@@ -55,6 +66,26 @@ TEST( variable, dictVariableValue_addItem )
   
   Value.addItem( "w.r.t", createVariable(6) );
   EXPECT_EQ( "{ .w = { .r = { .t = 6 } }, .x = 3, .y = abc, .z = { .l = 5, .n = 4 } }", Value.string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( variable, dictVariableValue_getItem )
+{
+  dictVariableValue Value;
+  Value.addItem( "x", createVariable(3) );
+  Value.addItem( "x.n", createVariable(4) );
+  Value.addItem( "x.m", createVariable(5) );
+  Value.addItem( "w.r.t", createVariable(6) );
+  Value.addItem( "y", createVariable(7) );
+
+  EXPECT_NEAR( 0, Value.getItem("z").number(), 1e-5 );
+  EXPECT_NEAR( 7, Value.getItem("y").number(), 1e-5 );
+  EXPECT_NEAR( 2, Value.getItem("x").number(), 1e-5 );
+  EXPECT_NEAR( 4, Value.getItem("x.n").number(), 1e-5 );
+  EXPECT_NEAR( 5, Value.getItem("x.m").number(), 1e-5 );
+  EXPECT_NEAR( 0, Value.getItem("x.o").number(), 1e-5 );
+  EXPECT_NEAR( 6, Value.getItem("w.r.t").number(), 1e-5 );
 }
 
 // =========================================================

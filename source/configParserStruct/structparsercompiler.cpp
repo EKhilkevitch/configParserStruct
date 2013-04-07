@@ -10,10 +10,14 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cassert>
+  
+extern "C" int lexCurrentLineNumber();
+
+using namespace configParserStruct::structParserUtil;
 
 // =====================================================
 
-static configParserStruct::structParserUtil::program *Program = NULL;
+static program *Program = NULL;
 
 // =====================================================
 
@@ -35,16 +39,16 @@ void configParserStruct::structParserUtil::setStructPrserProgram( program *const
 void popValueFromStack( void )
 {
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::popCommand() );
+    Program->pushCommand( popCommand() );
 }
 
 // -----------------------------------------------------
 
 void pushRealNumberToStack( double Number )
 {
-  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::createVariable( Number );
+  variable Variable = createVariable( Number );
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
+    Program->pushCommand( pushValueCommand( Variable ) );
 }
 
 // -----------------------------------------------------
@@ -58,18 +62,18 @@ void pushIntegerNumberToStack( int Number )
 
 void pushStringToStack( const char *String )
 {
-  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::createVariable( String );
+  variable Variable = createVariable( String );
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
+    Program->pushCommand( pushValueCommand( Variable ) );
 }
 
 // -----------------------------------------------------
 
 void pushDictToStack( void ) 
 {
-  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::dictVariableValue(); 
+  variable Variable = dictVariableValue(); 
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
+    Program->pushCommand( pushValueCommand( Variable ) );
 }
 
 // -----------------------------------------------------
@@ -78,7 +82,7 @@ void pushVariableValueToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::pushVariableCommand( StrName ) );
+    Program->pushCommand( pushVariableCommand( StrName ) );
 }
 
 // -----------------------------------------------------
@@ -87,7 +91,7 @@ void assignVariableValueFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::assignVariableCommand( StrName ) );
+    Program->pushCommand( assignVariableCommand( StrName ) );
 }
 
 // -----------------------------------------------------
@@ -96,7 +100,7 @@ void setDictFieldFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::setDictFieldCommand( StrName ) );
+    Program->pushCommand( setDictFieldCommand( StrName ) );
 }
 
 // -----------------------------------------------------
@@ -107,7 +111,7 @@ void operatorOnStackTop( int OperatorType )
   using namespace structParserUtil;
 
 #define CASE_OF_PUSH_COMMAND( Operator, Command ) \
-  case Operator: pushOperator< configParserStruct::structParserUtil::Command >(); break;
+  case Operator: pushOperator< Command >(); break;
 
   switch ( OperatorType )
   {
@@ -116,11 +120,29 @@ void operatorOnStackTop( int OperatorType )
     CASE_OF_PUSH_COMMAND( '*', mulCommand );
     CASE_OF_PUSH_COMMAND( '/', divCommand );
     default:
-      pushOperator< configParserStruct::structParserUtil::nopCommand >();
+      pushOperator< nopCommand >();
   }
 
 #undef PUSH_COMMAND
+}
 
+// -----------------------------------------------------
+
+void finalizeExpressionStack( void )
+{
+  assignVariableValueFromStack( program::lastResultVariableName().c_str() );
+  popValueFromStack();
+}
+
+// -----------------------------------------------------
+
+void setStructParserError( void )
+{
+  if ( Program != NULL && Program->errorLine() < 0 )
+  {
+    int LineNumber = lexCurrentLineNumber();
+    Program->setErrorLine( LineNumber );
+  }
 }
 
 // =====================================================

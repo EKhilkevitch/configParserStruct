@@ -9,6 +9,7 @@
 #include <sstream>
 
 extern "C" int strprs_parse();
+extern "C" void lexResetLineNumber();
 
 // =====================================================
 
@@ -18,12 +19,14 @@ static configParserStruct::mutex Mutex;
 
 configParserStruct::structParserUtil::program::program()
 {
+  clear();
 }
 
 // -----------------------------------------------------
 
 configParserStruct::structParserUtil::program::~program()
 {
+  clear();
 }
 
 // -----------------------------------------------------
@@ -33,21 +36,27 @@ void configParserStruct::structParserUtil::program::clear()
   Commands.clear();
   Variables.clear();
   Stack.clear();
+  ErrorLine = -1;
 }
 
 // -----------------------------------------------------
         
-void configParserStruct::structParserUtil::program::build( const std::string &ProgramText )
+bool configParserStruct::structParserUtil::program::build( const std::string &ProgramText )
 {
   clear();
+
+  bool Result = true;
 
   Mutex.lock();
   try
   {
     setStructPrserProgram( this );
     setInputString( ProgramText ); 
+    lexResetLineNumber();
     
     int ParseResult = strprs_parse();
+    if ( ErrorLine >= 0 || ParseResult != 0 )
+      Result = false;
 
     setStructPrserProgram( NULL );
   } catch ( ... )
@@ -57,15 +66,19 @@ void configParserStruct::structParserUtil::program::build( const std::string &Pr
   }
     
   Mutex.unlock();
+  return Result;
 }
         
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::program::rebuildAndExecute( const std::string &ProgramText )
+bool configParserStruct::structParserUtil::program::rebuildAndExecute( const std::string &ProgramText )
 {
   clear();
-  build( ProgramText );
+  bool Ok = build( ProgramText );
+  if ( ! Ok )
+    return false;
   execute();
+  return true;
 }
 
 // -----------------------------------------------------

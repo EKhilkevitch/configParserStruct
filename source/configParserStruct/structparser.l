@@ -24,8 +24,8 @@ DELIM                   [ \t\v\r\f]
 #include <stdlib.h>
 #include <assert.h>
 
-static void     lexResetLineNumber( void );
-static unsigned lexCurrentLineNumber( void ); 
+extern void     lexResetLineNumber( void );
+extern unsigned lexCurrentLineNumber( void ); 
 static void     lextUpdateLineNumber( void );
 
 static int  lexEnableTokenNewline( void );

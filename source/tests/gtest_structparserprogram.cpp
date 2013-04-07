@@ -39,7 +39,7 @@ TEST( program, number )
   
   Program.execute();
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_EQ( 0, Program.variableNames().size() );
+  EXPECT_EQ( 1, Program.variableNames().size() );
 }
 
 // ---------------------------------------------------------
@@ -51,7 +51,7 @@ TEST( program, clear )
   Program.execute();
   
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_EQ( 1, Program.variableNames().size() );
+  EXPECT_EQ( 2, Program.variableNames().size() );
   EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
 
   Program.clear();
@@ -65,20 +65,23 @@ TEST( program, clear )
 TEST( program, numericVariable )
 {
   program Program;
-  Program.build( "x = 1" );
+  bool OK = Program.build( "x = 1;" );
+  ASSERT_TRUE( OK );
   Program.execute();
   
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_EQ( 1, Program.variableNames().size() );
+  EXPECT_EQ( 2, Program.variableNames().size() );
   EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
 
-  Program.rebuildAndExecute( "x = y + 1" );
+  OK = Program.rebuildAndExecute( "x = y + 1;" );
+  ASSERT_TRUE( OK );
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_EQ( 1, Program.variableNames().size() );
+  EXPECT_EQ( 2, Program.variableNames().size() );
   EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
   EXPECT_NEAR( 0,   Program.getNamedVariable("y").number(), 1e-5 );
   
-  Program.rebuildAndExecute( "x = 3.3; y = 4e2; z = 0.01" );
+  OK = Program.rebuildAndExecute( "x = 3.3; y = 4e2; z = 0.01;\n" );
+  ASSERT_TRUE( OK );
   EXPECT_NEAR( 3.3,  Program.getNamedVariable("x").number(), 1e-5 );
   EXPECT_NEAR( 4e2,  Program.getNamedVariable("y").number(), 1e-5 );
   EXPECT_NEAR( 0.01, Program.getNamedVariable("z").number(), 1e-5 );
@@ -92,7 +95,7 @@ TEST( program, stringVariable )
   Program.rebuildAndExecute( "x = 'abc'; y = \"zz\";" );
   
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_EQ( 2, Program.variableNames().size() );
+  EXPECT_EQ( 3, Program.variableNames().size() );
   EXPECT_EQ( "abc", Program.getNamedVariable("x").string() );
   EXPECT_EQ( "zz",  Program.getNamedVariable("y").string() );
 }
@@ -118,6 +121,7 @@ TEST( program, sub )
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( 3, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("y").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
@@ -166,12 +170,12 @@ TEST( program, unarySign )
 TEST( program, braces )
 {
   program Program;
-  Program.rebuildAndExecute( "x = 2*3+1; y=2*(3+1);" );
+  Program.rebuildAndExecute( "x = 2+1*3; y=2*(3+1); z = 11+(2+4)*(-7.0/2-4)-3;" );
   
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_NEAR( 7.0, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 5.0, Program.getNamedVariable("x").number(), 1e-5 );
   EXPECT_NEAR( 8.0, Program.getNamedVariable("y").number(), 1e-5 );
-  EXPECT_NEAR( 0.0, Program.getNamedVariable("z").number(), 1e-5 );
+  EXPECT_NEAR( -37, Program.getNamedVariable("z").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
@@ -195,13 +199,15 @@ TEST( program, opEq )
 TEST( program, dict )
 {
   program Program;
-  Program.build( "a = 3; b = { .x = 0.1, .z = 2*a, .y = { .l = 'abcd' } }" );
+  Program.build( "a = 3; b = { .x = 0.1, .z = 2*a, .y = { .l = 'abcd' } }; c = b; d = b.y;" );
   //std::cerr << Program.toString() << std::endl;
   Program.execute();
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( 3.0, Program.getNamedVariable("a").number(), 1e-5 );
   EXPECT_EQ( "{ .x = 0.1, .y = { .l = abcd }, .z = 6 }", Program.getNamedVariable("b").string() );
+  EXPECT_EQ( Program.getNamedVariable("b").string(), Program.getNamedVariable("c").string() );
+  EXPECT_EQ( "{ .l = abcd }", Program.getNamedVariable("d").string() );
   try
   {
     dictVariableValue Struct = Program.getNamedVariable("b").value<dictVariableValue>();
@@ -221,14 +227,95 @@ TEST( program, dict )
 TEST( program, dictFieldAssign )
 {
   program Program;
-  Program.build( "a = { .x = 1, .y = 2 }; a.x = 3; b.z = 4; c = 5;" );
+  Program.build( "a = { .x = 1, .y = 2 }; a.x = 3; b.z = 4; c = a.x + 2;" );
   Program.execute();
-  std::cerr << Program.toString() << std::endl;
+  //std::cerr << Program.toString() << std::endl;
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_EQ( "{ .x = 3, .y = 2 }", Program.getNamedVariable("a").string() );
   EXPECT_EQ( "{ .z = 4 }", Program.getNamedVariable("b").string() );
   EXPECT_EQ( "5", Program.getNamedVariable("c").string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, comments )
+{
+  program Program;
+  Program.rebuildAndExecute( "x = 1;\n# y = 2;\n\n z = { .a = 2, # *3\n .b = 4 # aaa, \n #.d = 7 \n };\n" );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 1.0, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 0.0, Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_EQ( "{ .a = 2, .b = 4 }", Program.getNamedVariable("z").string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, getLastExpressionReuslt )
+{
+  program Program;
+  Program.rebuildAndExecute( "x = 2; 3+4;" );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 7.0, Program.getLastExpressionReuslt().number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, variableNames )
+{
+  program Program;
+  Program.rebuildAndExecute( "x = 2; 3+4; yyy=4; z.l = 2;" );
+
+  std::list<std::string> VariablesList = Program.variableNames();
+  std::set<std::string> Variables( VariablesList.begin(), VariablesList.end() );
+
+  EXPECT_EQ( 1, Variables.count("x") );
+  EXPECT_EQ( 0, Variables.count("a") );
+  EXPECT_EQ( 1, Variables.count("yyy") );
+  EXPECT_EQ( 0, Variables.count("z") );
+  EXPECT_EQ( 1, Variables.count("z.l") );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, incorrectProgram )
+{
+  program Program;
+  bool OK = Program.rebuildAndExecute( "x = 2;\n y=x+1;\n z = 3+;\nn=3-;\n" );
+
+  EXPECT_FALSE( OK );
+  EXPECT_EQ( 2, Program.errorLine() );
+
+  OK = Program.rebuildAndExecute( "x = 2;\n y=x+1;\n z = 3+1; \n" );
+  EXPECT_TRUE( OK );
+  EXPECT_EQ( -1, Program.errorLine() );
+
+#if 1
+  OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
+  EXPECT_TRUE( OK );
+
+  OK = Program.rebuildAndExecute( "x = 2\ny=x+1\nz = 3\n" );
+  EXPECT_FALSE( OK );
+  
+  OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
+  EXPECT_TRUE( OK );
+#endif
+}
+
+// ---------------------------------------------------------
+
+TEST( program, newLine )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "!NL-\nx = 2;y=x+1;z = 3;" );
+  EXPECT_TRUE( OK );
+
+  OK = Program.rebuildAndExecute( "!NL+\nx = 2\ny=x+1\nz = 3\n" );
+  EXPECT_TRUE( OK );
 }
 
 // =========================================================

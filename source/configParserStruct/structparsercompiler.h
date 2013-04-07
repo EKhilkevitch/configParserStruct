@@ -19,6 +19,9 @@ void pushVariableValueToStack( const char *Name );
 void assignVariableValueFromStack( const char *Name );
 void setDictFieldFromStack( const char *Name );
 void operatorOnStackTop( int OperatorType );
+void finalizeExpressionStack( void );
+void setParsingErrorLine( int LineNumber );
+void setStructParserError( void );
 
 #if __cplusplus
 }

@@ -21,6 +21,7 @@ namespace configParserStruct
         commandsList Commands;
         variablesList Variables;
         variablesStack Stack;
+        int ErrorLine;
 
       public:
         program();
@@ -37,15 +38,20 @@ namespace configParserStruct
 
         const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
         void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
-        std::list<std::string> variableNames() const { return Variables.listOfNames(); }
+        std::list<std::string> variableNames() const { return Variables.listOfNamesIncludeSubdict(); }
+        const variable getLastExpressionReuslt() const { return Variables.get( lastResultVariableName() ); }
+        
+        void setErrorLine( int Line ) { ErrorLine = Line; }
 
         void clear();
-
-        void build( const std::string &ProgramText );
+        bool build( const std::string &ProgramText );
+        int errorLine() { return ErrorLine; }
         void execute() { Commands.execute( this ); }
-        void rebuildAndExecute( const std::string &ProgramText );
+        bool rebuildAndExecute( const std::string &ProgramText );
 
         std::string toString() const;
+
+        static std::string lastResultVariableName() { return ":LAST_EXPRESSION:"; }
     };
   
     // =====================================================

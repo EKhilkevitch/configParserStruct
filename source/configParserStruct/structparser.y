@@ -21,9 +21,7 @@
 
 EXTERN int strprs_parse( void );
 EXTERN int strprs_lex( void );
-EXTERN void strprs_error( const char *const String );
-
-EXTERN unsigned lexCurrentLineNumber( void );
+EXTERN void strprs_error( const char *String );
 
 // ====================================================
 
@@ -70,14 +68,14 @@ EXTERN unsigned lexCurrentLineNumber( void );
 
 parserCommands : parserCommands parserCommand delimiter
 	       | parserCommand delimiter
-	       | error { yyerrok; yyclearin; strprs_error("invalid parserCommand"); }
+	       | error { yyclearin; yyerrok; setStructParserError(); }
 	       ;
 
 delimiter      : ';' 
                | TOKEN_NEWLINE
                ;
 
-parserCommand  : expression { popValueFromStack(); }
+parserCommand  : expression { finalizeExpressionStack(); }
 	       |
 	       ;
 
@@ -152,25 +150,18 @@ fullId         : fullId '.' TOKEN_ID     { strncpy( $$, $1, STRUCTPARSER_MAX_ID_
 
 // ==================================================
 
-void strprs_error( const char *const String )
-{
-#if 0
-  if ( yyparserProgram()->NumberOfErrorLine < 0 )
-  {
-    yyparserProgram()->NumberOfErrorLine = lexCurrentLineNumber();
-#if ! SILENT_ERRORS
-    fprintf(stderr,"Error: %s, line %u\n", String, lexCurrentLineNumber() ); 
-#endif
-  }
-#endif
-}
-
-// ==================================================
-
 int strprs_wrap( void )
 {
   return 1;
-} 
+  strprs_FLUSH_BUFFER(); 
+}
+
+// --------------------------------------------------
+
+void strprs_error( const char *String )
+{
+ setStructParserError();
+}
 
 // ====================================================
 

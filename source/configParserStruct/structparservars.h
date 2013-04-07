@@ -120,6 +120,10 @@ namespace configParserStruct
         size_t numberOfItems() const { return Dict.size(); }
         void clear() { Dict.clear(); }
         const std::list<std::string> listOfKeys() const;
+        const std::list<std::string> listOfKeysIncludeSubdict() const;
+
+        static std::pair<std::string,std::string> splitKey( const std::string &Key );
+        static std::string dictSeparator() { return "."; }
     };
         
     // =====================================================
@@ -136,6 +140,7 @@ namespace configParserStruct
         const variable get( const std::string &Name ) const { return Dict.getItem( Name ); }
 
         std::list<std::string> listOfNames() const { return Dict.listOfKeys(); }
+        std::list<std::string> listOfNamesIncludeSubdict() const { return Dict.listOfKeysIncludeSubdict(); }
         size_t size() const { return Dict.numberOfItems(); }
 
         void clear() { Dict.clear(); }
