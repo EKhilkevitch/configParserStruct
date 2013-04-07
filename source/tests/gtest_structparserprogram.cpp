@@ -190,6 +190,32 @@ TEST( program, opEq )
   EXPECT_NEAR( 2.5, Program.getNamedVariable("d").number(), 1e-5 );
 }
 
+// ---------------------------------------------------------
+
+TEST( program, dict )
+{
+  program Program;
+  Program.build( "a = 3; b = { .x = 0.1, .z = 2*a, .y = { .l = 'abcd' } }" );
+  //std::cerr << Program.toString() << std::endl;
+  Program.execute();
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 3.0, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_EQ( "{ .x = 0.1, .y = { .l = abcd }, .z = 6 }", Program.getNamedVariable("b").string() );
+  try
+  {
+    dictVariableValue Struct = Program.getNamedVariable("b").value<dictVariableValue>();
+    EXPECT_EQ( 3, Struct.numberOfItems() );
+    EXPECT_NEAR( 0.1, Struct.getItem("x").number(), 1e-5 );
+    EXPECT_NEAR( 6.0, Struct.getItem("z").number(), 1e-5 );
+    EXPECT_FALSE( Struct.getItem("xy").isDefined() );
+    EXPECT_EQ( "abcd", Struct.getItem("y").value<dictVariableValue>().getItem("l").string() );
+  } catch ( ... )
+  {
+    FAIL() << "Exception!";
+  }
+}
+
 // =========================================================
 
 

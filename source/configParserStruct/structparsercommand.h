@@ -162,15 +162,28 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    class assignCommand : public commandAction
+    class assignVariableCommand : public commandAction
     {
       private:
         std::string Name;
       public:
-        assignCommand( const std::string &N ) : Name(N) {}
+        assignVariableCommand( const std::string &N ) : Name(N) {}
         void execute( program *Program ) const;
-        commandAction* clone() const { return new assignCommand(Name); }
-        std::string toString() const { return "assign " + Name; }
+        commandAction* clone() const { return new assignVariableCommand(Name); }
+        std::string toString() const { return "assign variable " + Name; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class setDictFieldCommand : public commandAction
+    {
+      private:
+        std::string Name;
+      public:
+        setDictFieldCommand( const std::string &N ) : Name(N) {}
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new setDictFieldCommand(Name); }
+        std::string toString() const { return "set dict field " + Name; }
     };
 
     // =====================================================

@@ -136,10 +136,20 @@ void configParserStruct::structParserUtil::divCommand::execute( program *Program
 
 // -----------------------------------------------------
         
-void configParserStruct::structParserUtil::assignCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::assignVariableCommand::execute( program *Program ) const
 {
-  const variable &Var = Program->topStackVariable();
-  Program->setNamedVariable( Name, Var );
+  const variable &Value = Program->topStackVariable();
+  Program->setNamedVariable( Name, Value );
+}
+
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::setDictFieldCommand::execute( program *Program ) const
+{
+  const variable &Value = Program->popStackVariable();
+  variable Dict = Program->popStackVariable();
+  Dict.value<dictVariableValue>().addItem( Name, Value );
+  Program->pushStackVariable( Dict );
 }
 
 // =====================================================

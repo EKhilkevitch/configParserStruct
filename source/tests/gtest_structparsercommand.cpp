@@ -143,16 +143,37 @@ TEST( command, subCommand )
 
 // ---------------------------------------------------------
 
-TEST( command, assignCommand )
+TEST( command, assignVariableCommand )
 {
   program Program;
 
   pushValueCommand( createVariable(3) ).execute( &Program );
-  assignCommand( "a" ).execute( &Program );
+  assignVariableCommand( "a" ).execute( &Program );
 
   ASSERT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 3, Program.topStackVariable().number(), 1e-5 );
   EXPECT_NEAR( 3, Program.getNamedVariable("a").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( command, setDictFieldCommand ) 
+{
+  program Program;
+
+  pushValueCommand( dictVariableValue() ).execute( &Program );
+  pushValueCommand( createVariable(5.5) ).execute( &Program );
+  setDictFieldCommand( "field" ).execute( &Program );
+  
+  ASSERT_EQ( 1, Program.stackSize() );
+  EXPECT_EQ( "{ .field = 5.5 }", Program.topStackVariable().string() );
+  try
+  {
+    EXPECT_NEAR( 5.5, Program.topStackVariable().value<dictVariableValue>().getItem("field").number(), 1e-5 );
+  } catch ( ... )
+  {
+    FAIL() << "Exception!";
+  }
 }
 
 // =========================================================

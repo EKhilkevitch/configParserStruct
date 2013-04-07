@@ -82,7 +82,7 @@ parserCommand  : expression { popValueFromStack(); }
 	       ;
 
 expression     : exprSet    {  }
-               | fullId '=' {  } '{' structFields '}' {  }
+               | fullId '=' { pushDictToStack(); } '{' structFields '}' { assignVariableValueFromStack($1);  }
 	       ;
 
 exprSet        : fullId '=' exprSet { assignVariableValueFromStack($1); }
@@ -140,9 +140,8 @@ structFields   : structFields ',' structField
                |
                ;
 
-structField    : '.' TOKEN_ID '=' exprSet {  }
-               | '.' TOKEN_ID '=' {  } '{' structFields '}' 
-                                  {  }
+structField    : '.' TOKEN_ID '=' exprSet { setDictFieldFromStack($2); }
+               | '.' TOKEN_ID '=' { pushDictToStack(); } '{' structFields '}' { setDictFieldFromStack($2); }
                ;
 
 fullId         : fullId '.' TOKEN_ID     {  }

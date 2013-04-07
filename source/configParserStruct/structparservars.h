@@ -46,6 +46,8 @@ namespace configParserStruct
         double number() const { return Value->number(); }
         bool boolean() const { return Value->boolean(); }
         bool isDefined() const;
+        template <class VarT> const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
+        template <class VarT> VarT& value() { return dynamic_cast<VarT&>( *Value ); }
     };
 
     template <class T> variable createVariable( const T &Arg );
@@ -67,7 +69,7 @@ namespace configParserStruct
     };
     
     // -----------------------------------------------------
-
+    
     class realVariableValue : public variableValue
     {
       private:

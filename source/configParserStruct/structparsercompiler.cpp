@@ -32,7 +32,7 @@ void configParserStruct::structParserUtil::setStructPrserProgram( program *const
 
 // =====================================================
 
-void popValueFromStack()
+void popValueFromStack( void )
 {
   if ( Program != NULL )
     Program->pushCommand( configParserStruct::structParserUtil::popCommand() );
@@ -65,6 +65,15 @@ void pushStringToStack( const char *String )
 
 // -----------------------------------------------------
 
+void pushDictToStack( void ) 
+{
+  configParserStruct::structParserUtil::variable Variable = configParserStruct::structParserUtil::dictVariableValue(); 
+  if ( Program != NULL )
+    Program->pushCommand( configParserStruct::structParserUtil::pushValueCommand( Variable ) );
+}
+
+// -----------------------------------------------------
+
 void pushVariableValueToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
@@ -78,7 +87,16 @@ void assignVariableValueFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( configParserStruct::structParserUtil::assignCommand( StrName ) );
+    Program->pushCommand( configParserStruct::structParserUtil::assignVariableCommand( StrName ) );
+}
+
+// -----------------------------------------------------
+
+void setDictFieldFromStack( const char *Name )
+{
+  std::string StrName = ( Name == NULL ) ? std::string() : Name;
+  if ( Program != NULL )
+    Program->pushCommand( configParserStruct::structParserUtil::setDictFieldCommand( StrName ) );
 }
 
 // -----------------------------------------------------
