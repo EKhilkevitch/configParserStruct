@@ -295,12 +295,15 @@ TEST( program, incorrectProgram )
 #if 1
   OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
   EXPECT_TRUE( OK );
+  EXPECT_EQ( -1, Program.errorLine() );
 
-  OK = Program.rebuildAndExecute( "x = 2\ny=x+1\nz = 3\n" );
+  OK = Program.rebuildAndExecute( "\nx = 2\ny=x+1\nz = 3\n" );
   EXPECT_FALSE( OK );
+  EXPECT_EQ( 2, Program.errorLine() );
   
   OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
   EXPECT_TRUE( OK );
+  EXPECT_EQ( -1, Program.errorLine() );
 #endif
 }
 
