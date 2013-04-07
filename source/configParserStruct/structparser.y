@@ -120,7 +120,7 @@ exprAtom       : fullId             { pushVariableValueToStack( $1 ); }
 	       | TOKEN_REALNUMBER   { pushRealNumberToStack( $1 ); } 
 	       | TOKEN_INTNUMBER    { pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       { pushStringToStack( $1 ); }
-               | TOKEN_ID {  } '(' arglist ')' 
+               | TOKEN_ID { /*pushFunctionRetAddressToStack();*/ } '(' arglist ')' { /*callFunctionWithArgsFromStack($1);*/ }
                                     {  }
 	       | '(' exprSet ')'    {  }
 	       ;

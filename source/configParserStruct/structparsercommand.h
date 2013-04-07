@@ -66,8 +66,9 @@ namespace configParserStruct
         const command& currentCommand() const;
         const command& getCommand( unsigned Index ) const { return Commands.at(Index); }
         unsigned currentCommandIndex() const { return CurrentCommandIndex; }
-
         void resetCurrentCommandIndex() { CurrentCommandIndex = 0; }
+        void setCurrentCommandIndex( unsigned Index ) { CurrentCommandIndex = Index; }
+
         bool isAllCommandsDone() const { return CurrentCommandIndex >= Commands.size(); }
         unsigned executeOneCommand( program *Program );
         void execute( program *Program );
@@ -109,7 +110,7 @@ namespace configParserStruct
         commandAction* clone() const { return new pushVariableCommand(Name); }
         std::string toString() const { return "push variable " + Name + ""; }
     };
-
+    
     // -----------------------------------------------------
     
     class popCommand : public commandAction
@@ -118,6 +119,42 @@ namespace configParserStruct
         void execute( program *Program ) const; 
         commandAction* clone() const { return new popCommand(); }
         std::string toString() const { return "pop"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class callFunction : public commandAction
+    {
+      private:
+        std::string Name;
+      public:
+        callFunction( const std::string &N ) : Name(N) {}
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new callFunction(*this); }
+        std::string toString() const { return "call " + Name; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class retFromFunction : public commandAction
+    {
+      public:
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new retFromFunction(); }
+        std::string toString() const { return "ret"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class jumpToCommand : public commandAction
+    {
+      private:
+        unsigned Index;
+      public:
+        jumpToCommand( unsigned I ) : Index(I) {}
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new jumpToCommand(*this); }
+        std::string toString() const { return "jump to " + convertToString(Index); }
     };
     
     // -----------------------------------------------------

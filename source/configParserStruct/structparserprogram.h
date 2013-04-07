@@ -29,6 +29,10 @@ namespace configParserStruct
 
         unsigned pushCommand( const commandAction &A ) { return Commands.push(A); }
         size_t numberOfCommands() const { return Commands.size(); }
+        void executeOneCommand() { Commands.executeOneCommand(this); }
+
+        void setCurrentCommandIndex( unsigned Index ) { Commands.setCurrentCommandIndex(Index); }
+        unsigned currentCommandIndex()  const { return Commands.currentCommandIndex(); }
 
         void pushStackVariable( const variableValue &V ) { Stack.push(V); }
         void pushStackVariable( const variable &V )      { Stack.push(V); }

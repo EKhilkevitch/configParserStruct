@@ -176,6 +176,106 @@ TEST( command, setDictFieldCommand )
   }
 }
 
+// ---------------------------------------------------------
+
+TEST( command, jumpToCommand )
+{
+  program Program;
+  Program.pushCommand( pushValueCommand( createVariable(3.3) ) );
+  Program.pushCommand( assignVariableCommand( "a" ) );
+  Program.pushCommand( assignVariableCommand( "b" ) );
+  EXPECT_EQ( 0, Program.currentCommandIndex() );
+
+  jumpToCommand(2).execute( &Program );
+  EXPECT_EQ( 1, Program.currentCommandIndex() );
+  ASSERT_EQ( 0, Program.stackSize() );
+
+  Program.clear();
+  Program.pushCommand( pushValueCommand( createVariable(3.0) ) );
+  Program.pushCommand( jumpToCommand(3) );
+  Program.pushCommand( assignVariableCommand( "a" ) );
+  Program.pushCommand( assignVariableCommand( "b" ) );
+  Program.execute();
+
+  EXPECT_NEAR( 0, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 3, Program.getNamedVariable("b").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( command, callFunction )
+{
+  program Program;
+  for ( unsigned i = 0; i < 10U; i++ )
+    Program.pushCommand( nopCommand() );
+
+  Program.setNamedVariable( "func", commandAddressVariableValue(5) );
+  jumpToCommand(2).execute( &Program );
+  EXPECT_EQ( 1, Program.currentCommandIndex() );
+
+  callFunction( "func" ).execute( &Program );
+  EXPECT_EQ( 4, Program.currentCommandIndex() );
+  EXPECT_EQ( 1, Program.stackSize() );
+  EXPECT_NEAR( 2, Program.topStackVariable().number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( command, retFromFunction )
+{
+  program Program;
+  
+  Program.pushCommand( nopCommand() ); // 0
+  Program.pushCommand( nopCommand() ); // 1
+  Program.pushCommand( pushValueCommand( createVariable(3.3) ) ); // 2
+  Program.pushCommand( pushValueCommand( createVariable(1.0) ) ); // 3
+  Program.pushCommand( addCommand() ); // 4
+  Program.pushCommand( retFromFunction() ); // 5
+  Program.pushCommand( assignVariableCommand("a") ); // 6
+  Program.pushCommand( assignVariableCommand("b") ); // 7
+  Program.pushCommand( assignVariableCommand("c") ); // 8
+  Program.pushCommand( callFunction("func") ); // 9
+  Program.pushCommand( assignVariableCommand("e") ); // 10
+  Program.pushCommand( assignVariableCommand("f") ); // 11
+  Program.setCurrentCommandIndex(9);
+  Program.setNamedVariable( "func", commandAddressVariableValue(2) );
+
+  EXPECT_EQ( 9, Program.currentCommandIndex() );
+
+  Program.executeOneCommand();
+  EXPECT_EQ( 1, Program.stackSize() );
+  EXPECT_NEAR( 10, Program.topStackVariable().number(), 1e-5 );
+  EXPECT_EQ( 2, Program.currentCommandIndex() );
+  EXPECT_NEAR( 0, Program.getNamedVariable("c").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("e").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("f").number(), 1e-5 );
+
+  Program.executeOneCommand();
+  EXPECT_EQ( 2, Program.stackSize() );
+  EXPECT_NEAR( 3.3, Program.topStackVariable().number(), 1e-5 );
+  
+  Program.executeOneCommand();
+  Program.executeOneCommand();
+  EXPECT_EQ( 2, Program.stackSize() );
+  EXPECT_NEAR( 4.3, Program.topStackVariable().number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("e").number(), 1e-5 );
+
+  Program.executeOneCommand();
+  EXPECT_EQ( 10, Program.currentCommandIndex() );
+  EXPECT_EQ( 1, Program.stackSize() );
+  EXPECT_NEAR( 4.3, Program.topStackVariable().number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("e").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("f").number(), 1e-5 );
+  
+  Program.executeOneCommand();
+  EXPECT_EQ( 11, Program.currentCommandIndex() );
+  EXPECT_EQ( 1, Program.stackSize() );
+  EXPECT_NEAR( 4.3, Program.topStackVariable().number(), 1e-5 );
+  EXPECT_NEAR( 4.3, Program.getNamedVariable("e").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("f").number(), 1e-5 );
+
+}
+
 // =========================================================
 
 

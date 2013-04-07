@@ -96,6 +96,41 @@ void configParserStruct::structParserUtil::popCommand::execute( program *Program
 
 // -----------------------------------------------------
 
+void configParserStruct::structParserUtil::callFunction::execute( program *Program ) const
+{
+  const variable Function = Program->getNamedVariable( Name );
+  if ( Function.valueType() == typeid(commandAddressVariableValue) )
+  {
+    unsigned NextCommandAddress = Program->currentCommandIndex() + 1;
+    variable RetAddress = commandAddressVariableValue( NextCommandAddress );
+    Program->pushStackVariable( RetAddress );
+    Program->setCurrentCommandIndex( Function.value<commandAddressVariableValue>().address() - 1 );
+  } else {
+    Program->pushStackVariable( variable() );
+  }
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::retFromFunction::execute( program *Program ) const
+{
+  const variable Result = Program->popStackVariable();
+  const variable RetAddress = Program->popStackVariable();
+
+  if ( RetAddress.valueType() == typeid(commandAddressVariableValue) )
+    Program->setCurrentCommandIndex( RetAddress.value<commandAddressVariableValue>().address() - 1 );
+  Program->pushStackVariable( Result );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::jumpToCommand::execute( program *Program ) const
+{
+  Program->setCurrentCommandIndex( Index - 1 );
+}
+
+// -----------------------------------------------------
+
 void configParserStruct::structParserUtil::addCommand::execute( program *Program ) const
 {
   const variable &Var1 = Program->popStackVariable();

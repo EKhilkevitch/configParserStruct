@@ -101,6 +101,22 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
+    class commandAddressVariableValue : public variableValue
+    {
+      private:
+        unsigned CommandIndex;
+
+      public:
+        commandAddressVariableValue( unsigned Index ) : CommandIndex(Index) {}
+        variableValue* clone() const { return new commandAddressVariableValue(*this); }
+        const std::string string() const { return convertToString(CommandIndex); }
+        double number() const { return CommandIndex; }
+        bool boolean() const { return true; }
+        unsigned address() const { return CommandIndex; }
+    };
+    
+    // -----------------------------------------------------
+    
     class dictVariableValue : public variableValue
     {
       private:
