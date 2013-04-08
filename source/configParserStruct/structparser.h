@@ -27,6 +27,9 @@ namespace configParserStruct
 
       void exec( const std::string &ConfigText );
       bool isVariableExist( const std::string &VarName ) const;
+
+      void reset();
+      double lastDoubleVariable() const;
       
       containerForVariables listOfVariables() const;
       

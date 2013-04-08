@@ -360,6 +360,8 @@ TEST( commandLineArgumentsParser, parse )
   ASSERT_TRUE( ParsedArguments.arg('i') == "in_file" );
   ASSERT_TRUE( ParsedArguments.arg('O') == "out_file" );
   ASSERT_NEAR( 12.4, ParsedArguments.argDouble('D'), 1e-5 );
+  ASSERT_EQ( 0, ParsedArguments.argInt('I') );
+  ASSERT_EQ( 4, ParsedArguments.argInt('I',4) );
   ASSERT_EQ( (size_t)3, ParsedArguments.listOfFileArguments().size() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().back() == "ext_file3" );
 }

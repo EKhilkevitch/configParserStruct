@@ -37,6 +37,15 @@ void configParserStruct::structParser::exec( const std::string &Text )
 }
 
 // -----------------------------------------------------
+
+void configParserStruct::structParser::reset()
+{
+  assert( Program != NULL );
+  Program->clear();
+  Program->initBuiltInVariables();
+}
+
+// -----------------------------------------------------
       
 bool configParserStruct::structParser::isVariableExist( const std::string &VarName ) const
 {
@@ -65,6 +74,14 @@ int configParserStruct::structParser::integerVariable( const std::string &VarNam
 {
   const structParserUtil::variable& Variable = Program->getNamedVariable( VarName );
   return Variable.isDefined() ? Variable.integer() : DefaultValue;
+}
+
+// -----------------------------------------------------
+
+double configParserStruct::structParser::lastDoubleVariable() const
+{
+  const structParserUtil::variable& Variable = Program->getLastExpressionReuslt();
+  return Variable.number();
 }
 
 // -----------------------------------------------------

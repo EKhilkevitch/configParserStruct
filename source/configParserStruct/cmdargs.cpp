@@ -49,7 +49,8 @@ int configParserStruct::commandLineArgumentsParser::parsedArguments::argInt( cha
   const std::string ArgValue = arg(ArgShortName,std::string(),EnableException);
   int Result = strtol( ArgValue.c_str(), &End, 10 );
   assert( End != NULL );
-  if ( *End != '\0' )
+//  std::cerr << "argInt: Arg = " << ArgValue << ", End = '" << End << "'" << std::endl;
+  if ( *End != '\0' || ArgValue.empty() )
   {
     if ( EnableException )
       throw std::runtime_error( std::string("Invalid value of argument '") + ArgShortName + "' : must be integer" );
