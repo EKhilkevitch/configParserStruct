@@ -52,6 +52,7 @@ namespace configParserStruct
         bool boolean() const { return Value->boolean(); }
         bool isDefined() const;
         const std::type_info& valueType() const { return typeid(*Value); }
+        template <class VarT> bool isValueDerivedFrom() const { return Value.isDerivedFrom<VarT>(); }
         template <class VarT> const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
         template <class VarT> VarT& value() { return dynamic_cast<VarT&>( *Value ); }
     };

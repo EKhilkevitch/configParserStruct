@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <cstdio>
 #include <algorithm>
 #include <iostream>
@@ -10,6 +11,7 @@
 
 #include "configParserStruct/structparserprogram.h"
 #include "configParserStruct/structparsercommand.h"
+#include "configParserStruct/structparserbuiltin.h"
 
 using namespace configParserStruct;
 using namespace structParserUtil;
@@ -217,6 +219,18 @@ TEST( command, callCommand )
   EXPECT_EQ( 4, Program.currentCommandIndex() );
   EXPECT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 2, Program.topStackVariable().number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( command, callCommandBuiltIn )
+{
+  program Program;
+  Program.setNamedVariable( "pi", piBuiltIn() );
+  callCommand( "pi" ).execute( &Program );
+
+  EXPECT_EQ( 1, Program.stackSize() );
+  EXPECT_NEAR( M_PI, Program.topStackVariable().number(), 1e-5 );
 }
 
 // ---------------------------------------------------------

@@ -125,7 +125,7 @@ void configParserStruct::structParserUtil::callCommand::execute( program *Progra
     return;
   }
 
-  if ( Function.valueType() == typeid(builtinFunctionValue) )
+  if ( Function.isValueDerivedFrom<builtinFunctionValue>() )
   {
     const variable Result = Function.value<builtinFunctionValue>().execute( *Program );
     Program->pushStackVariable( Result );

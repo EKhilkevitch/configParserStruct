@@ -27,6 +27,8 @@ namespace configParserStruct
         program();
         ~program();
 
+        void initBuiltInVariables();
+
         unsigned pushCommand( const commandAction &A ) { return Commands.push(A); }
         size_t numberOfCommands() const { return Commands.size(); }
         void executeOneCommand() { Commands.executeOneCommand(this); }

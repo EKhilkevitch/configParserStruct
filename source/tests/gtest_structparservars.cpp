@@ -3,12 +3,15 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <cstdio>
 #include <algorithm>
 #include <iostream>
 #include <typeinfo>
 
 #include "configParserStruct/structparservars.h"
+#include "configParserStruct/structparserbuiltin.h"
+#include "configParserStruct/structparserprogram.h"
 
 using namespace configParserStruct;
 using namespace structParserUtil;
@@ -139,6 +142,19 @@ TEST( variable, variablesListStack )
  
   List.popList();
   ASSERT_EQ( 1, List.size() );
+}
+
+// ---------------------------------------------------------
+
+TEST( variable, builtIn )
+{
+  program Program;
+
+  variable Result;
+  
+  Result = piBuiltIn().execute( Program );
+  EXPECT_NEAR( M_PI, Result.number(), 1e-5 );
+
 }
 
 // =========================================================

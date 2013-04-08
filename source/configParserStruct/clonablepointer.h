@@ -33,6 +33,7 @@ namespace configParserStruct
       const T* operator->() const { return Pointer; }
 
       const std::type_info& type() const { return typeid(*Pointer); }
+      template <class X> bool isDerivedFrom() const { return dynamic_cast<const X*>(Pointer) != NULL; }
   };
     
   // =====================================================

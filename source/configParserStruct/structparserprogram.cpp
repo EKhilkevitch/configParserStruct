@@ -3,6 +3,7 @@
 
 #include "configParserStruct/structparserprogram.h"
 #include "configParserStruct/structparsercompiler.h"
+#include "configParserStruct/structparserbuiltin.h"
 #include "configParserStruct/structparserinput.h"
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/mutex.h"
@@ -33,6 +34,17 @@ configParserStruct::structParserUtil::program::~program()
 }
 
 // -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::program::initBuiltInVariables()
+{
+  setNamedVariable( "pi", piBuiltIn() );
+  setNamedVariable( "exp", expBuiltIn() );
+  setNamedVariable( "sin", sinBuiltIn() );
+  setNamedVariable( "cos", cosBuiltIn() );
+  setNamedVariable( "print", printBuiltIn() );
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::structParserUtil::program::pushFunctionArgument( const variable &V )
 {
@@ -57,6 +69,7 @@ void configParserStruct::structParserUtil::program::clear()
 bool configParserStruct::structParserUtil::program::build( const std::string &ProgramText )
 {
   clear();
+  initBuiltInVariables();
 
   bool Result = true;
 
