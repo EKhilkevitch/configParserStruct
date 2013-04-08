@@ -127,6 +127,28 @@ TEST( structParser, sub )
   EXPECT_EQ( -2, Parser.integerVariable("z") );
 }
 
+// ---------------------------------------------------------
+
+TEST( structParser, listOfVariablesStruct )
+{
+  const std::string TestProgram = 
+    "x = 3; y = { .a = 2 }; z = { .b = 3 };"
+    "";
+
+  structParser Parser;
+  Parser.exec(TestProgram);
+
+  std::set<std::string> List = Parser.listOfVariablesStruct();
+
+  for ( std::set<std::string>::iterator i = List.begin(); i != List.end(); ++i )
+    std::cout << *i << " " << std::endl;
+
+  ASSERT_EQ( 2, List.size() );
+  ASSERT_EQ( 0, List.count("x") );
+  ASSERT_EQ( 1, List.count("y") );
+  ASSERT_EQ( 1, List.count("z") );
+}
+
 // =========================================================
 
 

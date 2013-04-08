@@ -74,7 +74,11 @@ configParserStruct::structParser::containerForVariables configParserStruct::stru
   containerForVariables Result;
   const std::list<std::string> &List = Program->variableNames();
   for ( std::list<std::string>::const_iterator i = List.begin(); i != List.end(); ++i )
+  {
+    if ( i->find( structParserUtil::program::lastResultVariableName() ) == 0 )
+      continue;
     Result.insert( *i );
+  }
   return Result;
 }
 // -----------------------------------------------------

@@ -37,6 +37,6 @@ string( REGEX REPLACE "^.*ython" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
 string( REGEX REPLACE "[\\/]+$" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} '-DPYTHON_INCLUDE_HEADER=<python${PYTHON_VERSION}/Python.h>'") 
 
-add_library( configParser ${LIBRARY_TYPE} ${configparser_source_files} )
-target_link_libraries( configParser ${PYTHON_LIBRARIES} )
+add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} )
+target_link_libraries( configParserStruct ${PYTHON_LIBRARIES} )
 

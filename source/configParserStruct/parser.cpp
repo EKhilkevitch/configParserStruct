@@ -62,6 +62,15 @@ std::string configParserStruct::parser::joinStringList( const std::list<std::str
 }
 
 // -----------------------------------------------------
+
+std::string configParserStruct::parser::readFileContentinSingleString( const std::string &FileName, const std::string &JoinString )
+{
+  const std::list<std::string> &FileContent = readFileContent( FileName );
+  const std::string &FileContentString = joinStringList( FileContent, JoinString );
+  return FileContentString;
+}
+
+// -----------------------------------------------------
       
 std::list<std::string> configParserStruct::parser::splitString( const std::string &String, const std::string &PossibleSeparators )
 {
