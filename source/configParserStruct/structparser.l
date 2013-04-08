@@ -27,6 +27,7 @@ DELIM                   [ \t\v\r\f]
 
 extern void     lexResetLineNumber( void );
 extern unsigned lexCurrentLineNumber( void ); 
+extern void     lexSetNewLineEnabled( int Enabled );
 static void     lexUpdateLineNumber( void );
 
 static int  lexEnableTokenNewline( void );
@@ -165,6 +166,13 @@ unsigned lexCurrentLineNumber( void )
 
 // -----------------------------------------------------
 
+void     lexSetNewLineEnabled( int Enabled )
+{
+  EnableNewline = Enabled;
+}
+
+// -----------------------------------------------------
+
 static void lexUpdateLineNumber( void )
 {
   unsigned i;
@@ -180,9 +188,9 @@ static void lexUpdateLineNumber( void )
 static void lexProcessLexerPragma( const char *const String )
 {
   if ( strcmp( String, "NL+" ) == 0 )
-    EnableNewline = TRUE;
+    lexSetNewLineEnabled( TRUE );
   if ( strcmp( String, "NL-" ) == 0 )
-    EnableNewline = FALSE;
+    lexSetNewLineEnabled( FALSE );
 }
 
 // -----------------------------------------------------

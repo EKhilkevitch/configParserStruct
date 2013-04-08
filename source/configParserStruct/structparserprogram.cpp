@@ -14,6 +14,7 @@
 
 extern "C" int strprs_parse();
 extern "C" void lexResetLineNumber();
+extern "C" void lexSetNewLineEnabled( int Enabled );
 
 // =====================================================
 
@@ -76,6 +77,7 @@ bool configParserStruct::structParserUtil::program::build( const std::string &Pr
     setStructPrserProgram( this );
     setInputString( ProgramText ); 
     lexResetLineNumber();
+    lexSetNewLineEnabled(false);
     
     int ParseResult = strprs_parse();
     if ( ErrorLine >= 0 || ParseResult != 0 )

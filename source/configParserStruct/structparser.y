@@ -59,9 +59,8 @@ EXTERN void strprs_error( const char *String );
 
 %%
 
-parserCommands : parserCommands parserCommand delimiter
-	       | parserCommand delimiter
-               |
+parserCommands : parserCommands parserCommand 
+	       | parserCommand 
 	       | error { yyclearin; yyerrok; setStructParserError(); }
 	       ;
 
@@ -69,10 +68,10 @@ delimiter      : ';'
                | TOKEN_NEWLINE
                ;
 
-parserCommand  : expression { finalizeExpressionStack(); }
-	       | TOKEN_RETURN expression { returnFromCurrentFunction(); }
+parserCommand  : expression delimiter { finalizeExpressionStack(); } 
+	       | TOKEN_RETURN expression delimiter { returnFromCurrentFunction(); }
                | fullId '=' TOKEN_FUNCTION { beginOfNewFunctionAssignName($1); } '{' parserCommands '}' { endOfCurrentFunction(); }
-               |
+               | delimiter
 	       ;
 
 expression     : exprSet    {  }
@@ -87,15 +86,15 @@ exprSet        : fullId '=' exprSet { assignVariableValueFromStack($1); }
                | exprThr {  }
                ;
 
-exprThr        : exprCmp  {    } 
+exprThr        : exprCmp  {  } 
                      '?' exprCmp {  }
                      ':' exprThr {  }
                | exprCmp  {  }
                ;
 
-exprCmp        : exprCmp TOKEN_CMP exprAdd { }
+exprCmp        : exprCmp TOKEN_CMP exprAdd {  }
                | exprAdd              {  }  
-
+               ;
 
 exprAdd        : exprAdd '+' exprMul  { operatorOnStackTop('+'); }
 	       | exprAdd '-' exprMul  { operatorOnStackTop('-'); }

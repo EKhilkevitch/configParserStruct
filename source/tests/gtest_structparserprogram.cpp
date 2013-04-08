@@ -34,12 +34,13 @@ TEST( program, empty )
 TEST( program, number )
 {
   program Program;
-  Program.build( "1" );
+  Program.build( "1;" );
 
   EXPECT_TRUE( Program.numberOfCommands() > 0 );
   
   Program.execute();
   EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( -1, Program.errorLine() );
  // EXPECT_EQ( 1, Program.variableNames().size() );
 }
 
@@ -48,7 +49,7 @@ TEST( program, number )
 TEST( program, clear )
 {
   program Program;
-  Program.build( "x = 1" );
+  Program.build( "x = 1;" );
   Program.execute();
   
   EXPECT_EQ( 0, Program.stackSize() );
@@ -253,6 +254,18 @@ TEST( program, comments )
 
 // ---------------------------------------------------------
 
+TEST( program, emptyExpression )
+{
+  program Program;
+  bool OK;
+  OK = Program.rebuildAndExecute( "x = exp(2);;\n"); 
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, getLastExpressionReuslt )
 {
   program Program;
@@ -320,6 +333,9 @@ TEST( program, newLine )
 
   OK = Program.rebuildAndExecute( "!NL+\nx = 2\ny=x+1\nz = 3\n" );
   EXPECT_TRUE( OK );
+  
+  OK = Program.rebuildAndExecute( "\nx = 2\ny=x+1\nz = 3\n" );
+  EXPECT_FALSE( OK );
 }
 
 // ---------------------------------------------------------
@@ -425,7 +441,7 @@ TEST( program, functionbuiltIn )
   program Program;
   bool OK;
 
-  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi(); \n#print(1+3,' = 1 + 3');\n" );
+  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n#print(1+3,' = 1 + 3');\n" );
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );

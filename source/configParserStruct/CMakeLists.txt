@@ -5,7 +5,7 @@ project( configParserLib )
 find_package(BISON)
 find_package(FLEX)
 
-BISON_TARGET( structparserY structparser.y  ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c COMPILE_FLAGS "--name-prefix=strprs_" )
+BISON_TARGET( structparserY structparser.y  ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c COMPILE_FLAGS "--name-prefix=strprs_ -v" )
 FLEX_TARGET(  structparserL structparser.l  ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c  COMPILE_FLAGS "--prefix=strprs_" )
 ADD_FLEX_BISON_DEPENDENCY( structparserL structparserY )
 include_directories( "${CMAKE_CURRENT_BINARY_DIR}/.." )
