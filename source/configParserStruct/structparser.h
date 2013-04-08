@@ -21,9 +21,6 @@ namespace configParserStruct
       structParser( const structParser& );
       structParser& operator=( const structParser& );
 
-    protected:
-      void setVariableValueString( const std::string &VarName, const std::string &Value ) {}
-
     public:
       structParser( const std::string &ConfigText = std::string() );
       ~structParser();
@@ -32,6 +29,10 @@ namespace configParserStruct
       bool isVariableExist( const std::string &VarName ) const;
       
       containerForVariables listOfVariables() const;
+      
+      void setVariableValue( const std::string &VarName, const std::string &Value );
+      void setVariableValue( const std::string &VarName, int Value );
+      void setVariableValue( const std::string &VarName, double Value );
 
       std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const;
       double doubleVariable( const std::string &VarName, double DefaultValue = 0 ) const;

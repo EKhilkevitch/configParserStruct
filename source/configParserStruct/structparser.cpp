@@ -31,6 +31,7 @@ configParserStruct::structParser::~structParser()
 void configParserStruct::structParser::exec( const std::string &Text )
 {
   assert( Program != NULL );
+  Program->initBuiltInVariables();
   Program->build( Text );
   Program->execute();
 }
@@ -62,7 +63,8 @@ double configParserStruct::structParser::doubleVariable( const std::string &VarN
 
 int configParserStruct::structParser::integerVariable( const std::string &VarName, int DefaultValue ) const
 {
-  return round( doubleVariable( VarName, DefaultValue ) );
+  const structParserUtil::variable& Variable = Program->getNamedVariable( VarName );
+  return Variable.isDefined() ? Variable.integer() : DefaultValue;
 }
 
 // -----------------------------------------------------
@@ -74,6 +76,26 @@ configParserStruct::structParser::containerForVariables configParserStruct::stru
   for ( std::list<std::string>::const_iterator i = List.begin(); i != List.end(); ++i )
     Result.insert( *i );
   return Result;
+}
+// -----------------------------------------------------
+      
+void configParserStruct::structParser::setVariableValue( const std::string &VarName, const std::string &Value )
+{
+  Program->setNamedVariable( VarName, structParserUtil::createVariable(Value) );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParser::setVariableValue( const std::string &VarName, int Value )
+{
+  Program->setNamedVariable( VarName, structParserUtil::createVariable(Value) );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParser::setVariableValue( const std::string &VarName, double Value )
+{
+  Program->setNamedVariable( VarName, structParserUtil::createVariable(Value) );
 }
 
 // =====================================================

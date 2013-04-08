@@ -68,9 +68,6 @@ void configParserStruct::structParserUtil::program::clear()
         
 bool configParserStruct::structParserUtil::program::build( const std::string &ProgramText )
 {
-  clear();
-  initBuiltInVariables();
-
   bool Result = true;
 
   Mutex.lock();
@@ -100,6 +97,7 @@ bool configParserStruct::structParserUtil::program::build( const std::string &Pr
 bool configParserStruct::structParserUtil::program::rebuildAndExecute( const std::string &ProgramText )
 {
   clear();
+  initBuiltInVariables();
   bool Ok = build( ProgramText );
   if ( ! Ok )
     return false;
