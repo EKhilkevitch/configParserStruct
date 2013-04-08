@@ -19,9 +19,9 @@
 #  define EXTERN extern
 #endif
 
-EXTERN int strprs_parse( void );
-EXTERN int strprs_lex( void );
-EXTERN void strprs_error( const char *String );
+EXTERN int CPSSPU_parse( void );
+EXTERN int CPSSPU_lex( void );
+EXTERN void CPSSPU_error( const char *String );
 
 // ====================================================
 
@@ -148,15 +148,15 @@ fullId         : fullId '.' TOKEN_ID     { strncpy( $$, $1, STRUCTPARSER_MAX_ID_
 
 // ==================================================
 
-int strprs_wrap( void )
+int CPSSPU_wrap( void )
 {
   return 1;
-  strprs_FLUSH_BUFFER(); 
+  CPSSPU_FLUSH_BUFFER(); 
 }
 
 // --------------------------------------------------
 
-void strprs_error( const char *String )
+void CPSSPU_error( const char *String )
 {
   CPSSPU_setStructParserError();
 }

@@ -54,7 +54,7 @@ static void lexProcessLexerPragma( const char *const String );
 
 ^[ \t]*!                { BEGIN LEXER_PRAGMA; }
 <LEXER_PRAGMA>"\n"      { lexUpdateLineNumber(); BEGIN INITIAL; }
-<LEXER_PRAGMA>[^*\n]*   { lexProcessLexerPragma(strprs_text); }
+<LEXER_PRAGMA>[^*\n]*   { lexProcessLexerPragma(CPSSPU_text); }
 
 
 {DELIM}         { lexUpdateLineNumber(); }
@@ -63,12 +63,12 @@ static void lexProcessLexerPragma( const char *const String );
 "."             {  return '.';              }
 ","             {  return ',';              }
 
-">="            {  strprs_lval.CmpOpStr = ">="; return TOKEN_CMP; }
-">"             {  strprs_lval.CmpOpStr = ">";  return TOKEN_CMP; }
-"<="            {  strprs_lval.CmpOpStr = "<="; return TOKEN_CMP; }
-"<"             {  strprs_lval.CmpOpStr = "<";  return TOKEN_CMP; }
-"=="            {  strprs_lval.CmpOpStr = "=="; return TOKEN_CMP; }
-"!="            {  strprs_lval.CmpOpStr = "!="; return TOKEN_CMP; }
+">="            {  CPSSPU_lval.CmpOpStr = ">="; return TOKEN_CMP; }
+">"             {  CPSSPU_lval.CmpOpStr = ">";  return TOKEN_CMP; }
+"<="            {  CPSSPU_lval.CmpOpStr = "<="; return TOKEN_CMP; }
+"<"             {  CPSSPU_lval.CmpOpStr = "<";  return TOKEN_CMP; }
+"=="            {  CPSSPU_lval.CmpOpStr = "=="; return TOKEN_CMP; }
+"!="            {  CPSSPU_lval.CmpOpStr = "!="; return TOKEN_CMP; }
 
 "+="            { return TOKEN_ADDEQ; }
 "-="            { return TOKEN_SUBEQ; }
@@ -97,39 +97,39 @@ static void lexProcessLexerPragma( const char *const String );
 "return"        { return TOKEN_RETURN;      }
 
 {INTNUM}        {  
-                   strprs_lval.RealNumber = atol(strprs_text); 
+                   CPSSPU_lval.RealNumber = atol(CPSSPU_text); 
 		   return TOKEN_REALNUMBER; 
 		}
 
 {REALNUM}       {  
-                   strprs_lval.RealNumber = atof(strprs_text); 
+                   CPSSPU_lval.RealNumber = atof(CPSSPU_text); 
 		   return TOKEN_REALNUMBER; 
 		}
 
 {STRING}        {
                   lexUpdateLineNumber();
-                  if ( strprs_leng > STRUCTPARSER_MAX_STRING_LENGTH-1 )
+                  if ( CPSSPU_leng > STRUCTPARSER_MAX_STRING_LENGTH-1 )
 		  {
 		    fprintf( stderr, "Error: max length of string is %i\n",STRUCTPARSER_MAX_STRING_LENGTH-1);
 		    return TOKEN_ERROR;
 		  }
-                  strprs_lval.String[STRUCTPARSER_MAX_STRING_LENGTH-1] = '\0';
-                  strncpy(strprs_lval.String,&strprs_text[1],STRUCTPARSER_MAX_STRING_LENGTH-1); 
-		  strprs_lval.String[strprs_leng-2] = '\0';  
+                  CPSSPU_lval.String[STRUCTPARSER_MAX_STRING_LENGTH-1] = '\0';
+                  strncpy(CPSSPU_lval.String,&CPSSPU_text[1],STRUCTPARSER_MAX_STRING_LENGTH-1); 
+		  CPSSPU_lval.String[CPSSPU_leng-2] = '\0';  
 		  return TOKEN_STRING;     
 		}
 
 {ID}            {
                   lexUpdateLineNumber();
-                  strprs_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
-                  strncpy( strprs_lval.IdName, strprs_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
+                  CPSSPU_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
+                  strncpy( CPSSPU_lval.IdName, CPSSPU_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
                   return TOKEN_ID;
                 }
 
 {ARGUMENT}      {
                   lexUpdateLineNumber();
-                  strprs_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
-                  strncpy( strprs_lval.IdName, strprs_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
+                  CPSSPU_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
+                  strncpy( CPSSPU_lval.IdName, CPSSPU_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
                   return TOKEN_ARGUMENT;
                 }  
 
@@ -175,9 +175,9 @@ void     lexSetNewLineEnabled( int Enabled )
 static void lexUpdateLineNumber( void )
 {
   unsigned i;
-  for ( i = 0; strprs_text[i] != '\0'; i++ )
+  for ( i = 0; CPSSPU_text[i] != '\0'; i++ )
   {
-    if ( strprs_text[i] == '\n' )
+    if ( CPSSPU_text[i] == '\n' )
       LineNumber++; 
   }
 }
