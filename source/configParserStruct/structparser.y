@@ -33,8 +33,6 @@ EXTERN void strprs_error( const char *String );
   char IdName[STRUCTPARSER_MAX_ID_LENGTH];
   int  IntNumber;
   double RealNumber;
-  int CmpType;
-  unsigned ExprValue;
 }
 
 %token <String>     TOKEN_STRING
@@ -43,7 +41,8 @@ EXTERN void strprs_error( const char *String );
 %token <TimeVal>    TOKEN_TIMEVAL
 %token <DateVal>    TOKEN_DATEVAL
 %token <IdName>     TOKEN_ID
-%token <CmpType>    TOKEN_CMP
+%token <IdName>     TOKEN_ARGUMENT
+%token TOKEN_CMP
 %token TOKEN_ERROR
 %token TOKEN_NEWLINE
 %token TOKEN_POW
@@ -52,15 +51,8 @@ EXTERN void strprs_error( const char *String );
 %token TOKEN_MULEQ
 %token TOKEN_DIVEQ
 %token TOKEN_FUNCTION
+%token TOKEN_RETURN
 
-%type  <ExprValue> exprSet
-%type  <ExprValue> exprThr
-%type  <ExprValue> exprCmp
-%type  <ExprValue> exprAdd
-%type  <ExprValue> exprMul
-%type  <ExprValue> exprSign
-%type  <ExprValue> exprAtom
-%type  <ExprValue> expression
 %type  <IdName>    fullId
 
 %right '='
@@ -69,6 +61,7 @@ EXTERN void strprs_error( const char *String );
 
 parserCommands : parserCommands parserCommand delimiter
 	       | parserCommand delimiter
+               |
 	       | error { yyclearin; yyerrok; setStructParserError(); }
 	       ;
 
@@ -77,12 +70,13 @@ delimiter      : ';'
                ;
 
 parserCommand  : expression { finalizeExpressionStack(); }
-	       |
+	       | TOKEN_RETURN expression { returnFromCurrentFunction(); }
+               | fullId '=' TOKEN_FUNCTION { beginOfNewFunctionAssignName($1); } '{' parserCommands '}' { endOfCurrentFunction(); }
+               |
 	       ;
 
 expression     : exprSet    {  }
                | fullId '=' { pushDictToStack(); } '{' structFields '}' { assignVariableValueFromStack($1);  }
-               | fullId '=' TOKEN_FUNCTION {  } '{'  '}' {  }
 	       ;
 
 exprSet        : fullId '=' exprSet { assignVariableValueFromStack($1); }
@@ -122,7 +116,7 @@ exprAtom       : fullId             { pushVariableValueToStack( $1 ); }
 	       | TOKEN_REALNUMBER   { pushRealNumberToStack( $1 ); } 
 	       | TOKEN_INTNUMBER    { pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       { pushStringToStack( $1 ); }
-               | TOKEN_ID { /*pushFunctionRetAddressToStack();*/ } '(' arglist ')' { /*callFunctionWithArgsFromStack($1);*/ }
+               | TOKEN_ID { prepareToFunctionCall(); } '(' arglist ')' { callFunctionWithArgsFromStack($1); }
                                     {  }
 	       | '(' exprSet ')'    {  }
 	       ;
@@ -131,8 +125,8 @@ arglist        : arglistx
                |                               {  } 
                ;
 
-arglistx       : arglistx ',' expression       {  }
-               | expression                    {  }
+arglistx       : arglistx ',' expression       { pushFunctionArgument();  }
+               | expression                    { pushFunctionArgument(); }
                ;
 
 structFields   : structFields ',' structField
@@ -146,6 +140,7 @@ structField    : '.' TOKEN_ID '=' exprSet { setDictFieldFromStack($2); }
 
 fullId         : fullId '.' TOKEN_ID     { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); strncat( $$, ".", 2 ); strncat( $$, $3, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); }
                | TOKEN_ID                { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH ); }
+               | TOKEN_ARGUMENT          { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH ); }
                ;
 
 %%

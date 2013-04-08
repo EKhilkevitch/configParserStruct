@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <cstdio>
+#include <cmath>
 #include <algorithm>
 #include <iostream>
 
@@ -319,6 +320,120 @@ TEST( program, newLine )
 
   OK = Program.rebuildAndExecute( "!NL+\nx = 2\ny=x+1\nz = 3\n" );
   EXPECT_TRUE( OK );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionDeclaration )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "f1 = func { x = 1; };" );
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
+  
+//  std::cout << Program.toString() << std::endl;
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionCall )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "f1 = func { x = 1; return x+2; }; y = f1(); z = 2*f1() + 3; a = 1;" );
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+
+  //std::cout << Program.toString() << std::endl;
+
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
+  EXPECT_FALSE( Program.getNamedVariable("x").isDefined() );
+  EXPECT_NEAR( 3, Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_NEAR( 9, Program.getNamedVariable("z").number(), 1e-5 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("a").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionCallWithArgs )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "f1 = func { x = $1; return 2*x + 3*$2 + 4*$3; }; z = f1(4,5,6) + 0.5; " );
+  
+  //std::cout << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
+  EXPECT_NEAR( 2*4 + 3*5 + 4*6 + 0.5, Program.getNamedVariable("z").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionComplex )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "f1 = func { return $1*2; }; f2 = func { return f1($1) + 3.1; }; f1(2.1) + 0.1*f2(4,5);" );
+  
+ // std::cout << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
+  EXPECT_NEAR( 2.1*2 + 0.1*(2*4+3.1), Program.getLastExpressionReuslt().number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionUnknown )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "x = f1(3); f2 = func { 1+2; }; y = f2(3)+2;" );
+  
+ // std::cout << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_FALSE( Program.getNamedVariable("f1").isDefined() );
+  EXPECT_NEAR( 0, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 2, Program.getNamedVariable("y").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionbuiltIn )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3); z = pi(); " );
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( std::exp(2), Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( std::sin(0.3), Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_NEAR( M_PI, Program.getNamedVariable("z").number(), 1e-5 );
 }
 
 // =========================================================

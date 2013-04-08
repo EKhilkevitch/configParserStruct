@@ -18,6 +18,8 @@ namespace configParserStruct
 {
   namespace structParserUtil
   {
+    
+    class program;
     class undefVariableValue;
     
     // =====================================================
@@ -138,6 +140,26 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
+    class builtinFunctionValue : public variableValue
+    {
+      protected:
+        unsigned getNumberOfArguments( const program &Program ) const;
+        const variable getArgument( unsigned Index, const program &Program ) const;
+        const variable getVariable( const std::string &Name, const program &Program ) const;
+
+      public:
+        virtual const variable execute( const program &Program ) const = 0;
+        
+        variableValue* clone() const = 0;
+        const std::string string() const = 0;
+
+        double number() const { return 0; }
+        int integer() const { return 0; }
+        bool boolean() const { return true; }
+    };
+    
+    // -----------------------------------------------------
+    
     class dictVariableValue : public variableValue
     {
       private:
@@ -198,7 +220,7 @@ namespace configParserStruct
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
-        const variable getFromTopOfStack( const std::string &Name ) { return Stack.back().get(Name); }
+        const variable getFromTopOfStack( const std::string &Name ) const { return Stack.back().get(Name); }
 
         void pushNewList() { Stack.push_back( variablesList() ); }
         void popList();

@@ -8,6 +8,7 @@ STRING                  (\"[^\"]*\")|('[^']*')
 TIME                    {DIGIT}({DIGIT}?):{DIGIT}({DIGIT}?)(:{DIGIT}({DIGIT})?)?
 DATE                    {DIGIT}({DIGIT}?)\.{DIGIT}({DIGIT}?)\.{DIGIT}({DIGIT}?)
 ID                      {LETTER}({LETTER}|{DIGIT})*
+ARGUMENT                \${DIGIT}+
 DELIM                   [ \t\v\r\f]
 
 %{
@@ -26,7 +27,7 @@ DELIM                   [ \t\v\r\f]
 
 extern void     lexResetLineNumber( void );
 extern unsigned lexCurrentLineNumber( void ); 
-static void     lextUpdateLineNumber( void );
+static void     lexUpdateLineNumber( void );
 
 static int  lexEnableTokenNewline( void );
 static void lexProcessLexerPragma( const char *const String );
@@ -47,15 +48,15 @@ static void lexProcessLexerPragma( const char *const String );
 %%
 
 "#"              { BEGIN COMMENT;                          }
-<COMMENT>"\n"    { lextUpdateLineNumber(); BEGIN(INITIAL); if ( lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
+<COMMENT>"\n"    { lexUpdateLineNumber(); BEGIN(INITIAL); if ( lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
 <COMMENT>[^\n]*  {  } 
 
 ^[ \t]*!                { BEGIN LEXER_PRAGMA; }
-<LEXER_PRAGMA>"\n"      { lextUpdateLineNumber(); BEGIN INITIAL; }
+<LEXER_PRAGMA>"\n"      { lexUpdateLineNumber(); BEGIN INITIAL; }
 <LEXER_PRAGMA>[^*\n]*   { lexProcessLexerPragma(strprs_text); }
 
 
-{DELIM}         { lextUpdateLineNumber(); }
+{DELIM}         { lexUpdateLineNumber(); }
 
 ";"             {  return ';';              }
 "."             {  return '.';              }
@@ -93,6 +94,7 @@ static void lexProcessLexerPragma( const char *const String );
 "}"             { return '}';               }
 
 "func"          { return TOKEN_FUNCTION;    }
+"return"        { return TOKEN_RETURN;      }
 
 {INTNUM}        {  
                    strprs_lval.RealNumber = atol(strprs_text); 
@@ -105,7 +107,7 @@ static void lexProcessLexerPragma( const char *const String );
 		}
 
 {STRING}        {
-                  lextUpdateLineNumber();
+                  lexUpdateLineNumber();
                   if ( strprs_leng > STRUCTPARSER_MAX_STRING_LENGTH-1 )
 		  {
 		    fprintf( stderr, "Error: max length of string is %i\n",STRUCTPARSER_MAX_STRING_LENGTH-1);
@@ -118,17 +120,24 @@ static void lexProcessLexerPragma( const char *const String );
 		}
 
 {ID}            {
-                  lextUpdateLineNumber();
+                  lexUpdateLineNumber();
                   strprs_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
                   strncpy( strprs_lval.IdName, strprs_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
                   return TOKEN_ID;
                 }
 
+{ARGUMENT}      {
+                  lexUpdateLineNumber();
+                  strprs_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
+                  strncpy( strprs_lval.IdName, strprs_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
+                  return TOKEN_ARGUMENT;
+                }  
 
-"\\\n"          { lextUpdateLineNumber();                       }
-"\n"            { lextUpdateLineNumber(); if ( lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
 
-.               { lextUpdateLineNumber(); return TOKEN_ERROR;   }
+"\\\n"          { lexUpdateLineNumber();                       }
+"\n"            { lexUpdateLineNumber(); if ( lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
+
+.               { lexUpdateLineNumber(); return TOKEN_ERROR;   }
 
 %%
 
@@ -156,7 +165,7 @@ unsigned lexCurrentLineNumber( void )
 
 // -----------------------------------------------------
 
-static void lextUpdateLineNumber( void )
+static void lexUpdateLineNumber( void )
 {
   unsigned i;
   for ( i = 0; strprs_text[i] != '\0'; i++ )

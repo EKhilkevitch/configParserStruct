@@ -30,6 +30,7 @@ namespace configParserStruct
         unsigned pushCommand( const commandAction &A ) { return Commands.push(A); }
         size_t numberOfCommands() const { return Commands.size(); }
         void executeOneCommand() { Commands.executeOneCommand(this); }
+        void replaceCommandMarkerToJump() { Commands.replaceMarker( jumpToCommand(Commands.size())); }
 
         void setCurrentCommandIndex( unsigned Index ) { Commands.setCurrentCommandIndex(Index); }
         unsigned currentCommandIndex()  const { return Commands.currentCommandIndex(); }
@@ -46,6 +47,7 @@ namespace configParserStruct
         size_t functionLevel() const { return Variables.size(); }
 
         const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
+        const variable getNamedVariableFromTopOfStack( const std::string &Name ) const { return Variables.getFromTopOfStack(Name); }
         void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
         std::list<std::string> variableNames() const { return Variables.listOfNamesInAllStack(); }
         const variable getLastExpressionReuslt() const { return Variables.get( lastResultVariableName() ); }

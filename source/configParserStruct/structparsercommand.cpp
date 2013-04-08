@@ -112,16 +112,27 @@ void configParserStruct::structParserUtil::popCommand::execute( program *Program
 
 void configParserStruct::structParserUtil::callCommand::execute( program *Program ) const
 {
+  assert( Program != NULL );
+
   const variable Function = Program->getNamedVariable( Name );
+  
   if ( Function.valueType() == typeid(commandAddressVariableValue) )
   {
     unsigned NextCommandAddress = Program->currentCommandIndex() + 1;
     variable RetAddress = commandAddressVariableValue( NextCommandAddress );
     Program->pushStackVariable( RetAddress );
     Program->setCurrentCommandIndex( Function.value<commandAddressVariableValue>().address() - 1 );
-  } else {
-    Program->pushStackVariable( variable() );
+    return;
   }
+
+  if ( Function.valueType() == typeid(builtinFunctionValue) )
+  {
+    const variable Result = Function.value<builtinFunctionValue>().execute( *Program );
+    Program->pushStackVariable( Result );
+    return;
+  }
+
+  Program->pushStackVariable( variable() );
 }
 
 // -----------------------------------------------------

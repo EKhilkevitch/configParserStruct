@@ -2,6 +2,7 @@
 // =====================================================
 
 #include "configParserStruct/structparservars.h"
+#include "configParserStruct/structparserprogram.h"
 
 #include <typeinfo>
 #include <set>
@@ -11,6 +12,28 @@
 bool configParserStruct::structParserUtil::variable::isDefined() const 
 { 
   return typeid(*Value) != typeid(undefVariableValue); 
+}
+
+// =====================================================
+
+unsigned configParserStruct::structParserUtil::builtinFunctionValue::getNumberOfArguments( const program &Program ) const
+{
+  return Program.getNamedVariableFromTopOfStack( "$N" ).integer();
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getArgument( unsigned Index, const program &Program ) const
+{
+  std::string Name = "$" + convertToString(Index);
+  return Program.getNamedVariableFromTopOfStack( Name );
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getVariable( const std::string &Name, const program &Program ) const
+{
+  return Program.getNamedVariable( Name );
 }
 
 // =====================================================

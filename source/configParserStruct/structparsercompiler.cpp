@@ -136,20 +136,61 @@ void finalizeExpressionStack( void )
 
 // -----------------------------------------------------
 
-void beginOfFunction( const char *Name )
+void beginOfNewFunctionAssignName( const char *Name )
 {
   if ( Program == NULL )
     return;
-  Program->pushCommand( markerCommand() );
+  std::string StrName = ( Name == NULL ) ? "" : Name;
+  unsigned Index = Program->pushCommand( markerCommand() );
+  Program->setNamedVariable( StrName, commandAddressVariableValue( Index+1 ) );
 }
 
 // -----------------------------------------------------
 
-void endOfFunction( void )
+void endOfCurrentFunction( void )
 {
-  Program->pushCommand( popVarFrameCommand() );
+  if ( Program == NULL )
+    return;
+  Program->pushCommand( pushValueCommand( variable() ) );
   Program->pushCommand( retCommand() );
-  //Program->replaceCommandMarkerToJump();
+  Program->replaceCommandMarkerToJump();
+}
+
+// -----------------------------------------------------
+
+void returnFromCurrentFunction( void )
+{
+  if ( Program == NULL )
+    return;
+  Program->pushCommand( retCommand() );
+}
+
+// -----------------------------------------------------
+
+void prepareToFunctionCall( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( pushVarFrameCommand() );
+}
+
+// -----------------------------------------------------
+
+void callFunctionWithArgsFromStack( const char *Name )
+{
+  std::string StrName = ( Name == NULL ) ? "" : Name;
+  if ( Program != NULL )
+  {
+    Program->pushCommand( callCommand( StrName ) );
+    Program->pushCommand( popVarFrameCommand() );
+  }
+}
+
+// -----------------------------------------------------
+
+void pushFunctionArgument( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( pushArgumentCommand() );
 }
 
 // -----------------------------------------------------
