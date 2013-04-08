@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <cassert>
   
-extern "C" int lexCurrentLineNumber();
+extern "C" int CPSSPU_lexCurrentLineNumber();
 
 using namespace configParserStruct::structParserUtil;
 
@@ -188,7 +188,7 @@ void CPSSPU_setStructParserError( void )
 {
   if ( Program != NULL && Program->errorLine() < 0 )
   {
-    int LineNumber = lexCurrentLineNumber();
+    int LineNumber = CPSSPU_lexCurrentLineNumber();
     Program->setErrorLine( LineNumber );
   }
 }

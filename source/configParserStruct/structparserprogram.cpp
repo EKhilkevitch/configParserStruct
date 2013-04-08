@@ -12,9 +12,9 @@
 #include <sstream>
 #include <cassert>
 
-extern "C" int strprs_parse();
-extern "C" void lexResetLineNumber();
-extern "C" void lexSetNewLineEnabled( int Enabled );
+extern "C" int CPSSPU_parse();
+extern "C" void CPSSPU_lexResetLineNumber();
+extern "C" void CPSSPU_lexSetNewLineEnabled( int Enabled );
 
 // =====================================================
 
@@ -76,10 +76,10 @@ bool configParserStruct::structParserUtil::program::build( const std::string &Pr
   {
     setStructPrserProgram( this );
     setInputString( ProgramText ); 
-    lexResetLineNumber();
-    lexSetNewLineEnabled(false);
+    CPSSPU_lexResetLineNumber();
+    CPSSPU_lexSetNewLineEnabled(false);
     
-    int ParseResult = strprs_parse();
+    int ParseResult = CPSSPU_parse();
     if ( ErrorLine >= 0 || ParseResult != 0 )
       Result = false;
 

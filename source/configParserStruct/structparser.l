@@ -25,13 +25,13 @@ DELIM                   [ \t\v\r\f]
 #include <stdlib.h>
 #include <assert.h>
 
-extern void     lexResetLineNumber( void );
-extern unsigned lexCurrentLineNumber( void ); 
-extern void     lexSetNewLineEnabled( int Enabled );
-static void     lexUpdateLineNumber( void );
+extern void     CPSSPU_lexResetLineNumber( void );
+extern unsigned CPSSPU_lexCurrentLineNumber( void ); 
+extern void     CPSSPU_lexSetNewLineEnabled( int Enabled );
+static void     CPSSPU_lexUpdateLineNumber( void );
 
-static int  lexEnableTokenNewline( void );
-static void lexProcessLexerPragma( const char *const String );
+static int  CPSSPU_lexEnableTokenNewline( void );
+static void CPSSPU_lexProcessLexerPragma( const char *const String );
 
 #ifdef YY_INPUT
 #  undef  YY_INPUT
@@ -49,15 +49,15 @@ static void lexProcessLexerPragma( const char *const String );
 %%
 
 "#"              { BEGIN COMMENT;                          }
-<COMMENT>"\n"    { lexUpdateLineNumber(); BEGIN(INITIAL); if ( lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
+<COMMENT>"\n"    { CPSSPU_lexUpdateLineNumber(); BEGIN(INITIAL); if ( CPSSPU_lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
 <COMMENT>[^\n]*  {  } 
 
 ^[ \t]*!                { BEGIN LEXER_PRAGMA; }
-<LEXER_PRAGMA>"\n"      { lexUpdateLineNumber(); BEGIN INITIAL; }
-<LEXER_PRAGMA>[^*\n]*   { lexProcessLexerPragma(CPSSPU_text); }
+<LEXER_PRAGMA>"\n"      { CPSSPU_lexUpdateLineNumber(); BEGIN INITIAL; }
+<LEXER_PRAGMA>[^*\n]*   { CPSSPU_lexProcessLexerPragma(CPSSPU_text); }
 
 
-{DELIM}         { lexUpdateLineNumber(); }
+{DELIM}         { CPSSPU_lexUpdateLineNumber(); }
 
 ";"             {  return ';';              }
 "."             {  return '.';              }
@@ -107,7 +107,7 @@ static void lexProcessLexerPragma( const char *const String );
 		}
 
 {STRING}        {
-                  lexUpdateLineNumber();
+                  CPSSPU_lexUpdateLineNumber();
                   if ( CPSSPU_leng > STRUCTPARSER_MAX_STRING_LENGTH-1 )
 		  {
 		    fprintf( stderr, "Error: max length of string is %i\n",STRUCTPARSER_MAX_STRING_LENGTH-1);
@@ -120,24 +120,24 @@ static void lexProcessLexerPragma( const char *const String );
 		}
 
 {ID}            {
-                  lexUpdateLineNumber();
+                  CPSSPU_lexUpdateLineNumber();
                   CPSSPU_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
                   strncpy( CPSSPU_lval.IdName, CPSSPU_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
                   return TOKEN_ID;
                 }
 
 {ARGUMENT}      {
-                  lexUpdateLineNumber();
+                  CPSSPU_lexUpdateLineNumber();
                   CPSSPU_lval.IdName[STRUCTPARSER_MAX_ID_LENGTH-1] = '\0';
                   strncpy( CPSSPU_lval.IdName, CPSSPU_text, STRUCTPARSER_MAX_ID_LENGTH-1 );
                   return TOKEN_ARGUMENT;
                 }  
 
 
-"\\\n"          { lexUpdateLineNumber();                       }
-"\n"            { lexUpdateLineNumber(); if ( lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
+"\\\n"          { CPSSPU_lexUpdateLineNumber();                       }
+"\n"            { CPSSPU_lexUpdateLineNumber(); if ( CPSSPU_lexEnableTokenNewline() ) return TOKEN_NEWLINE; }
 
-.               { lexUpdateLineNumber(); return TOKEN_ERROR;   }
+.               { CPSSPU_lexUpdateLineNumber(); return TOKEN_ERROR;   }
 
 %%
 
@@ -146,57 +146,57 @@ static void lexProcessLexerPragma( const char *const String );
 #define TRUE 1
 #define FALSE 0
 
-static unsigned LineNumber = 0;
-static int EnableNewline = FALSE;
+static unsigned CPSSPU_LineNumber = 0;
+static int CPSSPU_EnableNewline = FALSE;
 
 // -----------------------------------------------------
 
-void lexResetLineNumber( void )
+void CPSSPU_lexResetLineNumber( void )
 {
-  LineNumber = 0;
+  CPSSPU_LineNumber = 0;
 }
 
 // -----------------------------------------------------
 
-unsigned lexCurrentLineNumber( void )
+unsigned CPSSPU_lexCurrentLineNumber( void )
 {
-  return LineNumber;
+  return CPSSPU_LineNumber;
 }
 
 // -----------------------------------------------------
 
-void     lexSetNewLineEnabled( int Enabled )
+void     CPSSPU_lexSetNewLineEnabled( int Enabled )
 {
-  EnableNewline = Enabled;
+  CPSSPU_EnableNewline = Enabled;
 }
 
 // -----------------------------------------------------
 
-static void lexUpdateLineNumber( void )
+static void CPSSPU_lexUpdateLineNumber( void )
 {
   unsigned i;
   for ( i = 0; CPSSPU_text[i] != '\0'; i++ )
   {
     if ( CPSSPU_text[i] == '\n' )
-      LineNumber++; 
+      CPSSPU_LineNumber++; 
   }
 }
 
 // -----------------------------------------------------
 
-static void lexProcessLexerPragma( const char *const String )
+static void CPSSPU_lexProcessLexerPragma( const char *const String )
 {
   if ( strcmp( String, "NL+" ) == 0 )
-    lexSetNewLineEnabled( TRUE );
+    CPSSPU_lexSetNewLineEnabled( TRUE );
   if ( strcmp( String, "NL-" ) == 0 )
-    lexSetNewLineEnabled( FALSE );
+    CPSSPU_lexSetNewLineEnabled( FALSE );
 }
 
 // -----------------------------------------------------
 
-static int  lexEnableTokenNewline( void )
+static int  CPSSPU_lexEnableTokenNewline( void )
 {
-  return EnableNewline;
+  return CPSSPU_EnableNewline;
 }
 
 // =====================================================
