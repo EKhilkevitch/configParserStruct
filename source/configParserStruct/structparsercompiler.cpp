@@ -107,10 +107,16 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
 #define CASE_OF_PUSH_COMMAND( Operator, Command ) \
   do { if ( std::strcmp( Operator, OperatorType ) == 0 ) Program->pushCommand( Command() ); } while (false)
 
-  CASE_OF_PUSH_COMMAND( "+", addCommand );
-  CASE_OF_PUSH_COMMAND( "-", subCommand );
-  CASE_OF_PUSH_COMMAND( "*", mulCommand );
-  CASE_OF_PUSH_COMMAND( "/", divCommand );
+  CASE_OF_PUSH_COMMAND( "+",  addCommand );
+  CASE_OF_PUSH_COMMAND( "-",  subCommand );
+  CASE_OF_PUSH_COMMAND( "*",  mulCommand );
+  CASE_OF_PUSH_COMMAND( "/",  divCommand );
+  CASE_OF_PUSH_COMMAND( "==", numEqCommand );
+  CASE_OF_PUSH_COMMAND( "!=", numNeCommand );
+  CASE_OF_PUSH_COMMAND( ">",  numGtCommand );
+  CASE_OF_PUSH_COMMAND( "<",  numLtCommand );
+  CASE_OF_PUSH_COMMAND( ">=", numGeCommand );
+  CASE_OF_PUSH_COMMAND( "<=", numLeCommand );
 
 #undef PUSH_COMMAND
 }

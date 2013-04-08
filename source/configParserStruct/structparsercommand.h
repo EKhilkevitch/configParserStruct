@@ -268,14 +268,70 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    class numEqCommand : public commandAction
+    class numEqCommand : public templateTwoStackOperandsCommand<double>
     {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 == Op1; }
       public:
-        void execute( program *Program ) const;
         commandAction* clone() const { return new numEqCommand(); }
         std::string toString() const { return "eq numbers"; }
+    };    
+
+    // -----------------------------------------------------
+    
+    class numNeCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 != Op1; }
+      public:
+        commandAction* clone() const { return new numNeCommand(); }
+        std::string toString() const { return "ne numbers"; }
     };
     
+    // -----------------------------------------------------
+    
+    class numGtCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 > Op1; }
+      public:
+        commandAction* clone() const { return new numGtCommand(); }
+        std::string toString() const { return "gt numbers"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class numLtCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 < Op1; }
+      public:
+        commandAction* clone() const { return new numLtCommand(); }
+        std::string toString() const { return "lt numbers"; }
+    };    
+
+    // -----------------------------------------------------
+    
+    class numGeCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 >= Op1; }
+      public:
+        commandAction* clone() const { return new numGeCommand(); }
+        std::string toString() const { return "ge numbers"; }
+    };
+
+    // -----------------------------------------------------
+    
+    class numLeCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 <= Op1; }
+      public:
+        commandAction* clone() const { return new numLeCommand(); }
+        std::string toString() const { return "le numbers"; }
+    };
+
     // -----------------------------------------------------
     
     class assignVariableCommand : public commandAction
