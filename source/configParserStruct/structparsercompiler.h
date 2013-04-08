@@ -10,24 +10,26 @@ extern "C" {
 
 #include <stdlib.h>
 
-void popValueFromStack( void );
-void pushRealNumberToStack( double Number );
-void pushIntegerNumberToStack( int Number );
-void pushStringToStack( const char *String );
-void pushDictToStack( void );
-void beginOfNewFunctionAssignName( const char *Name );
-void endOfCurrentFunction( void );
-void returnFromCurrentFunction( void );
-void prepareToFunctionCall( void );
-void pushFunctionArgument( void );
-void callFunctionWithArgsFromStack( const char *Name );
-void pushVariableValueToStack( const char *Name );
-void assignVariableValueFromStack( const char *Name );
-void setDictFieldFromStack( const char *Name );
-void operatorOnStackTop( int OperatorType );
-void finalizeExpressionStack( void );
-void setParsingErrorLine( int LineNumber );
-void setStructParserError( void );
+// CPSSPU = configParserStruct::structParserUtil 
+
+void CPSSPU_popValueFromStack( void );
+void CPSSPU_pushRealNumberToStack( double Number );
+void CPSSPU_pushIntegerNumberToStack( int Number );
+void CPSSPU_pushStringToStack( const char *String );
+void CPSSPU_pushDictToStack( void );
+void CPSSPU_beginOfNewFunctionAssignName( const char *Name );
+void CPSSPU_endOfCurrentFunction( void );
+void CPSSPU_returnFromCurrentFunction( void );
+void CPSSPU_prepareToFunctionCall( void );
+void CPSSPU_pushFunctionArgument( void );
+void CPSSPU_callFunctionWithArgsFromStack( const char *Name );
+void CPSSPU_pushVariableValueToStack( const char *Name );
+void CPSSPU_assignVariableValueFromStack( const char *Name );
+void CPSSPU_setDictFieldFromStack( const char *Name );
+void CPSSPU_operatorOnStackTop( const char *OperatorType );
+void CPSSPU_finalizeExpressionStack( void );
+void CPSSPU_setParsingErrorLine( int LineNumber );
+void CPSSPU_setStructParserError( void );
 
 #if __cplusplus
 }

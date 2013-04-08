@@ -33,6 +33,7 @@ EXTERN void strprs_error( const char *String );
   char IdName[STRUCTPARSER_MAX_ID_LENGTH];
   int  IntNumber;
   double RealNumber;
+  const char *CmpOpStr;
 }
 
 %token <String>     TOKEN_STRING
@@ -42,7 +43,8 @@ EXTERN void strprs_error( const char *String );
 %token <DateVal>    TOKEN_DATEVAL
 %token <IdName>     TOKEN_ID
 %token <IdName>     TOKEN_ARGUMENT
-%token TOKEN_CMP
+%token <CmpOpStr>   TOKEN_CMP
+
 %token TOKEN_ERROR
 %token TOKEN_NEWLINE
 %token TOKEN_POW
@@ -61,28 +63,28 @@ EXTERN void strprs_error( const char *String );
 
 parserCommands : parserCommands parserCommand 
 	       | parserCommand 
-	       | error { yyclearin; yyerrok; setStructParserError(); }
+	       | error { yyclearin; yyerrok; CPSSPU_setStructParserError(); }
 	       ;
 
 delimiter      : ';' 
                | TOKEN_NEWLINE
                ;
 
-parserCommand  : expression delimiter { finalizeExpressionStack(); } 
-	       | TOKEN_RETURN expression delimiter { returnFromCurrentFunction(); }
-               | fullId '=' TOKEN_FUNCTION { beginOfNewFunctionAssignName($1); } '{' parserCommands '}' { endOfCurrentFunction(); }
+parserCommand  : expression delimiter { CPSSPU_finalizeExpressionStack(); } 
+	       | TOKEN_RETURN expression delimiter { CPSSPU_returnFromCurrentFunction(); }
+               | fullId '=' TOKEN_FUNCTION { CPSSPU_beginOfNewFunctionAssignName($1); } '{' parserCommands '}' { CPSSPU_endOfCurrentFunction(); }
                | delimiter
 	       ;
 
 expression     : exprSet    {  }
-               | fullId '=' { pushDictToStack(); } '{' structFields '}' { assignVariableValueFromStack($1);  }
+               | fullId '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_assignVariableValueFromStack($1);  }
 	       ;
 
-exprSet        : fullId '=' exprSet { assignVariableValueFromStack($1); }
-               | fullId { pushVariableValueToStack($1); } TOKEN_ADDEQ exprSet { operatorOnStackTop('+'); assignVariableValueFromStack($1); }
-               | fullId { pushVariableValueToStack($1); } TOKEN_SUBEQ exprSet { operatorOnStackTop('-'); assignVariableValueFromStack($1); }
-               | fullId { pushVariableValueToStack($1); } TOKEN_MULEQ exprSet { operatorOnStackTop('*'); assignVariableValueFromStack($1); }
-               | fullId { pushVariableValueToStack($1); } TOKEN_DIVEQ exprSet { operatorOnStackTop('/'); assignVariableValueFromStack($1); }
+exprSet        : fullId '=' exprSet { CPSSPU_assignVariableValueFromStack($1); }
+               | fullId { CPSSPU_pushVariableValueToStack($1); } TOKEN_ADDEQ exprSet { CPSSPU_operatorOnStackTop("+"); CPSSPU_assignVariableValueFromStack($1); }
+               | fullId { CPSSPU_pushVariableValueToStack($1); } TOKEN_SUBEQ exprSet { CPSSPU_operatorOnStackTop("-"); CPSSPU_assignVariableValueFromStack($1); }
+               | fullId { CPSSPU_pushVariableValueToStack($1); } TOKEN_MULEQ exprSet { CPSSPU_operatorOnStackTop("*"); CPSSPU_assignVariableValueFromStack($1); }
+               | fullId { CPSSPU_pushVariableValueToStack($1); } TOKEN_DIVEQ exprSet { CPSSPU_operatorOnStackTop("/"); CPSSPU_assignVariableValueFromStack($1); }
                | exprThr {  }
                ;
 
@@ -92,30 +94,30 @@ exprThr        : exprCmp  {  }
                | exprCmp  {  }
                ;
 
-exprCmp        : exprCmp TOKEN_CMP exprAdd {  }
-               | exprAdd              {  }  
+exprCmp        : exprCmp TOKEN_CMP exprAdd { CPSSPU_operatorOnStackTop( $2 ); }
+               | exprAdd                   {  }  
                ;
 
-exprAdd        : exprAdd '+' exprMul  { operatorOnStackTop('+'); }
-	       | exprAdd '-' exprMul  { operatorOnStackTop('-'); }
+exprAdd        : exprAdd '+' exprMul  { CPSSPU_operatorOnStackTop("+"); }
+	       | exprAdd '-' exprMul  { CPSSPU_operatorOnStackTop("-"); }
 	       | exprMul              {  }
 	       ;
 
-exprMul        : exprMul '*' exprSign    { operatorOnStackTop('*'); }
-	       | exprMul '/' exprSign    { operatorOnStackTop('/'); }
+exprMul        : exprMul '*' exprSign    { CPSSPU_operatorOnStackTop("*"); }
+	       | exprMul '/' exprSign    { CPSSPU_operatorOnStackTop("/"); }
 	       | exprSign                {  }
 	       ;
 
 exprSign       : exprAtom              {  }
-	       | '-' { pushRealNumberToStack(0); } exprAtom { operatorOnStackTop('-'); }
+	       | '-' { CPSSPU_pushRealNumberToStack(0); } exprAtom { CPSSPU_operatorOnStackTop("-"); }
 	       | '+' exprAtom          {  }
 	       ;
 
-exprAtom       : fullId             { pushVariableValueToStack( $1 ); } 
-	       | TOKEN_REALNUMBER   { pushRealNumberToStack( $1 ); } 
-	       | TOKEN_INTNUMBER    { pushIntegerNumberToStack( $1 ); }
-               | TOKEN_STRING       { pushStringToStack( $1 ); }
-               | TOKEN_ID { prepareToFunctionCall(); } '(' arglist ')' { callFunctionWithArgsFromStack($1); }
+exprAtom       : fullId             { CPSSPU_pushVariableValueToStack( $1 ); } 
+	       | TOKEN_REALNUMBER   { CPSSPU_pushRealNumberToStack( $1 ); } 
+	       | TOKEN_INTNUMBER    { CPSSPU_pushIntegerNumberToStack( $1 ); }
+               | TOKEN_STRING       { CPSSPU_pushStringToStack( $1 ); }
+               | TOKEN_ID { CPSSPU_prepareToFunctionCall(); } '(' arglist ')' { CPSSPU_callFunctionWithArgsFromStack($1); }
                                     {  }
 	       | '(' exprSet ')'    {  }
 	       ;
@@ -124,8 +126,8 @@ arglist        : arglistx
                |                               {  } 
                ;
 
-arglistx       : arglistx ',' expression       { pushFunctionArgument();  }
-               | expression                    { pushFunctionArgument(); }
+arglistx       : arglistx ',' expression       { CPSSPU_pushFunctionArgument();  }
+               | expression                    { CPSSPU_pushFunctionArgument(); }
                ;
 
 structFields   : structFields ',' structField
@@ -133,8 +135,8 @@ structFields   : structFields ',' structField
                |
                ;
 
-structField    : '.' TOKEN_ID '=' exprSet { setDictFieldFromStack($2); }
-               | '.' TOKEN_ID '=' { pushDictToStack(); } '{' structFields '}' { setDictFieldFromStack($2); }
+structField    : '.' TOKEN_ID '=' exprSet { CPSSPU_setDictFieldFromStack($2); }
+               | '.' TOKEN_ID '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_setDictFieldFromStack($2); }
                ;
 
 fullId         : fullId '.' TOKEN_ID     { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); strncat( $$, ".", 2 ); strncat( $$, $3, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); }
@@ -156,54 +158,8 @@ int strprs_wrap( void )
 
 void strprs_error( const char *String )
 {
- setStructParserError();
+  CPSSPU_setStructParserError();
 }
 
 // ====================================================
-
-#if 0
-void yyparserSetParsedProg( struct parserProgram *const Program )
-{
-  PrsProgram = Program;
-}
-
-// --------------------------------------------------
-
-struct parserProgram* yyparserProgram( void )
-{
-  return PrsProgram;
-}
-
-// ====================================================
-
-static unsigned setOperationInProgram( const enum parserOperation Operation, const char *const SetVariable, const unsigned ExprReault,
-  struct parserProgram *const Program )
-{
-  unsigned Id    = parserIntrnlAddVariableToProgram( SetVariable, NULL, Program ); 
-  unsigned tmpId = parserIntrnlAddCommandToProgram( Operation, Id, ExprReault, Program );
-  return parserIntrnlAddCommandToProgram( PARSER_OPERATION_SET, Id, tmpId, Program );   
-}
-
-// --------------------------------------------------
-
-static enum parserOperation convertCmpTypeToOperation( const enum parserCmpType CmpType )
-{
-  switch ( CmpType )
-  {
-    case PARSER_CMP_OPERATOR_GE:   return PARSER_OPERATION_GE;
-    case PARSER_CMP_OPERATOR_GT:   return PARSER_OPERATION_GT;
-    case PARSER_CMP_OPERATOR_LT:   return PARSER_OPERATION_LT;
-    case PARSER_CMP_OPERATOR_LE:   return PARSER_OPERATION_LE;
-    case PARSER_CMP_OPERATOR_EQ:   return PARSER_OPERATION_EQ;
-    case PARSER_CMP_OPERATOR_NE:   return PARSER_OPERATION_NE;
-    default:    
-      abort();
-      return PARSER_OPERATION_NOP;
-  }
-}
-#endif
-// ====================================================
-
-
-
 

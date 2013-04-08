@@ -454,6 +454,27 @@ TEST( program, functionbuiltIn )
   EXPECT_NEAR( M_PI, Program.getNamedVariable("z").number(), 1e-5 );
 }
 
+// ---------------------------------------------------------
+
+TEST( program, cmp )
+{
+  program Program;
+
+  Program.rebuildAndExecute( "a = 1>2; b = 1<2; c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;" );
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_FALSE( Program.getNamedVariable("a").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("b").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("c").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("d").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("e").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("f").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("g").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("h").boolean() );
+}
+
 // =========================================================
 
 

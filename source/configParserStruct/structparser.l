@@ -63,13 +63,12 @@ static void lexProcessLexerPragma( const char *const String );
 "."             {  return '.';              }
 ","             {  return ',';              }
 
-">="            {  }
-">"             {  }
-"<="            {  }
-"<"             {  }
-"=="            {  }
-"<>"            {  }
-"!="            {  }
+">="            {  strprs_lval.CmpOpStr = ">="; return TOKEN_CMP; }
+">"             {  strprs_lval.CmpOpStr = ">";  return TOKEN_CMP; }
+"<="            {  strprs_lval.CmpOpStr = "<="; return TOKEN_CMP; }
+"<"             {  strprs_lval.CmpOpStr = "<";  return TOKEN_CMP; }
+"=="            {  strprs_lval.CmpOpStr = "=="; return TOKEN_CMP; }
+"!="            {  strprs_lval.CmpOpStr = "!="; return TOKEN_CMP; }
 
 "+="            { return TOKEN_ADDEQ; }
 "-="            { return TOKEN_SUBEQ; }

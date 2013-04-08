@@ -21,14 +21,6 @@ static program *Program = NULL;
 
 // =====================================================
 
-template <class T> static inline void pushOperator()
-{
-  if ( Program != NULL )
-    Program->pushCommand( T() );
-}
-
-// -----------------------------------------------------
-
 void configParserStruct::structParserUtil::setStructPrserProgram( program *const Program )
 {
   ::Program = Program;
@@ -36,7 +28,7 @@ void configParserStruct::structParserUtil::setStructPrserProgram( program *const
 
 // =====================================================
 
-void popValueFromStack( void )
+void CPSSPU_popValueFromStack( void )
 {
   if ( Program != NULL )
     Program->pushCommand( popCommand() );
@@ -44,7 +36,7 @@ void popValueFromStack( void )
 
 // -----------------------------------------------------
 
-void pushRealNumberToStack( double Number )
+void CPSSPU_pushRealNumberToStack( double Number )
 {
   variable Variable = createVariable( Number );
   if ( Program != NULL )
@@ -53,14 +45,16 @@ void pushRealNumberToStack( double Number )
 
 // -----------------------------------------------------
 
-void pushIntegerNumberToStack( int Number )
+void CPSSPU_pushIntegerNumberToStack( int Number )
 {
-  pushRealNumberToStack( Number );
+  variable Variable = createVariable( Number );
+  if ( Program != NULL )
+    Program->pushCommand( pushValueCommand( Variable ) );
 }
 
 // -----------------------------------------------------
 
-void pushStringToStack( const char *String )
+void CPSSPU_pushStringToStack( const char *String )
 {
   variable Variable = createVariable( String );
   if ( Program != NULL )
@@ -69,7 +63,7 @@ void pushStringToStack( const char *String )
 
 // -----------------------------------------------------
 
-void pushDictToStack( void ) 
+void CPSSPU_pushDictToStack( void ) 
 {
   variable Variable = dictVariableValue(); 
   if ( Program != NULL )
@@ -78,7 +72,7 @@ void pushDictToStack( void )
 
 // -----------------------------------------------------
 
-void pushVariableValueToStack( const char *Name )
+void CPSSPU_pushVariableValueToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
@@ -87,7 +81,7 @@ void pushVariableValueToStack( const char *Name )
 
 // -----------------------------------------------------
 
-void assignVariableValueFromStack( const char *Name )
+void CPSSPU_assignVariableValueFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
@@ -96,7 +90,7 @@ void assignVariableValueFromStack( const char *Name )
 
 // -----------------------------------------------------
 
-void setDictFieldFromStack( const char *Name )
+void CPSSPU_setDictFieldFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
@@ -105,38 +99,33 @@ void setDictFieldFromStack( const char *Name )
 
 // -----------------------------------------------------
 
-void operatorOnStackTop( int OperatorType )
+void CPSSPU_operatorOnStackTop( const char *OperatorType )
 {
-  using namespace configParserStruct;
-  using namespace structParserUtil;
+  if ( Program == NULL || OperatorType == NULL )
+    return;
 
 #define CASE_OF_PUSH_COMMAND( Operator, Command ) \
-  case Operator: pushOperator< Command >(); break;
+  do { if ( std::strcmp( Operator, OperatorType ) == 0 ) Program->pushCommand( Command() ); } while (false)
 
-  switch ( OperatorType )
-  {
-    CASE_OF_PUSH_COMMAND( '+', addCommand );
-    CASE_OF_PUSH_COMMAND( '-', subCommand );
-    CASE_OF_PUSH_COMMAND( '*', mulCommand );
-    CASE_OF_PUSH_COMMAND( '/', divCommand );
-    default:
-      pushOperator< nopCommand >();
-  }
+  CASE_OF_PUSH_COMMAND( "+", addCommand );
+  CASE_OF_PUSH_COMMAND( "-", subCommand );
+  CASE_OF_PUSH_COMMAND( "*", mulCommand );
+  CASE_OF_PUSH_COMMAND( "/", divCommand );
 
 #undef PUSH_COMMAND
 }
 
 // -----------------------------------------------------
 
-void finalizeExpressionStack( void )
+void CPSSPU_finalizeExpressionStack( void )
 {
-  assignVariableValueFromStack( program::lastResultVariableName().c_str() );
-  popValueFromStack();
+  CPSSPU_assignVariableValueFromStack( program::lastResultVariableName().c_str() );
+  CPSSPU_popValueFromStack();
 }
 
 // -----------------------------------------------------
 
-void beginOfNewFunctionAssignName( const char *Name )
+void CPSSPU_beginOfNewFunctionAssignName( const char *Name )
 {
   if ( Program == NULL )
     return;
@@ -147,7 +136,7 @@ void beginOfNewFunctionAssignName( const char *Name )
 
 // -----------------------------------------------------
 
-void endOfCurrentFunction( void )
+void CPSSPU_endOfCurrentFunction( void )
 {
   if ( Program == NULL )
     return;
@@ -158,7 +147,7 @@ void endOfCurrentFunction( void )
 
 // -----------------------------------------------------
 
-void returnFromCurrentFunction( void )
+void CPSSPU_returnFromCurrentFunction( void )
 {
   if ( Program == NULL )
     return;
@@ -167,7 +156,7 @@ void returnFromCurrentFunction( void )
 
 // -----------------------------------------------------
 
-void prepareToFunctionCall( void )
+void CPSSPU_prepareToFunctionCall( void )
 {
   if ( Program != NULL )
     Program->pushCommand( pushVarFrameCommand() );
@@ -175,7 +164,7 @@ void prepareToFunctionCall( void )
 
 // -----------------------------------------------------
 
-void callFunctionWithArgsFromStack( const char *Name )
+void CPSSPU_callFunctionWithArgsFromStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? "" : Name;
   if ( Program != NULL )
@@ -187,7 +176,7 @@ void callFunctionWithArgsFromStack( const char *Name )
 
 // -----------------------------------------------------
 
-void pushFunctionArgument( void )
+void CPSSPU_pushFunctionArgument( void )
 {
   if ( Program != NULL )
     Program->pushCommand( pushArgumentCommand() );
@@ -195,7 +184,7 @@ void pushFunctionArgument( void )
 
 // -----------------------------------------------------
 
-void setStructParserError( void )
+void CPSSPU_setStructParserError( void )
 {
   if ( Program != NULL && Program->errorLine() < 0 )
   {
