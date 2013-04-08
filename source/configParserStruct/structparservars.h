@@ -20,6 +20,7 @@ namespace configParserStruct
   {
     
     class program;
+    class variable;
     class undefVariableValue;
     
     // =====================================================
@@ -36,6 +37,8 @@ namespace configParserStruct
     };
     
     // =====================================================
+    
+    template <class T> T extractValueScalar( const variable &Var );
 
     class variable
     {
@@ -51,11 +54,20 @@ namespace configParserStruct
         int integer() const { return Value->integer(); }
         bool boolean() const { return Value->boolean(); }
         bool isDefined() const;
+        
         const std::type_info& valueType() const { return typeid(*Value); }
         template <class VarT> bool isValueDerivedFrom() const { return Value.isDerivedFrom<VarT>(); }
-        template <class VarT> const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
+        
         template <class VarT> VarT& value() { return dynamic_cast<VarT&>( *Value ); }
+        template <class VarT> const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
+
+        template <class T> T valueScalar() const { return extractValueScalar<T>(*this); }   
     };
+
+    template <> inline double extractValueScalar( const variable &Var ) { return Var.number(); }
+    template <> inline int extractValueScalar( const variable &Var ) { return Var.integer(); }
+    template <> inline bool extractValueScalar( const variable &Var ) { return Var.boolean(); }
+    template <> inline std::string extractValueScalar( const variable &Var ) { return Var.string(); }
 
     template <class T> variable createVariable( const T &Arg );
     template <> variable createVariable( const double &Arg );
@@ -286,9 +298,9 @@ namespace configParserStruct
       stringVariableValue Value( Arg );
       return variable( Value );
     }
-
+    
     // =====================================================
-
+  
   }
 }
 

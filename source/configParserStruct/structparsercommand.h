@@ -200,43 +200,80 @@ namespace configParserStruct
     };
     
     // -----------------------------------------------------
-
-    class addCommand : public commandAction
+    
+    class twoStackOperandsCommand : public commandAction
     {
+      protected:
+        virtual const variable calculateResultVariable( const variable &Op1, const variable &Op2 ) const = 0;
       public:
         void execute( program *Program ) const;
+    };
+    
+    // -----------------------------------------------------
+    
+    template <class T> class templateTwoStackOperandsCommand : public twoStackOperandsCommand
+    {
+      protected:
+        const variable calculateResultVariable( const variable &Op1, const variable &Op2 ) const
+        {
+          return createVariable<T>( calculateResult( Op1.valueScalar<T>(), Op2.valueScalar<T>() ) );
+        };
+
+        virtual T calculateResult( const T& Op1, const T& Op2 ) const = 0;
+    };
+    
+    // -----------------------------------------------------
+
+    class addCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 + Op1; }
+      public:
         commandAction* clone() const { return new addCommand(); }
         std::string toString() const { return "add"; }
     };
 
     // -----------------------------------------------------
 
-    class subCommand : public commandAction
+    class subCommand : public templateTwoStackOperandsCommand<double>
     {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 - Op1; }
       public:
-        void execute( program *Program ) const;
         commandAction* clone() const { return new subCommand(); }
         std::string toString() const { return "sub"; }
     };
 
     // -----------------------------------------------------
 
-    class mulCommand : public commandAction
+    class mulCommand : public templateTwoStackOperandsCommand<double>
     {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 * Op1; }
       public:
-        void execute( program *Program ) const;
         commandAction* clone() const { return new mulCommand(); }
         std::string toString() const { return "mul"; }
     };
 
     // -----------------------------------------------------
 
-    class divCommand : public commandAction
+    class divCommand : public templateTwoStackOperandsCommand<double>
+    {
+      protected:
+        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 / Op1; }
+      public:
+        commandAction* clone() const { return new divCommand(); }
+        std::string toString() const { return "div"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class numEqCommand : public commandAction
     {
       public:
         void execute( program *Program ) const;
-        commandAction* clone() const { return new divCommand(); }
-        std::string toString() const { return "div"; }
+        commandAction* clone() const { return new numEqCommand(); }
+        std::string toString() const { return "eq numbers"; }
     };
     
     // -----------------------------------------------------
