@@ -58,6 +58,7 @@ EXTERN void CPSSPU_error( const char *String );
 %type  <IdName>    fullId
 
 %right '='
+%right '?' ':'
 
 %%
 

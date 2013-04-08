@@ -479,7 +479,9 @@ TEST( program, cmp )
 TEST( program, thernarCondition )
 {
   program Program;
-  bool OK = Program.rebuildAndExecute( "a = 2 > 1 ? 3 : 4;\nb = 2 < 1 ? 5 : 6;" );
+  bool OK = Program.rebuildAndExecute( "a = 2 > 1 ? 3 : 4;\nb = ( 2 < 1 ) ? 5 : 6;\n"
+    " sign = func { return ( $1 > 0 ) ? +1 : ( $1 < 0 ) ? -1 : 0; }\n"
+    "x = sign(-3); y = sign(+2); z = sign(0);" );
 
   ASSERT_TRUE( OK );
   ASSERT_EQ( -1, Program.errorLine() );
@@ -487,6 +489,10 @@ TEST( program, thernarCondition )
   
   EXPECT_EQ( 3, Program.getNamedVariable("a").integer() );
   EXPECT_EQ( 6, Program.getNamedVariable("b").integer() );
+  
+  EXPECT_EQ( -1, Program.getNamedVariable("x").integer() );
+  EXPECT_EQ( +1, Program.getNamedVariable("y").integer() );
+  EXPECT_EQ(  0, Program.getNamedVariable("z").integer() );
 }
 
 // =========================================================
