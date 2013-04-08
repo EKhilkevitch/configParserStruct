@@ -212,6 +212,14 @@ void CPSSPU_beginOfElseStatement( void )
 void CPSSPU_endOfIfStatement( void )
 {
   if ( Program != NULL )
+    Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>();
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_endOfIfElseStatement( void )
+{
+  if ( Program != NULL )
     Program->replaceCommandMarkerToJmp<jumpToCommand>();
 }
 

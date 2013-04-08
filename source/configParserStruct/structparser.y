@@ -54,6 +54,8 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_DIVEQ
 %token TOKEN_FUNCTION
 %token TOKEN_RETURN
+%token TOKEN_IF
+%token TOKEN_ELSE
 
 %type  <IdName>    fullId
 
@@ -62,8 +64,7 @@ EXTERN void CPSSPU_error( const char *String );
 
 %%
 
-parserCommands : parserCommands parserCommand 
-	       | parserCommand 
+program        : statementSeq 
 	       | error { yyclearin; yyerrok; CPSSPU_setStructParserError(); }
 	       ;
 
@@ -71,11 +72,33 @@ delimiter      : ';'
                | TOKEN_NEWLINE
                ;
 
-parserCommand  : expression delimiter { CPSSPU_finalizeExpressionStack(); } 
-	       | TOKEN_RETURN expression delimiter { CPSSPU_returnFromCurrentFunction(); }
-               | fullId '=' TOKEN_FUNCTION { CPSSPU_beginOfNewFunctionAssignName($1); } '{' parserCommands '}' { CPSSPU_endOfCurrentFunction(); }
+statementSeq   : statementSeq statement
+               | 
+               ;
+
+block          : '{' statementSeq '}'
+               ;
+
+statement      : expression delimiter { CPSSPU_finalizeExpressionStack(); } 
+	       | return
+               | function
+               | block
+               | ifStatement 
                | delimiter
 	       ;
+
+return         : TOKEN_RETURN expression delimiter { CPSSPU_returnFromCurrentFunction(); }
+               ;
+
+function       : fullId '=' TOKEN_FUNCTION { CPSSPU_beginOfNewFunctionAssignName($1); } '{' program '}' { CPSSPU_endOfCurrentFunction(); }
+               ;
+
+ifStatement    : TOKEN_IF '(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block elseStatement
+               ;
+
+elseStatement  : TOKEN_ELSE { CPSSPU_beginOfElseStatement(); } block { CPSSPU_endOfIfElseStatement(); }
+               | { CPSSPU_endOfIfStatement(); }
+               ;
 
 expression     : exprSet    {  }
                | fullId '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_assignVariableValueFromStack($1);  }
@@ -91,7 +114,7 @@ exprSet        : fullId '=' exprSet { CPSSPU_assignVariableValueFromStack($1); }
 
 exprThr        : exprCmp  { CPSSPU_beginOfIfStatement(); } 
                      '?' exprCmp { CPSSPU_beginOfElseStatement(); }
-                     ':' exprThr { CPSSPU_endOfIfStatement(); }
+                     ':' exprThr { CPSSPU_endOfIfElseStatement(); }
                | exprCmp  {  }
                ;
 

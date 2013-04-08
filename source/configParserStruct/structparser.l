@@ -96,6 +96,9 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 "func"          { return TOKEN_FUNCTION;    }
 "return"        { return TOKEN_RETURN;      }
 
+"if"            { return TOKEN_IF;          }
+"else"          { return TOKEN_ELSE;        }
+
 {INTNUM}        {  
                    CPSSPU_lval.RealNumber = atol(CPSSPU_text); 
 		   return TOKEN_REALNUMBER; 

@@ -476,7 +476,7 @@ TEST( program, cmp )
 
 // ---------------------------------------------------------
 
-TEST( program, thernarCondition )
+TEST( program, ternary )
 {
   program Program;
   bool OK = Program.rebuildAndExecute( "a = 2 > 1 ? 3 : 4;\nb = ( 2 < 1 ) ? 5 : 6;\n"
@@ -493,6 +493,20 @@ TEST( program, thernarCondition )
   EXPECT_EQ( -1, Program.getNamedVariable("x").integer() );
   EXPECT_EQ( +1, Program.getNamedVariable("y").integer() );
   EXPECT_EQ(  0, Program.getNamedVariable("z").integer() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, ifelse )
+{
+  program Program;
+  bool OK = Program.rebuildAndExecute( "if ( 1 > 2 ) { x = 1; }\n"
+    " if ( 2 > 1 ) { y = 2; } else { y = 3; }\n"
+    "# if ( 1 < 2 ) { z = 4; } else { z = 5*2; }\n");
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
 }
 
 // =========================================================
