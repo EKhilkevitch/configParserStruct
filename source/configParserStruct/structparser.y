@@ -88,9 +88,9 @@ exprSet        : fullId '=' exprSet { CPSSPU_assignVariableValueFromStack($1); }
                | exprThr {  }
                ;
 
-exprThr        : exprCmp  {  } 
-                     '?' exprCmp {  }
-                     ':' exprThr {  }
+exprThr        : exprCmp  { CPSSPU_beginOfIfStatement(); } 
+                     '?' exprCmp { CPSSPU_beginOfElseStatement(); }
+                     ':' exprThr { CPSSPU_endOfIfStatement(); }
                | exprCmp  {  }
                ;
 

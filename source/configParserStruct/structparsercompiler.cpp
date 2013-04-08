@@ -105,7 +105,7 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
     return;
 
 #define CASE_OF_PUSH_COMMAND( Operator, Command ) \
-  do { if ( std::strcmp( Operator, OperatorType ) == 0 ) Program->pushCommand( Command() ); } while (false)
+  do { if ( std::strcmp( Operator, OperatorType ) == 0 ) { Program->pushCommand( Command() ); return; } } while (false)
 
   CASE_OF_PUSH_COMMAND( "+",  addCommand );
   CASE_OF_PUSH_COMMAND( "-",  subCommand );
@@ -148,7 +148,7 @@ void CPSSPU_endOfCurrentFunction( void )
     return;
   Program->pushCommand( pushValueCommand( variable() ) );
   Program->pushCommand( retCommand() );
-  Program->replaceCommandMarkerToJump();
+  Program->replaceCommandMarkerToJmp<jumpToCommand>();
 }
 
 // -----------------------------------------------------
@@ -186,6 +186,33 @@ void CPSSPU_pushFunctionArgument( void )
 {
   if ( Program != NULL )
     Program->pushCommand( pushArgumentCommand() );
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_beginOfIfStatement( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( markerCommand() );
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_beginOfElseStatement( void )
+{
+  if ( Program != NULL )
+  {
+    Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>(+1);
+    Program->pushCommand( markerCommand() );
+  }
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_endOfIfStatement( void )
+{
+  if ( Program != NULL )
+    Program->replaceCommandMarkerToJmp<jumpToCommand>();
 }
 
 // -----------------------------------------------------

@@ -165,7 +165,7 @@ unsigned CPSSPU_lexCurrentLineNumber( void )
 
 // -----------------------------------------------------
 
-void     CPSSPU_lexSetNewLineEnabled( int Enabled )
+void CPSSPU_lexSetNewLineEnabled( int Enabled )
 {
   CPSSPU_EnableNewline = Enabled;
 }
@@ -194,7 +194,7 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String )
 
 // -----------------------------------------------------
 
-static int  CPSSPU_lexEnableTokenNewline( void )
+static int CPSSPU_lexEnableTokenNewline( void )
 {
   return CPSSPU_EnableNewline;
 }

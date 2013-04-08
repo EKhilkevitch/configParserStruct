@@ -178,6 +178,15 @@ void configParserStruct::structParserUtil::jumpToCommand::execute( program *Prog
 
 // -----------------------------------------------------
 
+void configParserStruct::structParserUtil::jumpIfFalseCommand::execute( program *Program ) const
+{
+  const variable Argument = Program->popStackVariable();
+  if ( ! Argument.boolean() )
+    Program->setCurrentCommandIndex( Index - 1 );
+}
+
+// -----------------------------------------------------
+
 void configParserStruct::structParserUtil::twoStackOperandsCommand::execute( program *Program ) const
 {
   const variable &Var1 = Program->popStackVariable();

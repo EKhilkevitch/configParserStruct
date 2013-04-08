@@ -200,6 +200,19 @@ namespace configParserStruct
     };
     
     // -----------------------------------------------------
+   
+    class jumpIfFalseCommand : public commandAction
+    {
+      private:
+        unsigned Index;
+      public:
+        jumpIfFalseCommand( unsigned I ) : Index(I) {}
+        void execute( program *Program ) const; 
+        commandAction* clone() const { return new jumpIfFalseCommand(*this); }
+        std::string toString() const { return "jump if false to " + convertToString(Index); }
+    };
+
+    // -----------------------------------------------------
     
     class twoStackOperandsCommand : public commandAction
     {

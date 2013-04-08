@@ -32,7 +32,7 @@ namespace configParserStruct
         unsigned pushCommand( const commandAction &A ) { return Commands.push(A); }
         size_t numberOfCommands() const { return Commands.size(); }
         void executeOneCommand() { Commands.executeOneCommand(this); }
-        void replaceCommandMarkerToJump() { Commands.replaceMarker( jumpToCommand(Commands.size())); }
+        template <class JmpCmd> void replaceCommandMarkerToJmp( int Shift = 0 ) { Commands.replaceMarker( JmpCmd(Commands.size()+Shift)); }
 
         void setCurrentCommandIndex( unsigned Index ) { Commands.setCurrentCommandIndex(Index); }
         unsigned currentCommandIndex()  const { return Commands.currentCommandIndex(); }
