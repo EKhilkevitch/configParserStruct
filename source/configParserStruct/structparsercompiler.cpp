@@ -209,6 +209,25 @@ void CPSSPU_beginOfElseStatement( void )
 
 // -----------------------------------------------------
 
+void CPSSPU_beginOfWhileStatement( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( markerCommand() );
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_endOfWhileStatement( void )
+{
+  if ( Program != NULL )
+  {
+    unsigned Index = Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>();
+    Program->pushCommand( jumpToCommand(Index) );
+  }
+}
+
+// -----------------------------------------------------
+
 void CPSSPU_endOfIfStatement( void )
 {
   if ( Program != NULL )

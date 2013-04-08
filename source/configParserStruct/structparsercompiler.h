@@ -31,6 +31,8 @@ void CPSSPU_beginOfIfStatement( void );
 void CPSSPU_beginOfElseStatement( void );
 void CPSSPU_endOfIfElseStatement( void );
 void CPSSPU_endOfIfStatement( void );
+void CPSSPU_beginOfWhileStatement( void );
+void CPSSPU_endOfWhileStatement( void );
 
 void CPSSPU_assignVariableValueFromStack( const char *Name );
 void CPSSPU_setDictFieldFromStack( const char *Name );

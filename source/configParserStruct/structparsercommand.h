@@ -60,7 +60,7 @@ namespace configParserStruct
         unsigned push( const command &Cmd );
         unsigned push( const commandAction &Action );
         void set( unsigned Index, const command &Cmd );
-        void replaceMarker( const commandAction &Action );
+        unsigned replaceMarker( const commandAction &Action );
 
         void clear();
 

@@ -32,16 +32,18 @@ void configParserStruct::structParserUtil::commandsList::set( unsigned Index, co
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::commandsList::replaceMarker( const commandAction &Action )
+unsigned configParserStruct::structParserUtil::commandsList::replaceMarker( const commandAction &Action )
 {
   for ( int i = Commands.size()-1; i >= 0; i-- )
   {
     if ( Commands[i].actionType() == typeid(markerCommand) )
     {
       Commands[i] = command(Action);
-      break;
+      return i;
     }
   }
+
+  return Commands.size();
 }
 
 // -----------------------------------------------------

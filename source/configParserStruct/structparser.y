@@ -56,6 +56,7 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_RETURN
 %token TOKEN_IF
 %token TOKEN_ELSE
+%token TOKEN_WHILE
 
 %type  <IdName>    fullId
 
@@ -98,6 +99,9 @@ ifStatement    : TOKEN_IF '(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block
 
 elseStatement  : TOKEN_ELSE { CPSSPU_beginOfElseStatement(); } block { CPSSPU_endOfIfElseStatement(); }
                | { CPSSPU_endOfIfStatement(); }
+               ;
+
+whileStatement : TOKEN_WHILE '(' exprSet ')' { CPSSPU_beginOfWhileStatement(); } block { CPSSPU_endOfWhileStatement(); }
                ;
 
 expression     : exprSet    {  }
