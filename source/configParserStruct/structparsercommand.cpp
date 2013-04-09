@@ -199,6 +199,15 @@ void configParserStruct::structParserUtil::twoStackOperandsCommand::execute( pro
 
 // -----------------------------------------------------
 
+void configParserStruct::structParserUtil::boolNotCommand::execute( program *Program ) const
+{
+  const variable &Var = Program->popStackVariable();
+  const variable &Result = createVariable( ! Var.boolean() );
+  Program->pushStackVariable( Result );
+}
+
+// -----------------------------------------------------
+
 void configParserStruct::structParserUtil::assignVariableCommand::execute( program *Program ) const
 {
   const variable &Value = Program->topStackVariable();

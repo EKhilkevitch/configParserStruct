@@ -52,6 +52,8 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_SUBEQ
 %token TOKEN_MULEQ
 %token TOKEN_DIVEQ
+%token TOKEN_BOOL_AND
+%token TOKEN_BOOL_OR
 %token TOKEN_FUNCTION
 %token TOKEN_RETURN
 %token TOKEN_IF
@@ -117,10 +119,15 @@ exprSet        : fullId '=' exprSet { CPSSPU_assignVariableValueFromStack($1); }
                | exprThr {  }
                ;
 
-exprThr        : exprCmp  { CPSSPU_beginOfIfStatement(); } 
-                     '?' exprCmp { CPSSPU_beginOfElseStatement(); }
-                     ':' exprThr { CPSSPU_endOfIfElseStatement(); }
-               | exprCmp  {  }
+exprThr        : exprBool  { CPSSPU_beginOfIfStatement(); } 
+                     '?' exprBool { CPSSPU_beginOfElseStatement(); }
+                     ':' exprThr  { CPSSPU_endOfIfElseStatement(); }
+               | exprBool  {  }
+               ;
+
+exprBool       : exprBool TOKEN_BOOL_AND exprCmp { CPSSPU_operatorOnStackTop("&&"); }
+               | exprBool TOKEN_BOOL_OR  exprCmp { CPSSPU_operatorOnStackTop("||"); }
+               | exprCmp
                ;
 
 exprCmp        : exprCmp TOKEN_CMP exprAdd { CPSSPU_operatorOnStackTop( $2 ); }
@@ -134,12 +141,14 @@ exprAdd        : exprAdd '+' exprMul  { CPSSPU_operatorOnStackTop("+"); }
 
 exprMul        : exprMul '*' exprSign    { CPSSPU_operatorOnStackTop("*"); }
 	       | exprMul '/' exprSign    { CPSSPU_operatorOnStackTop("/"); }
+               | exprMul '%' exprSign    { CPSSPU_operatorOnStackTop("%"); }
 	       | exprSign                {  }
 	       ;
 
 exprSign       : exprAtom              {  }
 	       | '-' { CPSSPU_pushRealNumberToStack(0); } exprAtom { CPSSPU_operatorOnStackTop("-"); }
 	       | '+' exprAtom          {  }
+               | '!' exprSign          { CPSSPU_operatorOnStackTop("!"); }
 	       ;
 
 exprAtom       : fullId             { CPSSPU_pushVariableValueToStack( $1 ); } 

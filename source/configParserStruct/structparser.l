@@ -87,6 +87,10 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 "/"             {  return '/';              }
 "%"             {  return '%';              }
 
+"&&"            {  return TOKEN_BOOL_AND;   }
+"||"            {  return TOKEN_BOOL_OR;    }
+"!"             {  return '!';   }
+
 "?"             { return '?';               }
 ":"             { return ':';               }
 

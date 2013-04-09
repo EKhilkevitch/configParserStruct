@@ -111,12 +111,18 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
   CASE_OF_PUSH_COMMAND( "-",  subCommand );
   CASE_OF_PUSH_COMMAND( "*",  mulCommand );
   CASE_OF_PUSH_COMMAND( "/",  divCommand );
+  CASE_OF_PUSH_COMMAND( "%",  modCommand );
+
   CASE_OF_PUSH_COMMAND( "==", numEqCommand );
   CASE_OF_PUSH_COMMAND( "!=", numNeCommand );
   CASE_OF_PUSH_COMMAND( ">",  numGtCommand );
   CASE_OF_PUSH_COMMAND( "<",  numLtCommand );
   CASE_OF_PUSH_COMMAND( ">=", numGeCommand );
   CASE_OF_PUSH_COMMAND( "<=", numLeCommand );
+  
+  CASE_OF_PUSH_COMMAND( "&&",  boolAndCommand );
+  CASE_OF_PUSH_COMMAND( "||",  boolOrCommand );
+  CASE_OF_PUSH_COMMAND( "!",   boolNotCommand );
 
 #undef PUSH_COMMAND
 }

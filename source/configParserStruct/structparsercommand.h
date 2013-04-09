@@ -281,6 +281,17 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
+    class modCommand : public templateTwoStackOperandsCommand<int>
+    {
+      protected:
+        int calculateResult( const int &Op1, const int &Op2 ) const { return Op2 % Op1; }
+      public:
+        commandAction* clone() const { return new modCommand(); }
+        std::string toString() const { return "mod"; }
+    };
+    
+    // -----------------------------------------------------
+    
     class numEqCommand : public templateTwoStackOperandsCommand<double>
     {
       protected:
@@ -344,7 +355,39 @@ namespace configParserStruct
         commandAction* clone() const { return new numLeCommand(); }
         std::string toString() const { return "le numbers"; }
     };
+    
+    // -----------------------------------------------------
+    
+    class boolAndCommand : public templateTwoStackOperandsCommand<bool>
+    {
+      protected:
+        bool calculateResult( const bool &Op1, const bool &Op2 ) const { return Op2 && Op1; }
+      public:
+        commandAction* clone() const { return new boolAndCommand(); }
+        std::string toString() const { return "and bool"; }
+    };
 
+    // -----------------------------------------------------
+    
+    class boolOrCommand : public templateTwoStackOperandsCommand<bool>
+    {
+      protected:
+        bool calculateResult( const bool &Op1, const bool &Op2 ) const { return Op2 || Op1; }
+      public:
+        commandAction* clone() const { return new boolOrCommand(); }
+        std::string toString() const { return "or bool"; }
+    };
+
+    // -----------------------------------------------------
+    
+    class boolNotCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new boolNotCommand(); }
+        std::string toString() const { return "bot bool"; }
+    };
+    
     // -----------------------------------------------------
     
     class assignVariableCommand : public commandAction

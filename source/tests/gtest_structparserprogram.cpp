@@ -154,6 +154,20 @@ TEST( program, div )
 
 // ---------------------------------------------------------
 
+TEST( program, mod )
+{
+  program Program;
+  bool OK = Program.rebuildAndExecute( "x = 8 % 3; y = 3.2 % 2; z = 4 % 7;" );
+  
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 2.0, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 1.0, Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_NEAR( 4.0, Program.getNamedVariable("z").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, unarySign )
 {
   program Program;
@@ -459,8 +473,8 @@ TEST( program, functionbuiltIn )
 TEST( program, cmp )
 {
   program Program;
-  Program.rebuildAndExecute( "a = 1>2; b = 1<2; c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;\n"
-    "x = 0; y = 1;");
+  Program.rebuildAndExecute( "a = 1>2;b = 1<2;c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;\n i = 1+2 > 2.5; j = 1-2 < -1; \n"
+    "x = 0; y = 1;\n");
   
   ASSERT_EQ( -1, Program.errorLine() );
   EXPECT_EQ( 0, Program.stackSize() );
@@ -473,9 +487,30 @@ TEST( program, cmp )
   EXPECT_FALSE( Program.getNamedVariable("f").boolean() );
   EXPECT_TRUE( Program.getNamedVariable("g").boolean() );
   EXPECT_FALSE( Program.getNamedVariable("h").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("i").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("j").boolean() );
   
   EXPECT_FALSE( Program.getNamedVariable("x").boolean() );
   EXPECT_TRUE( Program.getNamedVariable("y").boolean() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, booleanOp )
+{
+  program Program;
+  Program.rebuildAndExecute( "a = 1 && 2;\nb = 0 && 1;\n c = 1 || 0;\n d = 0 || 0; \n e = ! 1; \n f = !!0; \n g = !0;\n" );
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+  
+  EXPECT_TRUE( Program.getNamedVariable("a").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("b").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("c").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("d").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("e").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("f").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("g").boolean() );
 }
 
 // ---------------------------------------------------------

@@ -72,6 +72,7 @@ namespace configParserStruct
     template <class T> variable createVariable( const T &Arg );
     template <> variable createVariable( const double &Arg );
     template <> variable createVariable( const int &Arg );
+    template <> variable createVariable( const bool &Arg );
     template <> variable createVariable( const char* const &Arg );
     template <> variable createVariable( const std::string &Arg );
 
@@ -280,6 +281,14 @@ namespace configParserStruct
     template <> inline variable createVariable( const int &Arg )
     {
       integerVariableValue Value( Arg );
+      return variable( Value );
+    }
+    
+    // -----------------------------------------------------
+    
+    template <> inline variable createVariable( const bool &Arg )
+    {
+      integerVariableValue Value( Arg ? 1 : 0 );
       return variable( Value );
     }
     
