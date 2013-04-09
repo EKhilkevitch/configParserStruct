@@ -31,6 +31,7 @@ void CPSSPU_beginOfIfStatement( void );
 void CPSSPU_beginOfElseStatement( void );
 void CPSSPU_endOfIfElseStatement( void );
 void CPSSPU_endOfIfStatement( void );
+void CPSSPU_prepareForWhileStatement( void );
 void CPSSPU_beginOfWhileStatement( void );
 void CPSSPU_endOfWhileStatement( void );
 

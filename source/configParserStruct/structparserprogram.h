@@ -33,6 +33,7 @@ namespace configParserStruct
         size_t numberOfCommands() const { return Commands.size(); }
         void executeOneCommand() { Commands.executeOneCommand(this); }
         template <class JmpCmd> unsigned replaceCommandMarkerToJmp( int Shift = 0 ) { return Commands.replaceMarker( JmpCmd(Commands.size()+Shift)); }
+        unsigned replaceCommandMarkerToNop() { return Commands.replaceMarker( nopCommand() ); }
 
         void setCurrentCommandIndex( unsigned Index ) { Commands.setCurrentCommandIndex(Index); }
         unsigned currentCommandIndex()  const { return Commands.currentCommandIndex(); }

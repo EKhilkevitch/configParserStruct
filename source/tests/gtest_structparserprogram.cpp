@@ -459,7 +459,8 @@ TEST( program, functionbuiltIn )
 TEST( program, cmp )
 {
   program Program;
-  Program.rebuildAndExecute( "a = 1>2; b = 1<2; c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;" );
+  Program.rebuildAndExecute( "a = 1>2; b = 1<2; c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;\n"
+    "x = 0; y = 1;");
   
   ASSERT_EQ( -1, Program.errorLine() );
   EXPECT_EQ( 0, Program.stackSize() );
@@ -472,6 +473,9 @@ TEST( program, cmp )
   EXPECT_FALSE( Program.getNamedVariable("f").boolean() );
   EXPECT_TRUE( Program.getNamedVariable("g").boolean() );
   EXPECT_FALSE( Program.getNamedVariable("h").boolean() );
+  
+  EXPECT_FALSE( Program.getNamedVariable("x").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("y").boolean() );
 }
 
 // ---------------------------------------------------------
@@ -497,16 +501,56 @@ TEST( program, ternary )
 
 // ---------------------------------------------------------
 
+TEST( program, factorial )
+{
+  program Program;
+  bool OK = Program.rebuildAndExecute( "fact = func { return ($1 >= 1) ? fact($1-1)*$1 : 1; };\n"
+    "fact(8);\n" );
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( 40320, Program.getLastExpressionReuslt().integer() );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, ifelse )
 {
   program Program;
   bool OK = Program.rebuildAndExecute( "if ( 1 > 2 ) { x = 1; }\n"
     " if ( 2 > 1 ) { y = 2; } else { y = 3; }\n"
-    "# if ( 1 < 2 ) { z = 4; } else { z = 5*2; }\n");
+    " if ( 1 < 2 ) { z = 4; } else { z = 5*2; }\n");
 
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
   EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( 0, Program.getNamedVariable("x").integer() );
+  EXPECT_EQ( 2, Program.getNamedVariable("y").integer() );
+  EXPECT_EQ( 4, Program.getNamedVariable("z").integer() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, whileCycle )
+{
+  program Program;
+  bool OK = Program.build( "while (0) { x = 1; }\n"
+    "y = 2;\n"
+    "i = z = 1; while (i<10) { z *= i; i += 1; }\n" );
+  //std::cout << Program.toString() << std::endl;
+  Program.execute();
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( 0, Program.getNamedVariable("x").integer() );
+  EXPECT_EQ( 2, Program.getNamedVariable("y").integer() );
+  EXPECT_EQ( 10, Program.getNamedVariable("i").integer() );
+  EXPECT_EQ( 362880, Program.getNamedVariable("z").integer() );
 }
 
 // =========================================================

@@ -85,6 +85,7 @@ statement      : expression delimiter { CPSSPU_finalizeExpressionStack(); }
                | function
                | block
                | ifStatement 
+               | whileStatement
                | delimiter
 	       ;
 
@@ -101,7 +102,7 @@ elseStatement  : TOKEN_ELSE { CPSSPU_beginOfElseStatement(); } block { CPSSPU_en
                | { CPSSPU_endOfIfStatement(); }
                ;
 
-whileStatement : TOKEN_WHILE '(' exprSet ')' { CPSSPU_beginOfWhileStatement(); } block { CPSSPU_endOfWhileStatement(); }
+whileStatement : TOKEN_WHILE { CPSSPU_prepareForWhileStatement(); } '(' exprSet ')' { CPSSPU_beginOfWhileStatement(); } block { CPSSPU_endOfWhileStatement(); }
                ;
 
 expression     : exprSet    {  }
