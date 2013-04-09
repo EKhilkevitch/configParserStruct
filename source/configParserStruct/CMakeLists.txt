@@ -71,7 +71,6 @@ if ( PYTHON_INCLUDE_DIRS )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYTHON_INCLUDE_HEADER=<Python.h>") 
   endif()
 
-  target_link_libraries( configParserStruct ${PYTHON_LIBRARIES} )
 endif()
 
 if ( WIN32 )
@@ -80,4 +79,8 @@ if ( WIN32 )
 endif()
 
 add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} )
+
+if ( PYTHON_INCLUDE_DIRS )
+  target_link_libraries( configParserStruct ${PYTHON_LIBRARIES} )
+endif()
 
