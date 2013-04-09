@@ -30,7 +30,7 @@ namespace configParserStruct
     class piBuiltIn : public mathBuiltIn
     {
       protected:
-        double calculate( double ) const { return M_PI; }
+        double calculate( double ) const;
 
       public: 
         variableValue* clone() const { return new piBuiltIn(); }

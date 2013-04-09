@@ -5,10 +5,32 @@ project( configParserLib )
 find_package(BISON)
 find_package(FLEX)
 
-BISON_TARGET( structparserY structparser.y  ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c COMPILE_FLAGS "--name-prefix=CPSSPU_ -v" )
-FLEX_TARGET(  structparserL structparser.l  ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c  COMPILE_FLAGS "--prefix=CPSSPU_" )
+if ( WIN32 )
+  set( BISON_FLAGS "--name-prefix=CPSSPU_ -v" )
+  set( FLAX_FLAGS "-PCPSSPU_" )
+endif()
+
+if ( UNIX )
+  set( BISON_FLAGS "--name-prefix=CPSSPU_ -v" )
+  set( FLAX_FLAGS "--prefix=CPSSPU_" )
+endif()
+
+BISON_TARGET( structparserY structparser.y  ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c COMPILE_FLAGS ${BISON_FLAGS} )
+FLEX_TARGET(  structparserL structparser.l  ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c  COMPILE_FLAGS ${FLAX_FLAGS} )
 ADD_FLEX_BISON_DEPENDENCY( structparserL structparserY )
 include_directories( "${CMAKE_CURRENT_BINARY_DIR}/.." )
+
+if ( WIN32 )
+  set( WIN_GETOPT_DIR "${PROJECT_SOURCE_DIR}/../../win_getopt" ) 
+  set( getopt_source_files 
+       ${WIN_GETOPT_DIR}/getopt.c
+       ${WIN_GETOPT_DIR}/getopt_long.c
+       ${WIN_GETOPT_DIR}/libecho.c
+    )
+  include_directories( ${WIN_GETOPT_DIR} )
+else()
+  set( getopt_source_files )
+endif()
 
 set( configparser_source_files 
       cmdargs.cpp
@@ -30,13 +52,23 @@ set( configparser_source_files
 
 include( FindPythonLibs )
 find_package( PythonLibs REQUIRED )
+if ( UNIX )
+  include_directories( "${PYTHON_INCLUDE_PATH}/.." )
+  set( PYTHON_VERSION ${PYTHON_INCLUDE_PATH} )
+  string( REGEX REPLACE "^.*ython" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
+  string( REGEX REPLACE "[\\/\\\\]+.*$" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} '-DPYTHON_INCLUDE_HEADER=<python${PYTHON_VERSION}/Python.h>'") 
+endif()
+if ( WIN32 )
+  include_directories( "${PYTHON_INCLUDE_PATH}" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYTHON_INCLUDE_HEADER=<Python.h>") 
+endif()
 
-include_directories( "${PYTHON_INCLUDE_PATH}/.." )
-set( PYTHON_VERSION ${PYTHON_INCLUDE_PATH} )
-string( REGEX REPLACE "^.*ython" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
-string( REGEX REPLACE "[\\/]+$" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} '-DPYTHON_INCLUDE_HEADER=<python${PYTHON_VERSION}/Python.h>'") 
+if ( WIN32 )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS=1" )
+  set( CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS=1" )
+endif()
 
-add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} )
+add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} ${getopt_source_files} )
 target_link_libraries( configParserStruct ${PYTHON_LIBRARIES} )
 

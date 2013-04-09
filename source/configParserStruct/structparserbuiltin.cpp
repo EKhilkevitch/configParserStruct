@@ -1,11 +1,12 @@
 
 // =====================================================
 
-#include "configParserStruct/structparservars.h"
-#include "configParserStruct/structparserbuiltin.h"
-
+#define _USE_MATH_DEFINES 1
 #include <cmath>
 #include <iostream>
+
+#include "configParserStruct/structparservars.h"
+#include "configParserStruct/structparserbuiltin.h"
 
 // =====================================================
 
@@ -14,6 +15,13 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   double Arg = getArgument( 1, Program ).number();
   double Result = calculate(Arg);
   return createVariable(Result);
+}
+
+// -----------------------------------------------------
+        
+double configParserStruct::structParserUtil::piBuiltIn::calculate( double ) const 
+{ 
+  return M_PI; 
 }
 
 // =====================================================

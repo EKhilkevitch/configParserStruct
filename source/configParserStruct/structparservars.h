@@ -101,7 +101,7 @@ namespace configParserStruct
         variableValue* clone() const { return new realVariableValue(*this); }
         const std::string string() const { return convertToString(Value); }
         double number() const { return Value; }
-        int integer() const { return Value; }
+        int integer() const { return (int)Value; }
         bool boolean() const { return Value != 0.0; }
     };
     

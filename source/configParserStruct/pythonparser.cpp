@@ -182,7 +182,7 @@ configParserStruct::pythonParser::containerForVariables configParserStruct::pyth
   PyObject *KeysList = PyDict_Keys( Dict );
   Py_ssize_t KeysListSize = PyList_Size( KeysList );
 
-  for ( unsigned Index = 0; Index < KeysListSize; Index++ )
+  for ( int Index = 0; Index < (int)KeysListSize; Index++ )
   {
     PyObject *Key = PyList_GetItem( KeysList, Index );
     PyObject *KeyRepr = PyObject_Repr( Key );
