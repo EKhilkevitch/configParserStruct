@@ -17,6 +17,7 @@ void CPSSPU_pushRealNumberToStack( double Number );
 void CPSSPU_pushIntegerNumberToStack( int Number );
 void CPSSPU_pushStringToStack( const char *String );
 void CPSSPU_pushDictToStack( void );
+void CPSSPU_pushArrayToStack( void );
 
 void CPSSPU_beginOfNewFunctionAssignName( const char *Name );
 void CPSSPU_endOfCurrentFunction( void );
@@ -37,6 +38,7 @@ void CPSSPU_endOfWhileStatement( void );
 
 void CPSSPU_assignVariableValueFromStack( const char *Name );
 void CPSSPU_setDictFieldFromStack( const char *Name );
+void CPSSPU_setArrayElementFromStack( void );
 void CPSSPU_operatorOnStackTop( const char *OperatorType );
 void CPSSPU_finalizeExpressionStack( void );
 

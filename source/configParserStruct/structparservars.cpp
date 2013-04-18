@@ -133,6 +133,48 @@ const std::list<std::string> configParserStruct::structParserUtil::dictVariableV
 }
 
 // =====================================================
+        
+const std::string configParserStruct::structParserUtil::arrayVariableValue::string() const
+{
+  std::string Result;
+  Result += "[ ";
+  for ( std::deque< variable >::const_iterator i = Array.begin(); i != Array.end(); ++i )
+  {
+    if ( i != Array.begin() )
+      Result += ", ";
+    Result += i->string();
+  }
+  Result += " ]";
+  return Result;
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::arrayVariableValue::pushItem( const variable &Value )
+{
+  Array.push_back( Value );
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::arrayVariableValue::getItem( int Index ) const
+{
+  const variable *Pointer = const_cast< arrayVariableValue* >(this)->getItemPointer(Index);
+  if ( Pointer == NULL )
+    return variable();
+  return *Pointer;
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::arrayVariableValue::getItemPointer( int Index )
+{
+  if ( Index >= Array.size() )
+    return NULL;
+  return &Array[Index];
+}
+
+// =====================================================
 
 void configParserStruct::structParserUtil::variablesStack::push( const variable &Var )
 {

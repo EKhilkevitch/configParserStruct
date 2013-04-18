@@ -224,6 +224,16 @@ void configParserStruct::structParserUtil::setDictFieldCommand::execute( program
   Program->pushStackVariable( Dict );
 }
 
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::pushArrayElementCommand::execute( program *Program ) const
+{
+  const variable &Value = Program->popStackVariable();
+  variable Array = Program->popStackVariable();
+  Array.value<arrayVariableValue>().pushItem( Value );
+  Program->pushStackVariable( Array );
+}
+
 // =====================================================
 
 

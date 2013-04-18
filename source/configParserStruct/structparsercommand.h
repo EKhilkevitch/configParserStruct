@@ -413,6 +413,16 @@ namespace configParserStruct
         commandAction* clone() const { return new setDictFieldCommand(Name); }
         std::string toString() const { return "set dict field " + Name; }
     };
+    
+    // -----------------------------------------------------
+
+    class pushArrayElementCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new pushArrayElementCommand(); }
+        std::string toString() const { return "push to array"; }
+    };
 
     // =====================================================
 

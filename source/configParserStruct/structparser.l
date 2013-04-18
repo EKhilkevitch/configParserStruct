@@ -97,6 +97,9 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 "{"             { return '{';               }
 "}"             { return '}';               }
 
+"\["            { return '[';               }
+"\]"            { return ']';               }
+
 "func"          { return TOKEN_FUNCTION;    }
 "return"        { return TOKEN_RETURN;      }
 

@@ -72,6 +72,15 @@ void CPSSPU_pushDictToStack( void )
 
 // -----------------------------------------------------
 
+void CPSSPU_pushArrayToStack( void )
+{
+  variable Variable = arrayVariableValue(); 
+  if ( Program != NULL )
+    Program->pushCommand( pushValueCommand( Variable ) );
+}
+
+// -----------------------------------------------------
+
 void CPSSPU_pushVariableValueToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
@@ -95,6 +104,14 @@ void CPSSPU_setDictFieldFromStack( const char *Name )
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
     Program->pushCommand( setDictFieldCommand( StrName ) );
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_setArrayElementFromStack( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( pushArrayElementCommand() );
 }
 
 // -----------------------------------------------------

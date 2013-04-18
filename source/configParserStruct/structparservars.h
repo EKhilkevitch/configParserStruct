@@ -8,6 +8,7 @@
 #include <vector>
 #include <list>
 #include <typeinfo>
+#include <deque>
 
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/clonablepointer.h"
@@ -174,6 +175,29 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
+    class arrayVariableValue : public variableValue
+    {
+      private:
+        std::deque< variable > Array;
+
+      public:
+        arrayVariableValue() {}
+        variableValue* clone() const { return new arrayVariableValue(*this); }
+        
+        const std::string string() const;
+        double number() const { return Array.size(); }
+        int integer() const { return Array.size(); }
+        bool boolean() const { return ! Array.empty(); }
+
+        void pushItem( const variable &Value );
+        const variable getItem( int Index ) const;
+        variable* getItemPointer( int Index );
+        size_t numberOfItems() const { return Array.size(); }
+        void clear() { Array.clear(); }
+    };
+
+    // -----------------------------------------------------
+    
     class dictVariableValue : public variableValue
     {
       private:
@@ -199,7 +223,7 @@ namespace configParserStruct
         static std::pair<std::string,std::string> splitKey( const std::string &Key );
         static std::string dictSeparator() { return "."; }
     };
-            
+
     // =====================================================
     
     class variablesList
