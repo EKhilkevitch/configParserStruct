@@ -156,7 +156,7 @@ exprAtom       : idName             { CPSSPU_pushVariableValueToStack( $1 ); }
 	       | TOKEN_REALNUMBER   { CPSSPU_pushRealNumberToStack( $1 ); } 
 	       | TOKEN_INTNUMBER    { CPSSPU_pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       { CPSSPU_pushStringToStack( $1 ); }
-               | TOKEN_ID { CPSSPU_prepareToFunctionCall(); } '(' arguments ')' { CPSSPU_callFunctionWithArgsFromStack($1); }
+               | idName { CPSSPU_prepareToFunctionCall(); } '(' arguments ')' { CPSSPU_callFunctionWithArgsFromStack($1); }
 	       | '(' exprSet ')'
 	       ;
 
