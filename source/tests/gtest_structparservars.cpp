@@ -166,13 +166,16 @@ TEST( variable, referenceVariableValue_simple )
 
   EXPECT_EQ( 1, referenceVariableValue("a").getValue(Program).integer() );
   EXPECT_EQ( "xxx", referenceVariableValue("b").getValue(Program).string() );
-  EXPECT_FALSE( referenceVariableValue("x").getValue(Program).isDefined() );
+  EXPECT_FALSE( referenceVariableValue("c").getValue(Program).isDefined() );
 
   referenceVariableValue("a").setValue( &Program, createVariable(2) );
   EXPECT_EQ( 2, referenceVariableValue("a").getValue(Program).integer() );
   
   referenceVariableValue("a").setValue( &Program, createVariable<std::string>("nml") );
   EXPECT_EQ( "nml", referenceVariableValue("a").getValue(Program).string() );
+  
+  referenceVariableValue("c").setValue( &Program, createVariable(13) );
+  EXPECT_EQ( 13, referenceVariableValue("c").getValue(Program).integer() );
 }
 
 // ---------------------------------------------------------
@@ -188,8 +191,8 @@ TEST( variable, referenceVariableValue_dict )
   ItemDict.addItem( "k5", createVariable(10) );
   ItemDict.addItem( "k6", createVariable(20) );
   Dict.addItem( "key3", ItemDict );
-
   Program.setNamedVariable( "Dict", Dict );
+
   EXPECT_EQ( 3, referenceVariableValue("Dict").getValue(Program).integer() );
   
   referenceVariableValue KeyRef("Dict");
@@ -198,6 +201,14 @@ TEST( variable, referenceVariableValue_dict )
   
   KeyRef.pushAttribute( createVariable<std::string>("k6") );
   EXPECT_EQ( 20, KeyRef.getValue(Program).integer() );
+
+  Program.setNamedVariable( "d", Dict );
+  EXPECT_EQ( 3, referenceVariableValue("d").getValue(Program).integer() );
+  referenceVariableValue("d").setValue( &Program, createVariable(13) );
+  EXPECT_EQ( 13, referenceVariableValue("d").getValue(Program).integer() );
+
+  KeyRef.setValue( &Program, createVariable(30) );
+  EXPECT_EQ( 30, KeyRef.getValue(Program).integer() );
 }
 
 // =========================================================
