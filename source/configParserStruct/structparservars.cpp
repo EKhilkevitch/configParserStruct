@@ -9,9 +9,46 @@
 
 // =====================================================
 
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variableValue::getValueByReference( const variable &Reference, unsigned AttrLevel ) const
+{
+  if ( AttrLevel == Reference.value<referenceVariableValue>().numberOfAttributes() )
+    return *this;
+  return variable();
+}
+
+// =====================================================
+
 bool configParserStruct::structParserUtil::variable::isDefined() const 
 { 
   return typeid(*Value) != typeid(undefVariableValue); 
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variable::getValueByReference( const variable &Reference, unsigned AttrLevel ) const
+{
+  return Value->getValueByReference(Reference,AttrLevel); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::variable::setValueByReference( const variable &Reference, const variable &Value, unsigned AttrLevel )
+{
+  const referenceVariableValue &RefValue = Reference.value<referenceVariableValue>();
+
+  if ( AttrLevel == RefValue.numberOfAttributes() )
+  {
+    *this = Value;
+    return;
+  }
+
+  if ( isValueDerivedFrom<composerVariableValue>() && AttrLevel < RefValue.numberOfAttributes() )
+  {
+    value<composerVariableValue>().setValueByReference( Reference, Value, AttrLevel + 1 );
+    return;
+  }
+    
+  *this = undefVariableValue();
 }
 
 // =====================================================
@@ -34,6 +71,79 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getVariable( const std::string &Name, const program &Program ) const
 {
   return Program.getNamedVariable( Name );
+}
+
+// =====================================================
+
+const std::string configParserStruct::structParserUtil::referenceVariableValue::string() const
+{
+  std::string Result;
+  Result += Name;
+  Result += " << ";
+  for ( std::vector< variable >::const_iterator i = Attributes.begin(); i != Attributes.end(); ++i )
+  {
+    if ( i != Attributes.begin() )
+      Result += ", ";
+    Result += i->string();
+  }
+  Result += " >>";
+  return Result;
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::referenceVariableValue::getValue( const program &Program ) const
+{
+  return Program.getNamedVariable( Name ).getValueByReference( *this );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::referenceVariableValue::setValue( program *Program, const variable &Value ) const
+{
+  assert( Program != NULL );
+
+  variable *const Variable = Program->getNamedVariablePointer( Name );
+  if ( Variable == NULL )
+  {
+    Program->setNamedVariable( Name, Value );
+  } else {
+    Variable->setValueByReference( *this, Value );
+  }
+}
+
+// =====================================================
+        
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::composerVariableValue::getValueByReference( const variable &Reference, unsigned AttrLevel ) const
+{
+  const referenceVariableValue &RefValue = Reference.value<referenceVariableValue>();
+
+  if ( AttrLevel > RefValue.numberOfAttributes() )
+    return variable();
+
+  if ( AttrLevel == RefValue.numberOfAttributes() )
+    return *this;
+
+  const variable &Key = RefValue.attribute( AttrLevel );
+  return getItemByVariableKey( Key ).getValueByReference( Reference, AttrLevel + 1 );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::composerVariableValue::setValueByReference( const variable &Reference, const variable &Value, unsigned AttrLevel )
+{
+  const referenceVariableValue &RefValue = Reference.value<referenceVariableValue>();
+
+  assert( AttrLevel < RefValue.numberOfAttributes() );
+
+  const variable &Key = RefValue.attribute( AttrLevel );
+  variable *Item = getItemPointerByVariableKey( Key );
+  if ( Item == NULL )
+  {
+    addItemByVariableKey( Key, Value );
+  } else {
+    Item->setValueByReference( Reference, Value, AttrLevel + 1 );
+  }
 }
 
 // =====================================================
@@ -229,21 +339,31 @@ void configParserStruct::structParserUtil::variablesListStack::set( const std::s
 
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesListStack::get( const std::string &Name ) const
 {
-  assert( ! Stack.empty() );
+  const variable *Variable = const_cast< variablesListStack* >(this)->getPointer( Name );
+  if ( Variable == NULL )
+    return variable();
+  return *Variable;
+}
 
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::variablesListStack::getPointer( const std::string &Name )
+{
+  assert( ! Stack.empty() );
+  
   const std::string &GlobalName = globalName(Name);
 
   if ( GlobalName.empty() )
   {
-    for ( varListStack::const_reverse_iterator s = Stack.rbegin(); s != Stack.rend(); ++s )
+    for ( varListStack::reverse_iterator s = Stack.rbegin(); s != Stack.rend(); ++s )
     {
-      variable Variable = s->get( Name );
-      if ( Variable.isDefined() )
+      variable *Variable = s->getPointer( Name );
+      if ( Variable != NULL )
         return Variable;
     }
-    return variable();
+    return NULL;
   } else {
-    return Stack.front().get( GlobalName );
+    return Stack.front().getPointer( GlobalName );
   }
 }
 

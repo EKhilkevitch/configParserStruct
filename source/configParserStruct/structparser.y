@@ -146,7 +146,7 @@ exprMul        : exprMul '*' exprSign    { CPSSPU_operatorOnStackTop("*"); }
 	       | exprSign                
 	       ;
 
-exprSign       : exprAtom              
+exprSign       : exprAtom
 	       | '-' { CPSSPU_pushRealNumberToStack(0); } exprAtom { CPSSPU_operatorOnStackTop("-"); }
 	       | '+' exprAtom          
                | '!' exprSign          { CPSSPU_operatorOnStackTop("!"); }

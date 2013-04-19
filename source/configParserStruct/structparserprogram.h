@@ -50,6 +50,7 @@ namespace configParserStruct
         size_t functionLevel() const { return Variables.size(); }
 
         const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
+        variable* getNamedVariablePointer( const std::string &Name ) { return Variables.getPointer(Name); }
         const variable getNamedVariableFromTopOfStack( const std::string &Name ) const { return Variables.getFromTopOfStack(Name); }
         void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
         std::list<std::string> variableNames() const { return Variables.listOfNamesInAllStack(); }

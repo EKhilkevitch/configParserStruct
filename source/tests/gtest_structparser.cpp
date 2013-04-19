@@ -140,8 +140,10 @@ TEST( structParser, listOfVariablesStruct )
 
   std::set<std::string> List = Parser.listOfVariablesStruct();
 
+#if 0
   for ( std::set<std::string>::iterator i = List.begin(); i != List.end(); ++i )
     std::cout << *i << " " << std::endl;
+#endif
 
   ASSERT_EQ( 2, List.size() );
   ASSERT_EQ( 0, List.count("x") );

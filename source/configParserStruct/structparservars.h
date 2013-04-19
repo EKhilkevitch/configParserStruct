@@ -23,6 +23,7 @@ namespace configParserStruct
     class program;
     class variable;
     class undefVariableValue;
+    class referenceVariableValue;
     
     // =====================================================
    
@@ -31,10 +32,12 @@ namespace configParserStruct
       public:
         virtual ~variableValue() {}
         virtual variableValue* clone() const = 0;
+        virtual void set( const variableValue& Value ) = 0;
         virtual const std::string string() const = 0;
         virtual double number() const = 0;
         virtual int integer() const = 0;
         virtual bool boolean() const = 0;
+        virtual const variable getValueByReference( const variable &Reference, unsigned AttrLevel = 0 ) const;
     };
     
     // =====================================================
@@ -55,6 +58,9 @@ namespace configParserStruct
         int integer() const { return Value->integer(); }
         bool boolean() const { return Value->boolean(); }
         bool isDefined() const;
+       
+        const variable getValueByReference( const variable &Reference, unsigned AttrLevel = 0 ) const;
+        void setValueByReference( const variable &Reference, const variable &Value, unsigned AttrLevel = 0 );
         
         const std::type_info& valueType() const { return typeid(*Value); }
         template <class VarT> bool isValueDerivedFrom() const { return Value.isDerivedFrom<VarT>(); }
@@ -85,6 +91,8 @@ namespace configParserStruct
         undefVariableValue() {}
         
         variableValue* clone() const { return new undefVariableValue(*this); }
+        void set( const variableValue& ) {}
+
         const std::string string() const { return std::string(); }
         double number() const { return 0; }
         int integer() const { return 0; }
@@ -97,9 +105,13 @@ namespace configParserStruct
     {
       private:
         double Value;
+
       public:
         realVariableValue( double V ) : Value(V) {}
+        
         variableValue* clone() const { return new realVariableValue(*this); }
+        void set( const variableValue& V ) { this->Value = V.number(); }
+        
         const std::string string() const { return convertToString(Value); }
         double number() const { return Value; }
         int integer() const { return (int)Value; }
@@ -112,9 +124,13 @@ namespace configParserStruct
     {
       private:
         int Value;
+
       public:
         integerVariableValue( int V ) : Value(V) {}
+        
         variableValue* clone() const { return new integerVariableValue(*this); }
+        void set( const variableValue& V ) { this->Value = V.integer(); }
+        
         const std::string string() const { return convertToString(Value); }
         double number() const { return Value; }
         int integer() const { return Value; }
@@ -129,7 +145,10 @@ namespace configParserStruct
         std::string Value;
       public:
         stringVariableValue( const std::string &V ) : Value(V) {}
+        
         variableValue* clone() const { return new stringVariableValue(*this); }
+        void set( const variableValue& V ) { this->Value = V.string(); }
+        
         const std::string string() const { return Value; }
         double number() const { return convertFromString<double>(Value); }
         int integer() const { return convertFromString<int>(Value); }
@@ -145,12 +164,42 @@ namespace configParserStruct
 
       public:
         commandAddressVariableValue( unsigned Index ) : CommandIndex(Index) {}
+        
         variableValue* clone() const { return new commandAddressVariableValue(*this); }
+        void set( const variableValue& V ) { this->CommandIndex = V.integer(); }
+        
         const std::string string() const { return convertToString(CommandIndex); }
         double number() const { return CommandIndex; }
         int integer() const { return CommandIndex; }
         bool boolean() const { return true; }
         unsigned address() const { return CommandIndex; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class referenceVariableValue : public variableValue
+    {
+      private:
+        std::string Name;
+        std::vector< variable > Attributes;
+
+      public:
+        referenceVariableValue( const std::string &N ) : Name(N) {}
+        
+        variableValue* clone() const { return new referenceVariableValue(*this); }
+        void set( const variableValue& V ) { *this = dynamic_cast<const referenceVariableValue&>(V); }
+        
+        const std::string string() const;
+        double number() const { return 0; }
+        int integer() const { return 0; }
+        bool boolean() const { return true; }
+
+        void pushAttribute( const variable &Var ) { Attributes.push_back(Var); }
+        const variable& attribute( unsigned Index ) const { return Attributes.at(Index); }
+        size_t numberOfAttributes() const { return Attributes.size(); }
+
+        const variable getValue( const program &Program ) const;
+        void setValue( program *Program, const variable &Value ) const;
     };
     
     // -----------------------------------------------------
@@ -166,6 +215,8 @@ namespace configParserStruct
         virtual const variable execute( const program &Program ) const = 0;
         
         variableValue* clone() const = 0;
+        void set( const variableValue& ) {  }
+
         const std::string string() const = 0;
 
         double number() const { return 0; }
@@ -173,6 +224,20 @@ namespace configParserStruct
         bool boolean() const { return true; }
     };
     
+    // -----------------------------------------------------
+   
+    class composerVariableValue : public variableValue
+    {
+      public:
+        virtual variable* getItemPointerByVariableKey( const variable &Key ) = 0;
+        virtual const variable getItemByVariableKey( const variable &Key ) const = 0;
+        virtual void addItemByVariableKey( const variable &Key, const variable &Value ) = 0;
+
+      public:
+        const variable getValueByReference( const variable &Reference, unsigned AttrLevel = 0 ) const;
+        void setValueByReference( const variable &Reference, const variable &Value, unsigned AttrLevel = 0 );
+    };
+
     // -----------------------------------------------------
     
     class arrayVariableValue : public variableValue
@@ -182,7 +247,9 @@ namespace configParserStruct
 
       public:
         arrayVariableValue() {}
+
         variableValue* clone() const { return new arrayVariableValue(*this); }
+        void set( const variableValue& V ) { *this = dynamic_cast<const arrayVariableValue&>(V); }
         
         const std::string string() const;
         double number() const { return Array.size(); }
@@ -198,14 +265,16 @@ namespace configParserStruct
 
     // -----------------------------------------------------
     
-    class dictVariableValue : public variableValue
+    class dictVariableValue : public composerVariableValue
     {
       private:
         std::map< std::string, variable > Dict;
 
       public:
         dictVariableValue() {}
+        
         variableValue* clone() const { return new dictVariableValue(*this); }
+        void set( const variableValue& V ) { *this = dynamic_cast<const dictVariableValue&>(V); }
 
         const std::string string() const;
         double number() const { return Dict.size(); }
@@ -219,7 +288,11 @@ namespace configParserStruct
         void clear() { Dict.clear(); }
         const std::list<std::string> listOfKeys() const;
         const std::list<std::string> listOfKeysIncludeSubdict() const;
-
+        
+        variable* getItemPointerByVariableKey( const variable &Key ) { return getItemPointer( Key.string() ); }
+        const variable getItemByVariableKey( const variable &Key ) const { return getItem( Key.string() ); }
+        void addItemByVariableKey( const variable &Key, const variable &Value ) { addItem( Key.string(), Value ); }
+        
         static std::pair<std::string,std::string> splitKey( const std::string &Key );
         static std::string dictSeparator() { return "."; }
     };
@@ -236,6 +309,7 @@ namespace configParserStruct
 
         void set( const std::string &Name, const variable &Var ) { Dict.addItem( Name, Var ); }
         const variable get( const std::string &Name ) const { return Dict.getItem( Name ); }
+        variable* getPointer( const std::string &Name ) { return Dict.getItemPointer( Name ); }
 
         std::list<std::string> listOfNames() const { return Dict.listOfKeys(); }
         std::list<std::string> listOfNamesIncludeSubdict() const { return Dict.listOfKeysIncludeSubdict(); }
@@ -258,6 +332,7 @@ namespace configParserStruct
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
+        variable* getPointer( const std::string &Name );
         const variable getFromTopOfStack( const std::string &Name ) const { return Stack.back().get(Name); }
 
         void pushNewList() { Stack.push_back( variablesList() ); }

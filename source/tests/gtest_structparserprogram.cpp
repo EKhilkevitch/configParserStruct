@@ -215,13 +215,15 @@ TEST( program, opEq )
 TEST( program, array )
 {
   program Program;
-  Program.rebuildAndExecute( "a = 3; b = [ 4, 2+1, a-1 ]; c = b[0]; d = b[2]; e = b[3];" );
+  Program.rebuildAndExecute( "a = 3; b1 = [ 4, 2+1, a-1 ];\n"
+    "b2 = b1; c = b1[0]; d = b1[1+2/2]; e = b1[3]; b2[1] = 10;" );
   
   ASSERT_EQ( -1, Program.errorLine() );
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( 3.0, Program.getNamedVariable("a").number(), 1e-5 );
-  EXPECT_EQ( "[ 4, 3, 2 ]", Program.getNamedVariable("b").string() );
+  EXPECT_EQ( "[ 4, 3, 2 ]", Program.getNamedVariable("b1").string() );
+  EXPECT_EQ( "[ 4, 10, 2 ]", Program.getNamedVariable("b2").string() );
   EXPECT_EQ( 4, Program.getNamedVariable("c").integer() );
   EXPECT_EQ( 2, Program.getNamedVariable("d").integer() );
   EXPECT_FALSE( Program.getNamedVariable("e").isDefined() );
