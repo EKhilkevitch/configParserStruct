@@ -156,6 +156,9 @@ TEST( command, assignVariableCommand )
 
   ASSERT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 3, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getLastExpressionReuslt().number(), 1e-5 );
+
+  assignLastExpressionCommand().execute( &Program );
   EXPECT_NEAR( 3, Program.getLastExpressionReuslt().number(), 1e-5 );
 }
 
