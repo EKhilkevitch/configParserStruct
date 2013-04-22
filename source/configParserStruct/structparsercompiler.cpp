@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cassert>
+#include <iostream>
   
 extern "C" int CPSSPU_lexCurrentLineNumber();
 
@@ -81,20 +82,35 @@ void CPSSPU_pushArrayToStack( void )
 
 // -----------------------------------------------------
 
-void CPSSPU_pushVariableValueToStack( const char *Name )
+void CPSSPU_pushVariableValueToStack( void )
 {
-  std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( pushVariableCommand( StrName ) );
+    Program->pushCommand( pushRefValueCommand() );
 }
 
 // -----------------------------------------------------
 
-void CPSSPU_assignVariableValueFromStack( const char *Name )
+void CPSSPU_replaceReferenceToValueOnStack( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( replaceRefToValueCommand() );
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_pushVariableReferenceToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( assignVariableCommand( StrName ) );
+    Program->pushCommand( pushValueCommand( referenceVariableValue(StrName) ) );
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_assignVariableValueFromStack( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( assignVariableCommand() );
 }
 
 // -----------------------------------------------------
@@ -148,19 +164,23 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
 
 void CPSSPU_finalizeExpressionStack( void )
 {
-  CPSSPU_assignVariableValueFromStack( program::lastResultVariableName().c_str() );
+  if ( Program != NULL )
+    Program->pushCommand( assignLastExpressionCommand() );
   CPSSPU_popValueFromStack();
 }
 
 // -----------------------------------------------------
 
-void CPSSPU_beginOfNewFunctionAssignName( const char *Name )
+void CPSSPU_beginOfNewFunctionAssignName( void )
 {
   if ( Program == NULL )
     return;
-  std::string StrName = ( Name == NULL ) ? "" : Name;
-  unsigned Index = Program->pushCommand( markerCommand() );
-  Program->setNamedVariable( StrName, commandAddressVariableValue( Index+1 ) );
+  unsigned Index = Program->numberOfCommands();
+  Program->pushCommand( pushValueCommand( commandAddressVariableValue( Index+4 ) ) );
+  Program->pushCommand( assignVariableCommand() );
+  Program->pushCommand( popCommand() );
+  Program->pushCommand( markerCommand() );
+//  Program->setNamedVariable( StrName, commandAddressVariableValue( Index+1 ) );
 }
 
 // -----------------------------------------------------

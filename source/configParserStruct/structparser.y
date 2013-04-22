@@ -60,8 +60,6 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_ELSE
 %token TOKEN_WHILE
 
-%type  <IdName>    idName
-
 %right '='
 %right '?' ':'
 
@@ -82,19 +80,19 @@ statementSeq   : statementSeq statement
 block          : '{' statementSeq '}'
                ;
 
-statement      : expression delimiter { CPSSPU_finalizeExpressionStack(); } 
-	       | return
+statement      : delimiter
                | function
+               | expression delimiter { CPSSPU_finalizeExpressionStack(); }
+	       | return
                | block
                | ifStatement 
                | whileStatement
-               | delimiter
 	       ;
 
 return         : TOKEN_RETURN expression delimiter { CPSSPU_returnFromCurrentFunction(); }
                ;
 
-function       : idName '=' TOKEN_FUNCTION { CPSSPU_beginOfNewFunctionAssignName($1); } '{' program '}' { CPSSPU_endOfCurrentFunction(); }
+function       : idName '=' TOKEN_FUNCTION { CPSSPU_beginOfNewFunctionAssignName(); } '{' program '}' { CPSSPU_endOfCurrentFunction(); }
                ;
 
 ifStatement    : TOKEN_IF '(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block elseStatement
@@ -108,15 +106,15 @@ whileStatement : TOKEN_WHILE { CPSSPU_prepareForWhileStatement(); } '(' exprSet 
                ;
 
 expression     : exprSet    
-               | idName '=' { CPSSPU_pushDictToStack();  } '{' structFields '}' { CPSSPU_assignVariableValueFromStack($1); }
-               | idName '=' { CPSSPU_pushArrayToStack(); } '[' arrayElements ']'{ CPSSPU_assignVariableValueFromStack($1); }
+               | idName '=' { CPSSPU_pushDictToStack();  } '{' structFields '}' { CPSSPU_assignVariableValueFromStack(); }
+               | idName '=' { CPSSPU_pushArrayToStack(); } '[' arrayElements ']'{ CPSSPU_assignVariableValueFromStack(); }
 	       ;
 
-exprSet        : idName '=' exprSet { CPSSPU_assignVariableValueFromStack($1); }
-               | idName { CPSSPU_pushVariableValueToStack($1); } TOKEN_ADDEQ exprSet { CPSSPU_operatorOnStackTop("+"); CPSSPU_assignVariableValueFromStack($1); }
-               | idName { CPSSPU_pushVariableValueToStack($1); } TOKEN_SUBEQ exprSet { CPSSPU_operatorOnStackTop("-"); CPSSPU_assignVariableValueFromStack($1); }
-               | idName { CPSSPU_pushVariableValueToStack($1); } TOKEN_MULEQ exprSet { CPSSPU_operatorOnStackTop("*"); CPSSPU_assignVariableValueFromStack($1); }
-               | idName { CPSSPU_pushVariableValueToStack($1); } TOKEN_DIVEQ exprSet { CPSSPU_operatorOnStackTop("/"); CPSSPU_assignVariableValueFromStack($1); }
+exprSet        : idName '=' exprSet { CPSSPU_assignVariableValueFromStack(); }
+               | idName { CPSSPU_pushVariableValueToStack(); } TOKEN_ADDEQ exprSet { CPSSPU_operatorOnStackTop("+"); CPSSPU_assignVariableValueFromStack(); }
+               | idName { CPSSPU_pushVariableValueToStack(); } TOKEN_SUBEQ exprSet { CPSSPU_operatorOnStackTop("-"); CPSSPU_assignVariableValueFromStack(); }
+               | idName { CPSSPU_pushVariableValueToStack(); } TOKEN_MULEQ exprSet { CPSSPU_operatorOnStackTop("*"); CPSSPU_assignVariableValueFromStack(); }
+               | idName { CPSSPU_pushVariableValueToStack(); } TOKEN_DIVEQ exprSet { CPSSPU_operatorOnStackTop("/"); CPSSPU_assignVariableValueFromStack(); }
                | exprThr 
                ;
 
@@ -152,13 +150,16 @@ exprSign       : exprAtom
                | '!' exprSign          { CPSSPU_operatorOnStackTop("!"); }
 	       ;
 
-exprAtom       : idName             { CPSSPU_pushVariableValueToStack( $1 ); } 
-	       | TOKEN_REALNUMBER   { CPSSPU_pushRealNumberToStack( $1 ); } 
+exprAtom       : idName             { CPSSPU_replaceReferenceToValueOnStack(); } 
+	       | TOKEN_REALNUMBER   { CPSSPU_pushRealNumberToStack($1); } 
 	       | TOKEN_INTNUMBER    { CPSSPU_pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       { CPSSPU_pushStringToStack( $1 ); }
-               | idName { CPSSPU_prepareToFunctionCall(); } '(' arguments ')' { CPSSPU_callFunctionWithArgsFromStack($1); }
+               | functionCall
 	       | '(' exprSet ')'
 	       ;
+
+functionCall   : TOKEN_ID           { CPSSPU_prepareToFunctionCall(); } '(' arguments ')' { CPSSPU_callFunctionWithArgsFromStack($1); }
+               ;
 
 arguments      : argumentsList
                |        
@@ -185,9 +186,9 @@ structField    : '.' TOKEN_ID '=' exprSet { CPSSPU_setDictFieldFromStack($2); }
                | '.' TOKEN_ID '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_setDictFieldFromStack($2); }
                ;
 
-idName         : idName '.' TOKEN_ID     { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); strncat( $$, ".", 2 ); strncat( $$, $3, STRUCTPARSER_MAX_ID_LENGTH/2-1 ); }
-               | TOKEN_ID                { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH ); }
-               | TOKEN_ARGUMENT          { strncpy( $$, $1, STRUCTPARSER_MAX_ID_LENGTH ); }
+idName         : idName '.' TOKEN_ID     {  }
+               | TOKEN_ID                { CPSSPU_pushVariableReferenceToStack( $1 ); }
+               | TOKEN_ARGUMENT          { CPSSPU_pushVariableReferenceToStack( $1 ); }
                ;
 
 %%

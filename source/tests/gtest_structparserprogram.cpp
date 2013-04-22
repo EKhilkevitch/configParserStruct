@@ -37,11 +37,36 @@ TEST( program, number )
   Program.build( "1;" );
 
   EXPECT_TRUE( Program.numberOfCommands() > 0 );
-  
+ 
   Program.execute();
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_EQ( -1, Program.errorLine() );
  // EXPECT_EQ( 1, Program.variableNames().size() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, assign )
+{
+  program Program;
+  Program.build( "x = 1;" );
+
+  //std::cout << Program.toString() << std::endl;
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_TRUE( Program.numberOfCommands() > 0 );
+ 
+  Program.execute();
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 1, Program.getNamedVariable("x").integer() );
+
+
+  Program.rebuildAndExecute( "y = 3 + 2;" );
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( 0, Program.getNamedVariable("x").integer() );
+  EXPECT_EQ( 5, Program.getNamedVariable("y").integer() );
 }
 
 // ---------------------------------------------------------
@@ -52,6 +77,7 @@ TEST( program, clear )
   Program.build( "x = 1;" );
   Program.execute();
   
+  ASSERT_EQ( -1, Program.errorLine() );
   EXPECT_EQ( 0, Program.stackSize() );
  // EXPECT_EQ( 2, Program.variableNames().size() );
   EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
@@ -72,15 +98,14 @@ TEST( program, numericVariable )
   Program.execute();
   
   EXPECT_EQ( 0, Program.stackSize() );
- // EXPECT_EQ( 2, Program.variableNames().size() );
   EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
 
   OK = Program.rebuildAndExecute( "x = y + 1;" );
   ASSERT_TRUE( OK );
+  
   EXPECT_EQ( 0, Program.stackSize() );
- // EXPECT_EQ( 2, Program.variableNames().size() );
   EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
-  EXPECT_NEAR( 0,   Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("y").number(), 1e-5 );
   
   OK = Program.rebuildAndExecute( "x = 3.3; y = 4e2; z = 0.01;\n" );
   ASSERT_TRUE( OK );
@@ -212,7 +237,7 @@ TEST( program, opEq )
 
 // ---------------------------------------------------------
 
-TEST( program, array )
+TEST( program, DISABLED_array )
 {
   program Program;
   Program.rebuildAndExecute( "a = 3; b1 = [ 4, 2+1, a-1 ];\n"
@@ -381,7 +406,7 @@ TEST( program, functionDeclaration )
   OK = Program.rebuildAndExecute( "f1 = func { x = 1; };" );
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
-
+  
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
   
@@ -395,9 +420,12 @@ TEST( program, functionCall )
   program Program;
   bool OK;
 
-  OK = Program.rebuildAndExecute( "f1 = func { x = 1; return x+2; }; y = f1(); z = 2*f1() + 3; a = 1;" );
+  OK = Program.build( "f1 = func { x = 1; return x+2; }; y = f1(); z = 2*f1() + 3; a = 1;" );
+//  std::cout << Program.toString() << std::endl;
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
+
+  Program.execute();
 
   //std::cout << Program.toString() << std::endl;
 

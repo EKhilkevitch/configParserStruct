@@ -392,13 +392,40 @@ namespace configParserStruct
     
     class assignVariableCommand : public commandAction
     {
-      private:
-        std::string Name;
       public:
-        assignVariableCommand( const std::string &N ) : Name(N) {}
         void execute( program *Program ) const;
-        commandAction* clone() const { return new assignVariableCommand(Name); }
-        std::string toString() const { return "assign variable " + Name; }
+        commandAction* clone() const { return new assignVariableCommand(); }
+        std::string toString() const { return "assign"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class assignLastExpressionCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new assignLastExpressionCommand(); }
+        std::string toString() const { return "assign last"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class pushRefValueCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new pushRefValueCommand(); }
+        std::string toString() const { return "push ref value"; }
+    };
+    
+    // -----------------------------------------------------
+
+    class replaceRefToValueCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new replaceRefToValueCommand(); }
+        std::string toString() const { return "replace ref"; }
     };
     
     // -----------------------------------------------------

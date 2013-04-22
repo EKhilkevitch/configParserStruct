@@ -210,8 +210,39 @@ void configParserStruct::structParserUtil::boolNotCommand::execute( program *Pro
 
 void configParserStruct::structParserUtil::assignVariableCommand::execute( program *Program ) const
 {
+  const variable Value = Program->popStackVariable();
+  const variable Reference = Program->popStackVariable();
+
+  Reference.value<referenceVariableValue>().setValue( Program, Value );
+  
+  Program->setNamedVariable( program::lastResultVariableName().c_str(), Value );
+  Program->pushStackVariable( Value );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::assignLastExpressionCommand::execute( program *Program ) const
+{
   const variable &Value = Program->topStackVariable();
-  Program->setNamedVariable( Name, Value );
+  Program->setNamedVariable( program::lastResultVariableName().c_str(), Value );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::pushRefValueCommand::execute( program *Program ) const
+{
+  const variable Reference = Program->topStackVariable();
+  variable Value = Reference.value<referenceVariableValue>().getValue( *Program );
+  Program->pushStackVariable( Value );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::replaceRefToValueCommand::execute( program *Program ) const
+{
+  const variable Reference = Program->popStackVariable();
+  variable Value = Reference.value<referenceVariableValue>().getValue( *Program );
+  Program->pushStackVariable( Value );
 }
 
 // -----------------------------------------------------

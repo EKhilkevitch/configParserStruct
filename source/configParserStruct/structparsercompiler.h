@@ -19,14 +19,16 @@ void CPSSPU_pushStringToStack( const char *String );
 void CPSSPU_pushDictToStack( void );
 void CPSSPU_pushArrayToStack( void );
 
-void CPSSPU_beginOfNewFunctionAssignName( const char *Name );
+void CPSSPU_beginOfNewFunctionAssignName( void );
 void CPSSPU_endOfCurrentFunction( void );
 void CPSSPU_returnFromCurrentFunction( void );
 
 void CPSSPU_prepareToFunctionCall( void );
 void CPSSPU_pushFunctionArgument( void );
 void CPSSPU_callFunctionWithArgsFromStack( const char *Name );
-void CPSSPU_pushVariableValueToStack( const char *Name );
+void CPSSPU_pushVariableValueToStack( void );
+void CPSSPU_pushVariableReferenceToStack( const char *Name );
+void CPSSPU_replaceReferenceToValueOnStack( void );
 
 void CPSSPU_beginOfIfStatement( void );
 void CPSSPU_beginOfElseStatement( void );
@@ -36,7 +38,7 @@ void CPSSPU_prepareForWhileStatement( void );
 void CPSSPU_beginOfWhileStatement( void );
 void CPSSPU_endOfWhileStatement( void );
 
-void CPSSPU_assignVariableValueFromStack( const char *Name );
+void CPSSPU_assignVariableValueFromStack( void );
 void CPSSPU_setDictFieldFromStack( const char *Name );
 void CPSSPU_setArrayElementFromStack( void );
 void CPSSPU_operatorOnStackTop( const char *OperatorType );
