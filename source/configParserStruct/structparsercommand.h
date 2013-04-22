@@ -427,6 +427,19 @@ namespace configParserStruct
         commandAction* clone() const { return new replaceRefToValueCommand(); }
         std::string toString() const { return "replace ref"; }
     };
+
+    // -----------------------------------------------------
+    
+    class setRefAttributeCommand : public commandAction
+    {
+      private:
+        std::string Name;
+      public:
+        setRefAttributeCommand( const std::string &N ) : Name(N) {}
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new setRefAttributeCommand(*this); }
+        std::string toString() const { return "set ref attr " + Name; }
+    };
     
     // -----------------------------------------------------
     

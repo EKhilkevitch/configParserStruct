@@ -43,12 +43,27 @@ void configParserStruct::structParserUtil::variable::setValueByReference( const 
     return;
   }
 
-  if ( isValueDerivedFrom<composerVariableValue>() && AttrLevel < RefValue.numberOfAttributes() )
+  if ( AttrLevel < RefValue.numberOfAttributes() )
   {
-    value<composerVariableValue>().setValueByReference( Reference, Value, AttrLevel );
+    if ( ! isValueDerivedFrom<composerVariableValue>() )
+    {
+      if ( RefValue.attribute(AttrLevel).valueType() == typeid(stringVariableValue) )
+        *this = dictVariableValue();
+#if 0
+      if ( Reference.attribute(AttrLevel).valueType() == typeid(integerVariableValue) )
+        *this = arrayVariableValue();
+      if ( Reference.attribute(AttrLevel).valueType() == typeid(realVariableValue) )
+        *this = arrayVariableValue();
+#endif
+    }
+
+    if ( isValueDerivedFrom<composerVariableValue>() )
+      value<composerVariableValue>().setValueByReference( Reference, Value, AttrLevel );
+    else
+      *this = undefVariableValue();
     return;
   }
-    
+
   *this = undefVariableValue();
 }
 
@@ -142,10 +157,11 @@ void configParserStruct::structParserUtil::composerVariableValue::setValueByRefe
 //  std::cerr << "setValueByReference: " << Value.string() << " " << Reference.string() << " " << AttrLevel << " " << Key.string() << " " << Item << std::endl;
   if ( Item == NULL )
   {
-    addItemByVariableKey( Key, Value );
-  } else {
-    Item->setValueByReference( Reference, Value, AttrLevel + 1 );
+    addItemByVariableKey( Key, variable() );
+    Item = getItemPointerByVariableKey( Key );
+    assert( Item != NULL );
   }
+  Item->setValueByReference( Reference, Value, AttrLevel + 1 );
 }
 
 // =====================================================

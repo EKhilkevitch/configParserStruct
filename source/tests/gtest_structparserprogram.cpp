@@ -289,7 +289,8 @@ TEST( program, dictFieldAssign )
   program Program;
   Program.build( "a = { .x = 1, .y = 2 }; a.x = 3; b.z = 4; c = a.x + 2;" );
   Program.execute();
-  //std::cerr << Program.toString() << std::endl;
+ 
+  std::cerr << Program.toString() << std::endl;
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_EQ( "{ .x = 3, .y = 2 }", Program.getNamedVariable("a").string() );

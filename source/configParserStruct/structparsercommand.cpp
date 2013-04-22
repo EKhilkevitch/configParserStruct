@@ -246,6 +246,15 @@ void configParserStruct::structParserUtil::replaceRefToValueCommand::execute( pr
 }
 
 // -----------------------------------------------------
+
+void configParserStruct::structParserUtil::setRefAttributeCommand::execute( program *Program ) const
+{
+  variable Reference = Program->popStackVariable();
+  Reference.value<referenceVariableValue>().pushAttribute( createVariable(Name) );
+  Program->pushStackVariable( Reference );
+}
+
+// -----------------------------------------------------
         
 void configParserStruct::structParserUtil::setDictFieldCommand::execute( program *Program ) const
 {
