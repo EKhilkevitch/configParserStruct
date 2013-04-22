@@ -4,6 +4,7 @@
 #include "configParserStruct/structparsercommand.h"
 #include "configParserStruct/structparserprogram.h"
 
+#include <iostream>
 #include <stdexcept>
 #include <cassert>
 
@@ -212,10 +213,7 @@ void configParserStruct::structParserUtil::assignVariableCommand::execute( progr
 {
   const variable Value = Program->popStackVariable();
   const variable Reference = Program->popStackVariable();
-
   Reference.value<referenceVariableValue>().setValue( Program, Value );
-  
-  Program->setNamedVariable( program::lastResultVariableName().c_str(), Value );
   Program->pushStackVariable( Value );
 }
 
@@ -224,7 +222,7 @@ void configParserStruct::structParserUtil::assignVariableCommand::execute( progr
 void configParserStruct::structParserUtil::assignLastExpressionCommand::execute( program *Program ) const
 {
   const variable &Value = Program->topStackVariable();
-  Program->setNamedVariable( program::lastResultVariableName().c_str(), Value );
+  Program->setNamedVariable( program::lastResultVariableName(), Value );
 }
 
 // -----------------------------------------------------

@@ -119,13 +119,14 @@ void configParserStruct::structParserUtil::referenceVariableValue::setValue( pro
 {
   assert( Program != NULL );
 
-  variable *const Variable = Program->getNamedVariablePointer( Name );
+  variable *Variable = Program->getNamedVariablePointer( Name );
   if ( Variable == NULL )
   {
-    Program->setNamedVariable( Name, Value );
-  } else {
-    Variable->setValueByReference( *this, Value );
+    Program->setNamedVariable( Name, variable() );
+    Variable = Program->getNamedVariablePointer( Name );
   }
+    
+  Variable->setValueByReference( *this, Value );
 }
 
 // =====================================================
