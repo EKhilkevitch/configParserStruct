@@ -49,12 +49,10 @@ void configParserStruct::structParserUtil::variable::setValueByReference( const 
     {
       if ( RefValue.attribute(AttrLevel).valueType() == typeid(stringVariableValue) )
         *this = dictVariableValue();
-#if 0
-      if ( Reference.attribute(AttrLevel).valueType() == typeid(integerVariableValue) )
+      if ( RefValue.attribute(AttrLevel).valueType() == typeid(integerVariableValue) )
         *this = arrayVariableValue();
-      if ( Reference.attribute(AttrLevel).valueType() == typeid(realVariableValue) )
+      if ( RefValue.attribute(AttrLevel).valueType() == typeid(realVariableValue) )
         *this = arrayVariableValue();
-#endif
     }
 
     if ( isValueDerivedFrom<composerVariableValue>() )

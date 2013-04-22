@@ -255,7 +255,7 @@ TEST( program, arrayFieldUse )
 {
   program Program;
   Program.rebuildAndExecute( "b1 = [ 4, 3, 2 ];\n"
-    "b2 = b1;\nc = b1[0]; d = b2[1+2/2]; e = b1[3]; b2[1] = 10;" );
+    "b2 = b1;\nc = b1[0]; d = b2[1+2/2]; e = b1[3]; b2[1] = 10; b3[4] = 2;" );
   
   //std::cout << Program.toString();
   
@@ -264,6 +264,7 @@ TEST( program, arrayFieldUse )
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_EQ( "[ 4, 3, 2 ]", Program.getNamedVariable("b1").string() );
   EXPECT_EQ( "[ 4, 10, 2 ]", Program.getNamedVariable("b2").string() );
+  EXPECT_EQ( "[ , , , , 2 ]", Program.getNamedVariable("b3").string() );
   EXPECT_EQ( 4, Program.getNamedVariable("c").integer() );
   EXPECT_EQ( 2, Program.getNamedVariable("d").integer() );
   EXPECT_FALSE( Program.getNamedVariable("e").isDefined() );
