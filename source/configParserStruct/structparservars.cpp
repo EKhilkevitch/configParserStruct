@@ -6,6 +6,7 @@
 
 #include <typeinfo>
 #include <set>
+#include <iostream>
 
 // =====================================================
 
@@ -44,7 +45,7 @@ void configParserStruct::structParserUtil::variable::setValueByReference( const 
 
   if ( isValueDerivedFrom<composerVariableValue>() && AttrLevel < RefValue.numberOfAttributes() )
   {
-    value<composerVariableValue>().setValueByReference( Reference, Value, AttrLevel + 1 );
+    value<composerVariableValue>().setValueByReference( Reference, Value, AttrLevel );
     return;
   }
     
@@ -78,7 +79,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 const std::string configParserStruct::structParserUtil::referenceVariableValue::string() const
 {
   std::string Result;
-  Result += Name;
+  Result += "Ref: '" + Name + "'";
   Result += " << ";
   for ( std::vector< variable >::const_iterator i = Attributes.begin(); i != Attributes.end(); ++i )
   {
@@ -138,6 +139,7 @@ void configParserStruct::structParserUtil::composerVariableValue::setValueByRefe
 
   const variable &Key = RefValue.attribute( AttrLevel );
   variable *Item = getItemPointerByVariableKey( Key );
+//  std::cerr << "setValueByReference: " << Value.string() << " " << Reference.string() << " " << AttrLevel << " " << Key.string() << " " << Item << std::endl;
   if ( Item == NULL )
   {
     addItemByVariableKey( Key, Value );

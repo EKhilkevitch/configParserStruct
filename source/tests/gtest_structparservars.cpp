@@ -209,6 +209,11 @@ TEST( variable, referenceVariableValue_dict )
 
   KeyRef.setValue( &Program, createVariable(30) );
   EXPECT_EQ( 30, KeyRef.getValue(Program).integer() );
+
+  KeyRef.popAttribute();
+  EXPECT_EQ( 2, KeyRef.getValue(Program).integer() );
+  KeyRef.setValue( &Program, createVariable(40) );
+  EXPECT_EQ( 40, KeyRef.getValue(Program).integer() );
 }
 
 // =========================================================

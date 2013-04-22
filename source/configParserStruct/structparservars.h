@@ -195,6 +195,7 @@ namespace configParserStruct
         bool boolean() const { return true; }
 
         void pushAttribute( const variable &Var ) { Attributes.push_back(Var); }
+        void popAttribute() { if ( ! Attributes.empty() ) Attributes.pop_back(); }
         const variable& attribute( unsigned Index ) const { return Attributes.at(Index); }
         size_t numberOfAttributes() const { return Attributes.size(); }
 
