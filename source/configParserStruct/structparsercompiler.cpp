@@ -98,11 +98,22 @@ void CPSSPU_replaceReferenceToValueOnStack( void )
 
 // -----------------------------------------------------
 
-void CPSSPU_setAttributeToTopReference( const char *Name )
+void CPSSPU_setAttributeToTopReferenceString( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
   if ( Program != NULL )
-    Program->pushCommand( setRefAttributeCommand(StrName) );
+  {
+    Program->pushCommand( pushValueCommand( createVariable(StrName) ) );
+    Program->pushCommand( setRefAttributeCommand() );
+  }
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_setAttributeToTopReference( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( setRefAttributeCommand() );
 }
 
 // -----------------------------------------------------

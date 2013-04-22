@@ -247,8 +247,9 @@ void configParserStruct::structParserUtil::replaceRefToValueCommand::execute( pr
 
 void configParserStruct::structParserUtil::setRefAttributeCommand::execute( program *Program ) const
 {
+  const variable Attribute = Program->popStackVariable();
   variable Reference = Program->popStackVariable();
-  Reference.value<referenceVariableValue>().pushAttribute( createVariable(Name) );
+  Reference.value<referenceVariableValue>().pushAttribute( Attribute );
   Program->pushStackVariable( Reference );
 }
 

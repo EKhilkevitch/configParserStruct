@@ -150,7 +150,7 @@ exprSign       : exprAtom
                | '!' exprSign          { CPSSPU_operatorOnStackTop("!"); }
 	       ;
 
-exprAtom       : idRef             { CPSSPU_replaceReferenceToValueOnStack(); } 
+exprAtom       : idRef              { CPSSPU_replaceReferenceToValueOnStack(); } 
 	       | TOKEN_REALNUMBER   { CPSSPU_pushRealNumberToStack($1); } 
 	       | TOKEN_INTNUMBER    { CPSSPU_pushIntegerNumberToStack( $1 ); }
                | TOKEN_STRING       { CPSSPU_pushStringToStack( $1 ); }
@@ -186,9 +186,10 @@ structField    : '.' TOKEN_ID '=' exprSet { CPSSPU_setDictFieldFromStack($2); }
                | '.' TOKEN_ID '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_setDictFieldFromStack($2); }
                ;
 
-idRef          : idRef '.' TOKEN_ID      { CPSSPU_setAttributeToTopReference( $3 );   }
-               | TOKEN_ID                { CPSSPU_pushVariableReferenceToStack( $1 ); }
-               | TOKEN_ARGUMENT          { CPSSPU_pushVariableReferenceToStack( $1 ); }
+idRef          : idRef '.' TOKEN_ID       { CPSSPU_setAttributeToTopReferenceString( $3 );   }
+               | idRef '[' expression ']' { CPSSPU_setAttributeToTopReference(); }
+               | TOKEN_ID                 { CPSSPU_pushVariableReferenceToStack( $1 ); }
+               | TOKEN_ARGUMENT           { CPSSPU_pushVariableReferenceToStack( $1 ); }
                ;
 
 %%

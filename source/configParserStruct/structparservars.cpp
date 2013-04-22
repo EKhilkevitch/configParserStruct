@@ -10,7 +10,7 @@
 
 // =====================================================
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variableValue::getValueByReference( const variable &Reference, unsigned AttrLevel ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variableValue::valueByReference( const variable &Reference, unsigned AttrLevel ) const
 {
   if ( AttrLevel == Reference.value<referenceVariableValue>().numberOfAttributes() )
     return *this;
@@ -26,9 +26,9 @@ bool configParserStruct::structParserUtil::variable::isDefined() const
 
 // -----------------------------------------------------
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variable::getValueByReference( const variable &Reference, unsigned AttrLevel ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variable::valueByReference( const variable &Reference, unsigned AttrLevel ) const
 {
-  return Value->getValueByReference(Reference,AttrLevel); 
+  return Value->valueByReference(Reference,AttrLevel); 
 }
 
 // -----------------------------------------------------
@@ -110,7 +110,7 @@ const std::string configParserStruct::structParserUtil::referenceVariableValue::
         
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::referenceVariableValue::getValue( const program &Program ) const
 {
-  return Program.getNamedVariable( Name ).getValueByReference( *this );
+  return Program.getNamedVariable( Name ).valueByReference( *this );
 }
 
 // -----------------------------------------------------
@@ -131,7 +131,7 @@ void configParserStruct::structParserUtil::referenceVariableValue::setValue( pro
 
 // =====================================================
         
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::composerVariableValue::getValueByReference( const variable &Reference, unsigned AttrLevel ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::composerVariableValue::valueByReference( const variable &Reference, unsigned AttrLevel ) const
 {
   const referenceVariableValue &RefValue = Reference.value<referenceVariableValue>();
 
@@ -142,7 +142,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
     return *this;
 
   const variable &Key = RefValue.attribute( AttrLevel );
-  return getItemByVariableKey( Key ).getValueByReference( Reference, AttrLevel + 1 );
+  return getItemByVariableKey( Key ).valueByReference( Reference, AttrLevel + 1 );
 }
 
 // -----------------------------------------------------
@@ -279,9 +279,11 @@ const std::string configParserStruct::structParserUtil::arrayVariableValue::stri
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::arrayVariableValue::pushItem( const variable &Value )
+void configParserStruct::structParserUtil::arrayVariableValue::addItem( unsigned Index, const variable &Value )
 {
-  Array.push_back( Value );
+  if ( Array.size() <= Index )
+    Array.resize( Index+1, variable() );
+  Array.at( Index ) = Value;
 }
 
 // -----------------------------------------------------
