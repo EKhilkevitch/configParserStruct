@@ -26,6 +26,16 @@ double configParserStruct::structParserUtil::piBuiltIn::calculate( double ) cons
 
 // =====================================================
 
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::powBuiltIn::execute( const program &Program ) const
+{
+  double Arg1 = getArgument( 1, Program ).number();
+  double Arg2 = getArgument( 2, Program ).number();
+  double Result = calculate(Arg1,Arg2);
+  return createVariable(Result);
+}
+
+// =====================================================
+
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::printBuiltIn::execute( const program &Program ) const
 {
   int NumberOfArgs = getNumberOfArguments(Program);

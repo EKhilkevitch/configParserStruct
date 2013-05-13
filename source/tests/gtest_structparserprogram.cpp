@@ -516,12 +516,12 @@ TEST( program, functionUnknown )
 
 // ---------------------------------------------------------
 
-TEST( program, functionbuiltIn )
+TEST( program, functionBuiltIn )
 {
   program Program;
   bool OK;
 
-  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n#print(1+3,' = 1 + 3');\na = 2; z1 = exp( a*pi() );" );
+  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n#print(1+3,' = 1 + 3');\na = 2; z1 = exp( a*pi() ); z2 = pow( 3.0, 5.5 );" );
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
@@ -533,6 +533,7 @@ TEST( program, functionbuiltIn )
   EXPECT_NEAR( std::sin(0.3) + std::cos(4), Program.getNamedVariable("y").number(), 1e-5 );
   EXPECT_NEAR( M_PI, Program.getNamedVariable("z").number(), 1e-5 );
   EXPECT_NEAR( std::exp( 2 * M_PI ), Program.getNamedVariable("z1").number(), 1e-5 );
+  EXPECT_NEAR( std::pow( 3, 5.5 ), Program.getNamedVariable("z2").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------

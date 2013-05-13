@@ -42,6 +42,7 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   setNamedVariable( "exp", expBuiltIn() );
   setNamedVariable( "sin", sinBuiltIn() );
   setNamedVariable( "cos", cosBuiltIn() );
+  setNamedVariable( "pow", powBuiltIn() );
   setNamedVariable( "print", printBuiltIn() );
 }
 

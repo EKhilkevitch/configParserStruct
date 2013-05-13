@@ -72,6 +72,19 @@ namespace configParserStruct
         variableValue* clone() const { return new cosBuiltIn(); }
         const std::string string() const { return "builtin:cos"; }
     };
+    
+    // -----------------------------------------------------
+    
+    class powBuiltIn : public builtinFunctionValue
+    {
+      protected:
+        double calculate( double Arg1, double Arg2 ) const { return std::pow( Arg1, Arg2 ); }
+
+      public: 
+        const variable execute( const program &Program ) const;
+        variableValue* clone() const { return new powBuiltIn(); }
+        const std::string string() const { return "builtin:pow"; }
+    };
 
     // -----------------------------------------------------
 
