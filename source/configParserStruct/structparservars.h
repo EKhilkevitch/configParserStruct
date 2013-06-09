@@ -147,7 +147,7 @@ namespace configParserStruct
         const std::string string() const { return Value; }
         double number() const { return convertFromString<double>(Value); }
         int integer() const { return convertFromString<int>(Value); }
-        bool boolean() const { return Value.empty(); }
+        bool boolean() const { return ! Value.empty(); }
     };
     
     // -----------------------------------------------------

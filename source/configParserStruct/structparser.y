@@ -39,19 +39,17 @@ EXTERN void CPSSPU_error( const char *String );
 %token <String>     TOKEN_STRING
 %token <IntNumber>  TOKEN_INTNUMBER
 %token <RealNumber> TOKEN_REALNUMBER
-%token <TimeVal>    TOKEN_TIMEVAL
-%token <DateVal>    TOKEN_DATEVAL
 %token <IdName>     TOKEN_ID
 %token <IdName>     TOKEN_ARGUMENT
 %token <CmpOpStr>   TOKEN_CMP
 
 %token TOKEN_ERROR
 %token TOKEN_NEWLINE
-%token TOKEN_POW
 %token TOKEN_ADDEQ
 %token TOKEN_SUBEQ
 %token TOKEN_MULEQ
 %token TOKEN_DIVEQ
+%token TOKEN_ADD_STR
 %token TOKEN_BOOL_AND
 %token TOKEN_BOOL_OR
 %token TOKEN_FUNCTION
@@ -135,6 +133,7 @@ exprCmp        : exprCmp TOKEN_CMP exprAdd { CPSSPU_operatorOnStackTop( $2 ); }
 
 exprAdd        : exprAdd '+' exprMul  { CPSSPU_operatorOnStackTop("+"); }
 	       | exprAdd '-' exprMul  { CPSSPU_operatorOnStackTop("-"); }
+               | exprAdd TOKEN_ADD_STR exprMul { CPSSPU_operatorOnStackTop( ".+." ); }
 	       | exprMul              
 	       ;
 

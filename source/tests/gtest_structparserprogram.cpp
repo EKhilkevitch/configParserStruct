@@ -193,6 +193,21 @@ TEST( program, mod )
 
 // ---------------------------------------------------------
 
+TEST( program, addStr )
+{
+  program Program;
+  bool OK = Program.rebuildAndExecute( "x = 'ab' .+. 'cd'; y = x .+. 13; z = 1 .+. 2;" );
+  
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( "abcd",   Program.getNamedVariable("x").string() );
+  EXPECT_EQ( "abcd13", Program.getNamedVariable("y").string() );
+  EXPECT_EQ( "12",     Program.getNamedVariable("z").string() );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, unarySign )
 {
   program Program;
@@ -271,8 +286,6 @@ TEST( program, arrayFieldUse )
 }
 
 // ---------------------------------------------------------
-
-
 
 TEST( program, dict )
 {
@@ -600,6 +613,35 @@ TEST( program, ternary )
   EXPECT_EQ( -1, Program.getNamedVariable("x").integer() );
   EXPECT_EQ( +1, Program.getNamedVariable("y").integer() );
   EXPECT_EQ(  0, Program.getNamedVariable("z").integer() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, varsAsBool )
+{
+  program Program;
+  bool OK = Program.rebuildAndExecute( "x1 = 0 ? 3 : 4;\n"
+    "x2 = 2 ? 3 : 4;\n"
+    "y1 = a ? 3 : 4;\n"
+    "a = 1; y2 = a ? 3 : 4;\n"
+    "z1 = '' ? 3 : 4;\n"
+    "z2 = '1' ? 3 : 4;\n"
+    "z3 = 'abc' ? 3 : 4;\n");
+
+  ASSERT_TRUE( OK );
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+  
+  EXPECT_EQ( 4, Program.getNamedVariable("x1").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("x2").integer() );
+
+  EXPECT_EQ( 4, Program.getNamedVariable("y1").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("y2").integer() );
+  
+  EXPECT_EQ( 4, Program.getNamedVariable("z1").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("z2").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("z3").integer() );
+
 }
 
 // ---------------------------------------------------------

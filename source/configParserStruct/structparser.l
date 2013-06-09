@@ -59,10 +59,6 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 
 {DELIM}         { CPSSPU_lexUpdateLineNumber(); }
 
-";"             {  return ';';              }
-"."             {  return '.';              }
-","             {  return ',';              }
-
 ">="            {  CPSSPU_lval.CmpOpStr = ">="; return TOKEN_CMP; }
 ">"             {  CPSSPU_lval.CmpOpStr = ">";  return TOKEN_CMP; }
 "<="            {  CPSSPU_lval.CmpOpStr = "<="; return TOKEN_CMP; }
@@ -81,11 +77,11 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 
 "+"             {  return '+';              }
 "-"             {  return '-';              }
-"**"            {  return TOKEN_POW;  }
-"^"             {        }
 "*"             {  return '*';              }
 "/"             {  return '/';              }
 "%"             {  return '%';              }
+
+".+."           {  return TOKEN_ADD_STR;    }
 
 "&&"            {  return TOKEN_BOOL_AND;   }
 "||"            {  return TOKEN_BOOL_OR;    }
@@ -99,6 +95,11 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 
 "\["            { return '[';               }
 "\]"            { return ']';               }
+
+";"             {  return ';';              }
+"."             {  return '.';              }
+","             {  return ',';              }
+
 
 "func"          { return TOKEN_FUNCTION;    }
 "return"        { return TOKEN_RETURN;      }

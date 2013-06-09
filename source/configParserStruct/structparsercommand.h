@@ -390,6 +390,17 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
+    class addStrCommand : public templateTwoStackOperandsCommand<std::string>
+    {
+      protected:
+        std::string calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 + Op1; }
+      public:
+        commandAction* clone() const { return new addStrCommand(); }
+        std::string toString() const { return "add string"; }
+    };
+
+    // -----------------------------------------------------
+    
     class assignVariableCommand : public commandAction
     {
       public:

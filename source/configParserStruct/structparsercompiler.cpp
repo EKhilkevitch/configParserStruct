@@ -176,6 +176,8 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
   CASE_OF_PUSH_COMMAND( "&&",  boolAndCommand );
   CASE_OF_PUSH_COMMAND( "||",  boolOrCommand );
   CASE_OF_PUSH_COMMAND( "!",   boolNotCommand );
+  
+  CASE_OF_PUSH_COMMAND( ".+.", addStrCommand );
 
 #undef PUSH_COMMAND
 }
