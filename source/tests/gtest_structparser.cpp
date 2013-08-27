@@ -100,7 +100,7 @@ TEST( structParser, builtinFunctions )
 TEST( structParser, add )
 {
   const std::string TestProgram = 
-    "x = 3; y = 2 + x; z = 9 + 10 + x"
+    "x = 3; y = 2 + x; z = 9 + 10 + x;"
     "";
 
   structParser Parser;
@@ -116,7 +116,7 @@ TEST( structParser, add )
 TEST( structParser, sub )
 {
   const std::string TestProgram = 
-    "x = 3; y = 2 - x; z = 10 - 9 - 3"
+    "x = 3; y = 2 - x; z = 10 - 9 - 3;"
     "";
 
   structParser Parser;

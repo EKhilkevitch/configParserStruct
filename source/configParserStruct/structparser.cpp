@@ -32,7 +32,9 @@ void configParserStruct::structParser::exec( const std::string &Text )
 {
   assert( Program != NULL );
   Program->initBuiltInVariables();
-  Program->build( Text );
+  bool OK = Program->build( Text );
+  if ( ! OK )
+    throw std::runtime_error( "Error while parsing in line " + convertToString( Program->errorLine() ) );
   Program->execute();
 }
 

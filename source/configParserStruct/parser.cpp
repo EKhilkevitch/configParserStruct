@@ -50,7 +50,7 @@ std::string configParserStruct::parser::joinStringList( const std::list<std::str
 {
   std::string Result;
 
-  Result.reserve( ( JoinString.size() + 128 ) * List.size() );
+  Result.reserve( ( JoinString.size() + 128 ) * List.size() * 1024 );
 
   for ( std::list<std::string>::const_iterator i = List.begin(); i != List.end(); ++i )
   {

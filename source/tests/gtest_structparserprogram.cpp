@@ -396,7 +396,6 @@ TEST( program, incorrectProgram )
   EXPECT_TRUE( OK );
   EXPECT_EQ( -1, Program.errorLine() );
 
-#if 1
   OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
   EXPECT_TRUE( OK );
   EXPECT_EQ( -1, Program.errorLine() );
@@ -408,7 +407,18 @@ TEST( program, incorrectProgram )
   OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
   EXPECT_TRUE( OK );
   EXPECT_EQ( -1, Program.errorLine() );
-#endif
+  
+  OK = Program.rebuildAndExecute( "\nx = { .a = 1,\n .b = 3\n .c = 4 };\n" );
+  EXPECT_FALSE( OK );
+  EXPECT_EQ( 3, Program.errorLine() );
+  
+  OK = Program.rebuildAndExecute( "\nx = { .a = 1,\n .b = { .f1 = 3 }\n .c = { .f2 = 4 } };\n" );
+  EXPECT_FALSE( OK );
+  EXPECT_EQ( 3, Program.errorLine() );
+  
+  OK = Program.rebuildAndExecute( "x = 2;y=x+1;z = 3;" );
+  EXPECT_TRUE( OK );
+  EXPECT_EQ( -1, Program.errorLine() );
 }
 
 // ---------------------------------------------------------
