@@ -198,7 +198,6 @@ idRef          : idRef '.' TOKEN_ID       { CPSSPU_setAttributeToTopReferenceStr
 int CPSSPU_wrap( void )
 {
   return 1;
-  CPSSPU_FLUSH_BUFFER(); 
 }
 
 // --------------------------------------------------
