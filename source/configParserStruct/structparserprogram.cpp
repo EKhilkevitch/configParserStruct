@@ -1,6 +1,12 @@
 
 // =====================================================
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES 1
+#endif
+
+#include <cmath>
+
 #include "configParserStruct/structparserprogram.h"
 #include "configParserStruct/structparsercompiler.h"
 #include "configParserStruct/structparserbuiltin.h"
@@ -11,6 +17,8 @@
 
 #include <sstream>
 #include <cassert>
+
+// =====================================================
 
 extern "C" int CPSSPU_parse();
 extern "C" void CPSSPU_lexResetLineNumber();
@@ -38,12 +46,32 @@ configParserStruct::structParserUtil::program::~program()
         
 void configParserStruct::structParserUtil::program::initBuiltInVariables()
 {
-  setNamedVariable( "pi", piBuiltIn() );
-  setNamedVariable( "exp", expBuiltIn() );
-  setNamedVariable( "sin", sinBuiltIn() );
-  setNamedVariable( "cos", cosBuiltIn() );
-  setNamedVariable( "pow", powBuiltIn() );
+
+#define SET_BUILTIN_FUNCTION( Type, Name, Value ) \
+  do { setNamedVariable( Name, makeBuiltIn<Type>( Name, Value ) ); } while (false)
+
+#define SET_STD_BUILTIN_FUNCTION( Type, Name ) \
+  SET_BUILTIN_FUNCTION( Type, #Name, std::Name )
+
+
+  SET_BUILTIN_FUNCTION( mathZeroArgumentBuiltIn, "pi", M_PI );
+
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, sin );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, cos );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, tan );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, exp );
+  
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, asin );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, acos );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, atan );
+  
+  SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, pow );
+  SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, atan2 );
+
   setNamedVariable( "print", printBuiltIn() );
+
+#undef SET_BUILTIN_FUNCTION 
+#undef SET_STD_BUILTIN_FUNCTION
 }
 
 // -----------------------------------------------------

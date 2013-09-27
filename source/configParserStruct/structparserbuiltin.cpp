@@ -2,36 +2,21 @@
 // =====================================================
 
 #define _USE_MATH_DEFINES 1
+
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
 
 #include "configParserStruct/structparservars.h"
 #include "configParserStruct/structparserbuiltin.h"
 
 // =====================================================
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::mathBuiltIn::execute( const program &Program ) const
+configParserStruct::structParserUtil::namedBuiltIn::namedBuiltIn( const std::string &N ) :
+  Name(N)
 {
-  double Arg = getArgument( 1, Program ).number();
-  double Result = calculate(Arg);
-  return createVariable(Result);
-}
-
-// -----------------------------------------------------
-        
-double configParserStruct::structParserUtil::piBuiltIn::calculate( double ) const 
-{ 
-  return M_PI; 
-}
-
-// =====================================================
-
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::powBuiltIn::execute( const program &Program ) const
-{
-  double Arg1 = getArgument( 1, Program ).number();
-  double Arg2 = getArgument( 2, Program ).number();
-  double Result = calculate(Arg1,Arg2);
-  return createVariable(Result);
+  if ( Name.empty() )
+    throw std::invalid_argument("Name of builtin function must be not empty");
 }
 
 // =====================================================

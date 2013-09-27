@@ -232,7 +232,7 @@ TEST( command, callCommand )
 TEST( command, callCommandBuiltIn )
 {
   program Program;
-  Program.setNamedVariable( "pi", piBuiltIn() );
+  Program.setNamedVariable( "pi", makeBuiltIn<mathZeroArgumentBuiltIn>("pi",M_PI) );
   callCommand( "pi" ).execute( &Program );
 
   EXPECT_EQ( 1, Program.stackSize() );

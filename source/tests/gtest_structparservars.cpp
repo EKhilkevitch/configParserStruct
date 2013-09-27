@@ -152,7 +152,7 @@ TEST( variable, builtIn )
 
   variable Result;
   
-  Result = piBuiltIn().execute( Program );
+  Result = makeBuiltIn<mathZeroArgumentBuiltIn>("pi",M_PI).execute( Program );
   EXPECT_NEAR( M_PI, Result.number(), 1e-5 );
 }
 

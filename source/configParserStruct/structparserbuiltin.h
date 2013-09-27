@@ -3,7 +3,8 @@
 
 // =====================================================
 
-#include <cmath>
+#include <stdexcept>
+#include <string>
 
 #include "configParserStruct/structparservars.h"
 
@@ -16,88 +17,157 @@ namespace configParserStruct
     
     // =====================================================
     
-    class mathBuiltIn : public builtinFunctionValue
+    class namedBuiltIn : public builtinFunctionValue
     {
-      protected:
-        virtual double calculate( double Argument ) const = 0;
+      private:
+        std::string Name;
 
       public:
+        namedBuiltIn( const std::string &N );
+        const std::string string() const { return "builtin:" + Name; }
+    };
+    
+    // -----------------------------------------------------
+    
+    template <class T> class zeroArgumentBuiltIn : public namedBuiltIn
+    {
+      public:
+        typedef T type;
+
+      private:
+        type Value;
+      
+      public: 
+        zeroArgumentBuiltIn( const std::string &N, const type &V );
+        variableValue* clone() const { return new zeroArgumentBuiltIn<type>(*this); }
+        const variable execute( const program &Program ) const;
+    };
+
+    // -----------------------------------------------------
+    
+    template <class retT, class argT> class oneArgumentBuiltIn : public namedBuiltIn
+    {
+      public:
+        typedef retT (*function)( argT );
+
+      private:
+        function Function;
+
+      public:
+        oneArgumentBuiltIn( const std::string &N, function F );
+        variableValue* clone() const { return new oneArgumentBuiltIn<retT,argT>(*this); }
         const variable execute( const program &Program ) const;
     };
     
     // -----------------------------------------------------
     
-    class piBuiltIn : public mathBuiltIn
+    template <class retT, class arg1T, class arg2T> class twoArgumentsBuiltIn : public namedBuiltIn
     {
-      protected:
-        double calculate( double ) const;
+      public:
+        typedef retT (*function)( arg1T, arg2T );
 
-      public: 
-        variableValue* clone() const { return new piBuiltIn(); }
-        const std::string string() const { return "builtin:pi"; }
-    };
-    
-    // -----------------------------------------------------
- 
-    class expBuiltIn : public mathBuiltIn
-    {
-      protected:
-        double calculate( double Argument ) const { return std::exp( Argument ); }
+      private:
+        function Function;
 
-      public: 
-        variableValue* clone() const { return new expBuiltIn(); }
-        const std::string string() const { return "builtin:exp"; }
-    };
-    
-    // -----------------------------------------------------
-    
-    class sinBuiltIn : public mathBuiltIn
-    {
-      protected:
-        double calculate( double Argument ) const { return std::sin( Argument ); }
-
-      public: 
-        variableValue* clone() const { return new sinBuiltIn(); }
-        const std::string string() const { return "builtin:sin"; }
-    };
-    
-    // -----------------------------------------------------
-    
-    class cosBuiltIn : public mathBuiltIn
-    {
-      protected:
-        double calculate( double Argument ) const { return std::cos( Argument ); }
-
-      public: 
-        variableValue* clone() const { return new cosBuiltIn(); }
-        const std::string string() const { return "builtin:cos"; }
-    };
-    
-    // -----------------------------------------------------
-    
-    class powBuiltIn : public builtinFunctionValue
-    {
-      protected:
-        double calculate( double Arg1, double Arg2 ) const { return std::pow( Arg1, Arg2 ); }
-
-      public: 
+      public:
+        twoArgumentsBuiltIn( const std::string &N, function F );
+        variableValue* clone() const { return new twoArgumentsBuiltIn<retT,arg1T,arg2T>(*this); }
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new powBuiltIn(); }
-        const std::string string() const { return "builtin:pow"; }
-    };
-
-    // -----------------------------------------------------
-
-    class printBuiltIn : public builtinFunctionValue
-    {
-      public: 
-        const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new printBuiltIn(); }
-        const std::string string() const { return "builtin:print"; }
     };
 
     // =====================================================
+
+    class printBuiltIn : public namedBuiltIn
+    {
+      public: 
+        printBuiltIn() : namedBuiltIn("print") {}
+        const variable execute( const program &Program ) const;
+        variableValue* clone() const { return new printBuiltIn(); }
+    };
+    
+    // =====================================================
    
+    typedef zeroArgumentBuiltIn<double>                 mathZeroArgumentBuiltIn;
+    typedef oneArgumentBuiltIn<double,double>           mathOneArgumentBuiltIn;
+    typedef twoArgumentsBuiltIn<double,double,double>   mathTwoArgumentsBuiltIn;
+
+    template <class builtIn> builtIn makeBuiltIn( const std::string &Name, typename builtIn::function Function );
+    template <class builtIn> builtIn makeBuiltIn( const std::string &Name, const typename builtIn::type &Value );
+
+    // =====================================================
+        
+    template <class type> zeroArgumentBuiltIn<type>::zeroArgumentBuiltIn( const std::string &N, const type &V ) : 
+      namedBuiltIn(N), 
+      Value(V) 
+    {
+    }
+    
+    // -----------------------------------------------------
+    
+    template <class type> const variable zeroArgumentBuiltIn<type>::execute( const program &Program ) const
+    {
+      return createVariable( Value );
+    }
+    
+    // -----------------------------------------------------
+    
+    template <class retT, class argT> oneArgumentBuiltIn<retT,argT>::oneArgumentBuiltIn( const std::string &N, function F ) :
+      namedBuiltIn(N),
+      Function(F)
+    {
+      if ( Function == NULL )
+        throw std::invalid_argument("Function must be not NULL");
+    }
+    
+    // -----------------------------------------------------
+    
+    template <class retT, class argT> const variable oneArgumentBuiltIn<retT,argT>::execute( const program &Program ) const
+    {
+      const variable &ArgVariable = getArgument( 1, Program );
+      argT Arg = extractValueScalar<argT>( ArgVariable );
+      retT Ret = Function( Arg );
+      return createVariable<retT>( Ret );
+    }
+    
+    // -----------------------------------------------------
+
+    template <class retT, class arg1T, class arg2T> twoArgumentsBuiltIn<retT,arg1T,arg2T>::twoArgumentsBuiltIn( const std::string &N, function F ) :
+      namedBuiltIn(N),
+      Function(F)
+    {
+      if ( Function == NULL )
+        throw std::invalid_argument("Function must be not NULL");
+    }
+    
+    // -----------------------------------------------------
+
+    template <class retT, class arg1T, class arg2T> const variable twoArgumentsBuiltIn<retT,arg1T,arg2T>::execute( const program &Program ) const
+    {
+      const variable &Arg1Variable = getArgument( 1, Program );
+      arg1T Arg1 = extractValueScalar<arg1T>( Arg1Variable );
+      
+      const variable &Arg2Variable = getArgument( 2, Program );
+      arg2T Arg2 = extractValueScalar<arg2T>( Arg2Variable );
+
+      retT Ret = Function( Arg1, Arg2 );
+      return createVariable<retT>( Ret );
+    }
+
+    // =====================================================
+       
+    template <class builtIn> builtIn makeBuiltIn( const std::string &Name, typename builtIn::function Function )
+    {
+      return builtIn( Name, Function );
+    }
+    
+    // -----------------------------------------------------
+    
+    template <class builtIn> builtIn makeBuiltIn( const std::string &Name, const typename builtIn::type &Value )
+    {
+      return builtIn( Name, Value );
+    }
+    
+    // =====================================================
   }
 }
 
