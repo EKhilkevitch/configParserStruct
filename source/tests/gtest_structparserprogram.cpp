@@ -519,6 +519,30 @@ TEST( program, functionComplex )
 
 // ---------------------------------------------------------
 
+TEST( program, functionReturnContaners )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "f1 = func { return { .a = 3, .b = $1, .c = $2*2 }; };\n"
+    "f2 = func { return [ 1, $1*2, $2*3 ]; };\n"
+    "x = f1(3,4); y = f2(5,6);\n"
+    );
+  
+ // std::cout << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
+  EXPECT_TRUE( Program.getNamedVariable("f2").isDefined() );
+  EXPECT_EQ( "{ .a = 3, .b = 3, .c = 8 }", Program.getNamedVariable("x").string() );
+  EXPECT_EQ( "[ 1, 10, 18 ]", Program.getNamedVariable("y").string() );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, functionUnknown )
 {
   program Program;

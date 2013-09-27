@@ -89,6 +89,8 @@ statement      : delimiter
 	       ;
 
 return         : TOKEN_RETURN expression delimiter { CPSSPU_returnFromCurrentFunction(); }
+               | TOKEN_RETURN { CPSSPU_pushDictToStack();  } '{' structFields '}' delimiter { CPSSPU_returnFromCurrentFunction(); }
+               | TOKEN_RETURN { CPSSPU_pushArrayToStack(); } '[' arrayElements ']'delimiter { CPSSPU_returnFromCurrentFunction(); }
                ;
 
 function       : idRef '=' TOKEN_FUNCTION { CPSSPU_beginOfNewFunctionAssignName(); } '{' program '}' { CPSSPU_endOfCurrentFunction(); }
