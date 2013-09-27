@@ -57,6 +57,7 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_IF
 %token TOKEN_ELSE
 %token TOKEN_WHILE
+%token TOMEN_SYMREF_BEGIN
 
 %right '='
 %right '?' ':'
@@ -185,10 +186,11 @@ structField    : '.' TOKEN_ID '=' exprSet { CPSSPU_setDictFieldFromStack($2); }
                | '.' TOKEN_ID '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_setDictFieldFromStack($2); }
                ;
 
-idRef          : idRef '.' TOKEN_ID       { CPSSPU_setAttributeToTopReferenceString( $3 );   }
-               | idRef '[' expression ']' { CPSSPU_setAttributeToTopReference(); }
-               | TOKEN_ID                 { CPSSPU_pushVariableReferenceToStack( $1 ); }
-               | TOKEN_ARGUMENT           { CPSSPU_pushVariableReferenceToStack( $1 ); }
+idRef          : idRef '.' TOKEN_ID                { CPSSPU_setAttributeToTopReferenceString( $3 );   }
+               | idRef '[' expression ']'          { CPSSPU_setAttributeToTopReference(); }
+               | TOKEN_ID                          { CPSSPU_pushVariableReferenceToStack( $1 ); }
+               | TOKEN_ARGUMENT                    { CPSSPU_pushVariableReferenceToStack( $1 ); }
+               | TOMEN_SYMREF_BEGIN expression '}' { CPSSPU_pushVariableSymbolicReferenceToStack(); }
                ;
 
 %%

@@ -10,7 +10,7 @@ extern "C" {
 
 #include <stdlib.h>
 
-// CPSSPU = configParserStruct::structParserUtil 
+/* 'CPSSPU' means configParserStruct::structParserUtil */
 
 void CPSSPU_popValueFromStack( void );
 void CPSSPU_pushRealNumberToStack( double Number );
@@ -30,7 +30,8 @@ void CPSSPU_pushVariableValueToStack( void );
 void CPSSPU_pushVariableReferenceToStack( const char *Name );
 void CPSSPU_replaceReferenceToValueOnStack( void );
 void CPSSPU_setAttributeToTopReferenceString( const char *Name );
-void CPSSPU_setAttributeToTopReference();
+void CPSSPU_setAttributeToTopReference( void );
+void CPSSPU_pushVariableSymbolicReferenceToStack( void );
 
 void CPSSPU_beginOfIfStatement( void );
 void CPSSPU_beginOfElseStatement( void );

@@ -75,19 +75,6 @@ TEST( command, pushValueCommand )
 
 // ---------------------------------------------------------
 
-TEST( command, pushVariableCommand )
-{
-  program Program;
-  Program.setNamedVariable( "a", createVariable(4) );
-
-  pushVariableCommand( "a" ).execute( &Program );
-
-  EXPECT_EQ( 1, Program.stackSize() );
-  EXPECT_NEAR( 4, Program.topStackVariable().number(), 1e-5 );
-}
-
-// ---------------------------------------------------------
-
 TEST( command, nopCommand )
 {
   program Program;

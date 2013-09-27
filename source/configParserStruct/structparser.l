@@ -108,6 +108,8 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 "else"          { return TOKEN_ELSE;        }
 "while"         { return TOKEN_WHILE;       }
 
+"\${"           { return TOMEN_SYMREF_BEGIN; }
+
 {INTNUM}        {  
                    CPSSPU_lval.RealNumber = atol(CPSSPU_text); 
 		   return TOKEN_REALNUMBER; 

@@ -544,7 +544,10 @@ TEST( program, functionBuiltIn )
   program Program;
   bool OK;
 
-  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n#print(1+3,' = 1 + 3');\na = 2; z1 = exp( a*pi() ); z2 = pow( 3.0, 5.5 );" );
+  OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n"
+    "#print(1+3,' = 1 + 3');\n"
+    "a = 2; z1 = exp( a*pi() ); z2 = pow( 3.0, 5.5 );\n"
+    "z3 = atan2( 4, 7 );");
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
@@ -557,6 +560,7 @@ TEST( program, functionBuiltIn )
   EXPECT_NEAR( M_PI, Program.getNamedVariable("z").number(), 1e-5 );
   EXPECT_NEAR( std::exp( 2 * M_PI ), Program.getNamedVariable("z1").number(), 1e-5 );
   EXPECT_NEAR( std::pow( 3, 5.5 ), Program.getNamedVariable("z2").number(), 1e-5 );
+  EXPECT_NEAR( std::atan2( 4, 7 ), Program.getNamedVariable("z3").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
@@ -609,8 +613,9 @@ TEST( program, booleanOp )
 TEST( program, ternary )
 {
   program Program;
-  bool OK = Program.rebuildAndExecute( "a = 2 > 1 ? 3 : 4;\nb = ( 2 < 1 ) ? 5 : 6;\n"
-    " sign = func { return ( $1 > 0 ) ? +1 : ( $1 < 0 ) ? -1 : 0; }\n"
+  bool OK = Program.rebuildAndExecute( "a = 2 > 1 ? 3 : 4;\n"
+    "b = ( 2 < 1 ) ? 5 : 6;\n"
+    "sign = func { return ( $1 > 0 ) ? +1 : ( $1 < 0 ) ? -1 : 0; };\n"
     "x = sign(-3); y = sign(+2); z = sign(0);" );
 
   ASSERT_TRUE( OK );
@@ -706,6 +711,26 @@ TEST( program, whileCycle )
   EXPECT_EQ( 2, Program.getNamedVariable("y").integer() );
   EXPECT_EQ( 10, Program.getNamedVariable("i").integer() );
   EXPECT_EQ( 362880, Program.getNamedVariable("z").integer() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, symbolicRef )
+{
+  program Program;
+  bool OK = Program.build( "a = 3; b =4; bc = 5; s1 = 'b';\n"
+    "${'a'} = 10; ${s1} = 20; ${s1.+.'c'}=30; ${'d'} = 40;\n" );
+  //std::cout << Program.toString() << std::endl;
+  Program.execute();
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( 10, Program.getNamedVariable("a").integer() );
+  EXPECT_EQ( 20, Program.getNamedVariable("b").integer() );
+  EXPECT_EQ( 30, Program.getNamedVariable("bc").integer() );
+  EXPECT_EQ( 40, Program.getNamedVariable("d").integer() );
 }
 
 // =========================================================

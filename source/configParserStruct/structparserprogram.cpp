@@ -53,7 +53,6 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
 #define SET_STD_BUILTIN_FUNCTION( Type, Name ) \
   SET_BUILTIN_FUNCTION( Type, #Name, std::Name )
 
-
   SET_BUILTIN_FUNCTION( mathZeroArgumentBuiltIn, "pi", M_PI );
 
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, sin );

@@ -112,19 +112,6 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    class pushVariableCommand : public commandAction
-    {
-      private:
-        std::string Name;
-      public:
-        pushVariableCommand( const std::string &N ) : Name(N) {}
-        void execute( program *Program ) const; 
-        commandAction* clone() const { return new pushVariableCommand(Name); }
-        std::string toString() const { return "push variable " + Name + ""; }
-    };
-    
-    // -----------------------------------------------------
-    
     class popCommand : public commandAction
     {
       public:
@@ -436,9 +423,19 @@ namespace configParserStruct
       public:
         void execute( program *Program ) const;
         commandAction* clone() const { return new replaceRefToValueCommand(); }
-        std::string toString() const { return "replace ref"; }
+        std::string toString() const { return "replace ref value"; }
     };
 
+    // -----------------------------------------------------
+    
+    class replaceStringToRefCommand : public commandAction
+    {
+      public:
+        void execute( program *Program ) const;
+        commandAction* clone() const { return new replaceStringToRefCommand(); }
+        std::string toString() const { return "replace string ref"; }
+    };
+    
     // -----------------------------------------------------
     
     class setRefAttributeCommand : public commandAction

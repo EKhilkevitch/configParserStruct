@@ -98,14 +98,6 @@ void configParserStruct::structParserUtil::pushValueCommand::execute( program *P
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::pushVariableCommand::execute( program *Program ) const
-{
-  const variable &Var = Program->getNamedVariable( Name );
-  Program->pushStackVariable( Var );
-}
-
-// -----------------------------------------------------
-
 void configParserStruct::structParserUtil::popCommand::execute( program *Program ) const
 {
   Program->popStackVariable();
@@ -241,6 +233,15 @@ void configParserStruct::structParserUtil::replaceRefToValueCommand::execute( pr
   const variable Reference = Program->popStackVariable();
   variable Value = Reference.value<referenceVariableValue>().getValue( *Program );
   Program->pushStackVariable( Value );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::replaceStringToRefCommand::execute( program *Program ) const
+{
+  const variable Variable = Program->popStackVariable();
+  const std::string &VariableName = Variable.string();
+  Program->pushStackVariable( referenceVariableValue(VariableName) );
 }
 
 // -----------------------------------------------------

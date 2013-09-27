@@ -118,6 +118,14 @@ void CPSSPU_setAttributeToTopReference( void )
 
 // -----------------------------------------------------
 
+void CPSSPU_pushVariableSymbolicReferenceToStack( void )
+{
+  if ( Program != NULL )
+    Program->pushCommand( replaceStringToRefCommand() ); 
+}
+
+// -----------------------------------------------------
+
 void CPSSPU_pushVariableReferenceToStack( const char *Name )
 {
   std::string StrName = ( Name == NULL ) ? std::string() : Name;
