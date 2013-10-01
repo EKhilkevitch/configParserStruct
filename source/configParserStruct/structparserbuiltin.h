@@ -82,9 +82,19 @@ namespace configParserStruct
       public: 
         printBuiltIn() : namedBuiltIn("print") {}
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new printBuiltIn(); }
+        variableValue* clone() const { return new printBuiltIn(*this); }
     };
     
+    // -----------------------------------------------------
+    
+    class definedBuiltIn : public namedBuiltIn
+    {
+      public:
+        definedBuiltIn() : namedBuiltIn("defined") {}
+        const variable execute( const program &Program ) const;
+        variableValue* clone() const { return new definedBuiltIn(*this); }
+    };
+
     // =====================================================
    
     typedef zeroArgumentBuiltIn<double>                 mathZeroArgumentBuiltIn;

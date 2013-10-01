@@ -59,15 +59,18 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, cos );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, tan );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, exp );
-  
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, asin );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, acos );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, atan );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, log );
   
   SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, pow );
   SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, atan2 );
 
+  SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "abs", std::fabs );
+
   setNamedVariable( "print", printBuiltIn() );
+  setNamedVariable( "defined", definedBuiltIn() );
 
 #undef SET_BUILTIN_FUNCTION 
 #undef SET_STD_BUILTIN_FUNCTION

@@ -570,8 +570,10 @@ TEST( program, functionBuiltIn )
 
   OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n"
     "#print(1+3,' = 1 + 3');\n"
-    "a = 2; z1 = exp( a*pi() ); z2 = pow( 3.0, 5.5 );\n"
-    "z3 = atan2( 4, 7 );");
+    "a = 2; z1 = exp( a*pi() );\n"
+    "z2 = pow( 3.0, 5.5 );\n"
+    "z3 = atan2( 4, 7 );\n"
+    "z4 = abs(-3.4); z5 = defined(z4); z6 = defined(ABC);\n");
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
@@ -585,6 +587,9 @@ TEST( program, functionBuiltIn )
   EXPECT_NEAR( std::exp( 2 * M_PI ), Program.getNamedVariable("z1").number(), 1e-5 );
   EXPECT_NEAR( std::pow( 3, 5.5 ), Program.getNamedVariable("z2").number(), 1e-5 );
   EXPECT_NEAR( std::atan2( 4, 7 ), Program.getNamedVariable("z3").number(), 1e-5 );
+  EXPECT_NEAR( 3.4, Program.getNamedVariable("z4").number(), 1e-5 );
+  EXPECT_TRUE( Program.getNamedVariable("z5").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("z6").boolean() );
 }
 
 // ---------------------------------------------------------
