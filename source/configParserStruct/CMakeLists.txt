@@ -40,7 +40,6 @@ if ( FLEX_EXECUTABLE AND BISON_EXECUTABLE )
   ADD_FLEX_BISON_DEPENDENCY( structparserL structparserY )
   include_directories( "${CMAKE_CURRENT_BINARY_DIR}/.." )
   set( configparser_source_files ${configparser_source_files}
-      structparserutil.cpp
       structparserinput.cpp
       structparsercompiler.cpp
       structparsercommand.cpp

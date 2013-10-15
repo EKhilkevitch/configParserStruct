@@ -9,9 +9,7 @@ set ( tests_source_files
         gtest_pythonparser.cpp
         gtest_simpleparser.cpp
         gtest_structparser.cpp
-        gtest_structparserutil.cpp
         gtest_structparserinput.cpp
-        gtest_structparsercompiler.cpp
         gtest_structparsercommand.cpp
         gtest_structparservars.cpp
         gtest_structparserprogram.cpp

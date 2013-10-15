@@ -32,6 +32,7 @@ static void     CPSSPU_lexUpdateLineNumber( void );
 
 static int  CPSSPU_lexEnableTokenNewline( void );
 static void CPSSPU_lexProcessLexerPragma( const char *const String );
+static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t DestinationSize, const char *const Source );
 
 #ifdef YY_INPUT
 #  undef  YY_INPUT
@@ -127,9 +128,7 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String );
 		    fprintf( stderr, "Error: max length of string is %i\n",STRUCTPARSER_MAX_STRING_LENGTH-1);
 		    return TOKEN_ERROR;
 		  }
-                  CPSSPU_lval.String[STRUCTPARSER_MAX_STRING_LENGTH-1] = '\0';
-                  strncpy(CPSSPU_lval.String,&CPSSPU_text[1],STRUCTPARSER_MAX_STRING_LENGTH-1); 
-		  CPSSPU_lval.String[CPSSPU_leng-2] = '\0';  
+                  CPSSPU_lexProcessAndCopyString( CPSSPU_lval.String, STRUCTPARSER_MAX_STRING_LENGTH, CPSSPU_text );
 		  return TOKEN_STRING;     
 		}
 
@@ -211,6 +210,83 @@ static void CPSSPU_lexProcessLexerPragma( const char *const String )
 static int CPSSPU_lexEnableTokenNewline( void )
 {
   return CPSSPU_EnableNewline;
+}
+
+// -----------------------------------------------------
+
+static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t DestinationSize, const char *const Source )
+{
+  unsigned si, di;
+  size_t SourceSize = 0;
+
+  assert( Source != NULL );
+  assert( Destination != NULL );
+  assert( DestinationSize > 0 );
+
+  Destination[0] = Destination[ DestinationSize-1 ] = '\0';
+
+  SourceSize = strlen( Source );
+  if ( SourceSize <= 2 )
+    return;
+
+  si = 1;
+  di = 0;
+  while ( si < SourceSize-1 && di < DestinationSize-1 )
+  {
+    if ( Source[si] == '\\' && si != SourceSize-2 )
+    {
+      si += 1;
+      switch ( Source[si] )
+      {
+        case 'n':
+          Destination[di] = '\n';
+          break;
+
+        case 't':
+          Destination[di] = '\t';
+          break;
+
+        case 'r':
+          Destination[di] = '\r';
+          break;
+
+        case '0':
+        case '1':
+        case '2':
+          {
+            char NumberStr[4];
+            NumberStr[ 0 ] = ( si < SourceSize-1 ? Source[si++] : '\0' );
+            NumberStr[ 1 ] = ( si < SourceSize-1 ? Source[si++] : '\0' );
+            NumberStr[ 2 ] = ( si < SourceSize-1 ? Source[si]   : '\0' );
+            NumberStr[ 3 ] = '\0';
+            Destination[di] = strtol( NumberStr, NULL, 8 );
+            break;
+          }
+
+        case 'x':
+          {
+            char NumberStr[3];
+            si++;
+            NumberStr[ 0 ] = ( si < SourceSize-1 ? Source[si++] : '\0' );
+            NumberStr[ 1 ] = ( si < SourceSize-1 ? Source[si]   : '\0' );
+            NumberStr[ 2 ] = '\0';
+            Destination[di] = strtol( NumberStr, NULL, 16 );
+            break;
+          }
+
+        default:
+          Destination[di] = Source[si];
+          break;
+      }
+    } else {
+      Destination[di] = Source[si];
+    }
+    si += 1;
+    di += 1;
+  }
+
+  assert( di < DestinationSize );
+  Destination[di] = '\0';
 }
 
 // =====================================================

@@ -129,6 +129,24 @@ TEST( program, stringVariable )
 
 // ---------------------------------------------------------
 
+TEST( program, stringVariableSpecialSymbols )
+{
+  program Program;
+  bool OK = Program.build( "x = 'a\\nbc'; y = \"z\\t\\065\\xf7z\";" );
+  Program.execute();
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+ // EXPECT_EQ( 3, Program.variableNames().size() );
+  EXPECT_EQ( "a\nbc", Program.getNamedVariable("x").string() );
+  EXPECT_EQ( "z\t\065\xf7z",  Program.getNamedVariable("y").string() );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, add )
 {
   program Program;

@@ -5,16 +5,14 @@
 #define _USE_MATH_DEFINES 1
 #endif
 
-#include <cmath>
-
 #include "configParserStruct/structparserprogram.h"
 #include "configParserStruct/structparsercompiler.h"
 #include "configParserStruct/structparserbuiltin.h"
 #include "configParserStruct/structparserinput.h"
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/mutex.h"
-#include "configParserStruct/mutex.h"
 
+#include <cmath>
 #include <sstream>
 #include <cassert>
 
