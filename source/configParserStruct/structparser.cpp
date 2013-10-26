@@ -30,11 +30,25 @@ configParserStruct::structParser::~structParser()
 
 void configParserStruct::structParser::exec( const std::string &Text )
 {
+  build( Text );
+  run();
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParser::build( const std::string &Text )
+{
   assert( Program != NULL );
   Program->initBuiltInVariables();
   bool OK = Program->build( Text );
   if ( ! OK )
     throw std::runtime_error( "Error while parsing in line " + convertToString( Program->errorLine() ) );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParser::run()
+{
   Program->execute();
 }
 

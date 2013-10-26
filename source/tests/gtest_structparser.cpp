@@ -129,6 +129,20 @@ TEST( structParser, sub )
 
 // ---------------------------------------------------------
 
+TEST( structParser, divZero )
+{
+  const std::string TestProgram = 
+    "x = 0; y = 1; z = y/x;\n"
+    "";
+
+  structParser Parser;
+  Parser.exec(TestProgram);
+
+  EXPECT_EQ( 1.0/0.0, Parser.doubleVariable("z") );
+}
+
+// ---------------------------------------------------------
+
 TEST( structParser, listOfVariables )
 {
   const std::string TestProgram = 
