@@ -3,6 +3,10 @@
 
 // =====================================================
 
+#include <string>
+#include <list>
+#include <set>
+
 #include "configParserStruct/structparservars.h"
 #include "configParserStruct/structparsercommand.h"
 
@@ -53,7 +57,8 @@ namespace configParserStruct
         variable* getNamedVariablePointer( const std::string &Name ) { return Variables.getPointer(Name); }
         const variable getNamedVariableFromTopOfStack( const std::string &Name ) const { return Variables.getFromTopOfStack(Name); }
         void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
-        std::list<std::string> variableNames() const { return Variables.listOfNamesInAllStack(); }
+        std::set<std::string> onExecuteVariableNames() const { return Variables.listOfNamesInAllStack(); }
+        std::set<std::string> onBuildVariableNames() const;
         const variable getLastExpressionReuslt() const { return Variables.get( lastResultVariableName() ); }
         
         void setErrorLine( int Line ) { ErrorLine = Line; }

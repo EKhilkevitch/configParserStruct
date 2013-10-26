@@ -385,13 +385,12 @@ TEST( program, getLastExpressionReuslt )
 
 // ---------------------------------------------------------
 
-TEST( program, variableNames )
+TEST( program, onExecuteVariableNames )
 {
   program Program;
   Program.rebuildAndExecute( "x = 2; 3+4; yyy=4; z.l = 2;" );
 
-  std::list<std::string> VariablesList = Program.variableNames();
-  std::set<std::string> Variables( VariablesList.begin(), VariablesList.end() );
+  std::set<std::string> Variables = Program.onExecuteVariableNames();
 
   EXPECT_EQ( 1, Variables.count("x") );
   EXPECT_EQ( 0, Variables.count("a") );

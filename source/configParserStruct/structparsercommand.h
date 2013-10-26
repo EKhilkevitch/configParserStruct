@@ -44,14 +44,19 @@ namespace configParserStruct
         void execute( program *Program ) const { Action->execute(Program); }
         const std::type_info& actionType() const { return typeid(*Action); }
         const std::string toString() const { return Action->toString(); }
+        const commandAction& action() const { return *Action; }
     };
     
     // =====================================================
     
     class commandsList
     {
+      public:
+        typedef std::vector< command > container;
+        typedef container::const_iterator const_iterator;
+
       private:
-        std::vector< command > Commands;
+        container Commands;
         unsigned CurrentCommandIndex;
 
       public:
@@ -74,6 +79,9 @@ namespace configParserStruct
         bool isAllCommandsDone() const { return CurrentCommandIndex >= Commands.size(); }
         unsigned executeOneCommand( program *Program );
         void execute( program *Program );
+
+        const_iterator begin() const { return Commands.begin(); }
+        const_iterator end() const { return Commands.end(); }
     };
     
     // =====================================================
@@ -108,6 +116,7 @@ namespace configParserStruct
         void execute( program *Program ) const; 
         commandAction* clone() const { return new pushValueCommand(Variable); }
         std::string toString() const { return "push value " + Variable.string() + ""; }
+        const variable& pushedVariable() const { return Variable; }
     };
     
     // -----------------------------------------------------

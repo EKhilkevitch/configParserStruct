@@ -15,6 +15,7 @@
 #include <cmath>
 #include <sstream>
 #include <cassert>
+#include <stdexcept>
 
 // =====================================================
 
@@ -84,6 +85,25 @@ void configParserStruct::structParserUtil::program::pushFunctionArgument( const 
 }
 
 // -----------------------------------------------------
+
+std::set<std::string> configParserStruct::structParserUtil::program::onBuildVariableNames() const
+{
+  std::set<std::string> VariableNames;
+  for ( commandsList::const_iterator c = Commands.begin(); c != Commands.end(); ++c )
+  {
+    try
+    {
+      const pushValueCommand &PushCommand = dynamic_cast< const pushValueCommand& > ( c->action() );
+      const variable &ReferenceVariable = PushCommand.pushedVariable();
+      const referenceVariableValue &ReferenceVariableValue = ReferenceVariable.value<referenceVariableValue>();
+      const std::string &PushedName = ReferenceVariableValue.name();
+      VariableNames.insert( PushedName );
+    } catch ( std::bad_cast& ) {}
+  }
+  return VariableNames;
+}
+
+// -----------------------------------------------------
         
 void configParserStruct::structParserUtil::program::clear()
 {
@@ -149,8 +169,8 @@ std::string configParserStruct::structParserUtil::program::toString() const
     Stream << "  " << Commands.getCommand(i).toString() << std::endl;
   
   Stream << std::endl << "Variables:" << std::endl;
-  std::list<std::string> Names = Variables.listOfNames();
-  for ( std::list<std::string>::const_iterator i = Names.begin(); i != Names.end(); ++i )
+  const std::set<std::string> &Names = Variables.listOfNames();
+  for ( std::set<std::string>::const_iterator i = Names.begin(); i != Names.end(); ++i )
     Stream << "  " << *i << " = " << Variables.get( *i ).string() << std::endl;
 
   return Stream.str();

@@ -232,31 +232,31 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 
 // -----------------------------------------------------
         
-const std::list<std::string> configParserStruct::structParserUtil::dictVariableValue::listOfKeys() const
+const std::set<std::string> configParserStruct::structParserUtil::dictVariableValue::listOfKeys() const
 {
-  std::list<std::string> List;
+  std::set<std::string> Set;
   for ( std::map< std::string, variable >::const_iterator i = Dict.begin(); i != Dict.end(); ++i )
-    List.push_back( i->first );
-  return List;
+    Set.insert( i->first );
+  return Set;
 }
 
 // -----------------------------------------------------
         
-const std::list<std::string> configParserStruct::structParserUtil::dictVariableValue::listOfKeysIncludeSubdict() const
+const std::set<std::string> configParserStruct::structParserUtil::dictVariableValue::listOfKeysIncludeSubdict() const
 {
-  std::list<std::string> List;
+  std::set<std::string> Set;
   for ( std::map< std::string, variable >::const_iterator i = Dict.begin(); i != Dict.end(); ++i )
   {
     if ( i->second.valueType() == typeid(dictVariableValue) )
     {
-      std::list<std::string> DictKeys = i->second.value<dictVariableValue>().listOfKeysIncludeSubdict();
-      for ( std::list<std::string>::const_iterator s = DictKeys.begin(); s != DictKeys.end(); ++s )
-        List.push_back( i->first + dictSeparator() + *s );
+      const std::set<std::string> &DictKeys = i->second.value<dictVariableValue>().listOfKeysIncludeSubdict();
+      for ( std::set<std::string>::const_iterator s = DictKeys.begin(); s != DictKeys.end(); ++s )
+        Set.insert( i->first + dictSeparator() + *s );
     } else {
-      List.push_back( i->first );
+      Set.insert( i->first );
     }
   }
-  return List;
+  return Set;
 }
 
 // =====================================================
@@ -404,28 +404,28 @@ void configParserStruct::structParserUtil::variablesListStack::clear()
 
 // -----------------------------------------------------
 
-std::list<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNames() const
+std::set<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNames() const
 {
   std::set<std::string> Result;
   for ( varListStack::const_iterator s = Stack.begin(); s != Stack.end(); ++s )
   {
-    std::list<std::string> Names = s->listOfNames();
+    const std::set<std::string> &Names = s->listOfNames();
     Result.insert( Names.begin(), Names.end() );
   }
-  return std::list<std::string>( Result.begin(), Result.end() );
+  return Result;
 }
 
 // -----------------------------------------------------
 
-std::list<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNamesInAllStack() const
+std::set<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNamesInAllStack() const
 {
   std::set<std::string> Result;
   for ( varListStack::const_iterator s = Stack.begin(); s != Stack.end(); ++s )
   {
-    std::list<std::string> Names = s->listOfNamesIncludeSubdict();
+    const std::set<std::string> &Names = s->listOfNamesIncludeSubdict();
     Result.insert( Names.begin(), Names.end() );
   }
-  return std::list<std::string>( Result.begin(), Result.end() );
+  return Result;
 }
 
 // -----------------------------------------------------

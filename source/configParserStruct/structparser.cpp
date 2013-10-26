@@ -91,13 +91,26 @@ double configParserStruct::structParser::lastDoubleVariable() const
 configParserStruct::structParser::containerForVariables configParserStruct::structParser::listOfVariables() const
 {
   containerForVariables Result;
-  const std::list<std::string> &List = Program->variableNames();
-  for ( std::list<std::string>::const_iterator i = List.begin(); i != List.end(); ++i )
+
+  const std::set<std::string> &BuildVariables = Program->onBuildVariableNames();
+  Result.insert( BuildVariables.begin(), BuildVariables.end() );
+  
+  const std::set<std::string> &OnExecute = Program->onExecuteVariableNames();
+  Result.insert( OnExecute.begin(), OnExecute.end() );
+
+  for ( containerForVariables::iterator s = Result.begin(); s != Result.end(); )
   {
-    if ( i->find( structParserUtil::program::lastResultVariableName() ) == 0 )
-      continue;
-    Result.insert( *i );
+    if ( s->find( structParserUtil::program::lastResultVariableName() ) == 0 )
+    {
+      containerForVariables::iterator es = s++;
+      Result.erase( es );
+    } else {
+      ++s;
+    }
   }
+
+  Result.erase( structParserUtil::program::lastResultVariableName() );
+
   return Result;
 }
 // -----------------------------------------------------

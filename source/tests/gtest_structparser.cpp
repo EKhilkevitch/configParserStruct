@@ -129,10 +129,39 @@ TEST( structParser, sub )
 
 // ---------------------------------------------------------
 
+TEST( structParser, listOfVariables )
+{
+  const std::string TestProgram = 
+    "x = 3; y = { .a = 2 }; z = c;\n"
+    "v1 = x ? 1 : v2;\n"
+    "";
+
+  structParser Parser;
+  Parser.exec(TestProgram);
+
+  std::set<std::string> List = Parser.listOfVariables();
+
+#if 0
+  for ( std::set<std::string>::iterator i = List.begin(); i != List.end(); ++i )
+    std::cout << *i << " " << std::endl;
+#endif
+
+  EXPECT_EQ( 1, List.count("x") );
+  EXPECT_EQ( 1, List.count("c") );
+  EXPECT_EQ( 1, List.count("y.a") );
+  EXPECT_EQ( 1, List.count("y") );
+  EXPECT_EQ( 1, List.count("z") );
+  EXPECT_EQ( 1, List.count("v1") );
+  EXPECT_EQ( 1, List.count("v2") );
+
+}
+
+// ---------------------------------------------------------
+
 TEST( structParser, listOfVariablesStruct )
 {
   const std::string TestProgram = 
-    "x = 3; y = { .a = 2 }; z = { .b = 3 };"
+    "x = 3; y = { .a = 2 }; z = { .b = 3 };\n"
     "";
 
   structParser Parser;
@@ -145,10 +174,10 @@ TEST( structParser, listOfVariablesStruct )
     std::cout << *i << " " << std::endl;
 #endif
 
-  ASSERT_EQ( 2, List.size() );
-  ASSERT_EQ( 0, List.count("x") );
-  ASSERT_EQ( 1, List.count("y") );
-  ASSERT_EQ( 1, List.count("z") );
+  EXPECT_EQ( 2, List.size() );
+  EXPECT_EQ( 0, List.count("x") );
+  EXPECT_EQ( 1, List.count("y") );
+  EXPECT_EQ( 1, List.count("z") );
 }
 
 // =========================================================

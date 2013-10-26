@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <set>
 #include <typeinfo>
 #include <deque>
 
@@ -64,8 +65,8 @@ namespace configParserStruct
         const std::type_info& valueType() const { return typeid(*Value); }
         template <class VarT> bool isValueDerivedFrom() const { return Value.isDerivedFrom<VarT>(); }
         
-        template <class VarT> VarT& value() { return dynamic_cast<VarT&>( *Value ); }
-        template <class VarT> const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
+        template <class VarT > VarT& value() { return dynamic_cast<VarT&>( *Value ); }
+        template <class VarT > const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
 
         template <class T> T valueScalar() const { return extractValueScalar<T>(*this); }   
     };
@@ -187,6 +188,7 @@ namespace configParserStruct
         int integer() const { return 0; }
         bool boolean() const { return true; }
 
+        const std::string& name() const { return Name; }
         void pushAttribute( const variable &Var ) { Attributes.push_back(Var); }
         void popAttribute() { if ( ! Attributes.empty() ) Attributes.pop_back(); }
         const variable& attribute( unsigned Index ) const { return Attributes.at(Index); }
@@ -285,8 +287,8 @@ namespace configParserStruct
         variable* getItemPointer( const std::string &Key );
         size_t numberOfItems() const { return Dict.size(); }
         void clear() { Dict.clear(); }
-        const std::list<std::string> listOfKeys() const;
-        const std::list<std::string> listOfKeysIncludeSubdict() const;
+        const std::set<std::string> listOfKeys() const;
+        const std::set<std::string> listOfKeysIncludeSubdict() const;
         
         variable* getItemPointerByVariableKey( const variable &Key ) { return getItemPointer( Key.string() ); }
         const variable getItemByVariableKey( const variable &Key ) const { return getItem( Key.string() ); }
@@ -310,8 +312,8 @@ namespace configParserStruct
         const variable get( const std::string &Name ) const { return Dict.getItem( Name ); }
         variable* getPointer( const std::string &Name ) { return Dict.getItemPointer( Name ); }
 
-        std::list<std::string> listOfNames() const { return Dict.listOfKeys(); }
-        std::list<std::string> listOfNamesIncludeSubdict() const { return Dict.listOfKeysIncludeSubdict(); }
+        std::set<std::string> listOfNames() const { return Dict.listOfKeys(); }
+        std::set<std::string> listOfNamesIncludeSubdict() const { return Dict.listOfKeysIncludeSubdict(); }
         size_t size() const { return Dict.numberOfItems(); }
 
         void clear() { Dict.clear(); }
@@ -337,8 +339,8 @@ namespace configParserStruct
         void pushNewList() { Stack.push_back( variablesList() ); }
         void popList();
         
-        std::list<std::string> listOfNames() const;
-        std::list<std::string> listOfNamesInAllStack() const;
+        std::set<std::string> listOfNames() const;
+        std::set<std::string> listOfNamesInAllStack() const;
         size_t size() const { return Stack.size(); }
 
         void clear();

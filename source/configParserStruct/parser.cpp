@@ -146,7 +146,7 @@ int configParserStruct::parser::integerVariable( const std::string &VarName, int
 
 configParserStruct::parser::containerForVariables configParserStruct::parser::listOfVariablesStruct() const
 {
-  const containerForVariables Variables = listOfVariables();
+  const containerForVariables &Variables = listOfVariables();
   containerForVariables Result;
 
   for ( containerForVariables::const_iterator i = Variables.begin(); i != Variables.end(); ++i )
