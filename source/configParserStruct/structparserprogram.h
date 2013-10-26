@@ -66,7 +66,7 @@ namespace configParserStruct
         void clear();
         bool build( const std::string &ProgramText );
         int errorLine() { return ErrorLine; }
-        void execute() { Commands.execute( this ); }
+        void execute();
         bool rebuildAndExecute( const std::string &ProgramText );
 
         std::string toString() const;

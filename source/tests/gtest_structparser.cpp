@@ -75,9 +75,37 @@ TEST( structParser, setVariableValue )
   EXPECT_NEAR( 1.3, Parser.doubleVariable("b"), 1e-5 );
   EXPECT_EQ( "xyz", Parser.stringVariable("c") );
   
-  Parser.exec("x = 2*a + b;");
-  
+  Parser.exec("x = 2*a + b;"); 
   EXPECT_NEAR( 3.3, Parser.doubleVariable("x"), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( structParser, setVariableValue_2 )
+{
+  structParser Parser;
+  Parser.build( " x = 2*a + b + 2;" );
+  
+  EXPECT_NEAR( 0, Parser.doubleVariable("x"), 1e-5 );
+  EXPECT_NEAR( 0, Parser.doubleVariable("a"), 1e-5 );
+  EXPECT_NEAR( 0, Parser.doubleVariable("b"), 1e-5 );
+
+  Parser.setVariableValue( "a", 3 );
+  Parser.setVariableValue( "b", 5 );
+  EXPECT_NEAR( 0, Parser.doubleVariable("x"), 1e-5 );
+  EXPECT_NEAR( 3, Parser.doubleVariable("a"), 1e-5 );
+  EXPECT_NEAR( 5, Parser.doubleVariable("b"), 1e-5 );
+
+  Parser.run();
+  EXPECT_NEAR( 13, Parser.doubleVariable("x"), 1e-5 );
+  EXPECT_NEAR(  3, Parser.doubleVariable("a"), 1e-5 );
+  EXPECT_NEAR(  5, Parser.doubleVariable("b"), 1e-5 );
+  
+  Parser.setVariableValue( "a", 10 );
+  Parser.run();
+  EXPECT_NEAR( 27, Parser.doubleVariable("x"), 1e-5 );
+  EXPECT_NEAR( 10, Parser.doubleVariable("a"), 1e-5 );
+  EXPECT_NEAR(  5, Parser.doubleVariable("b"), 1e-5 );
 }
 
 // ---------------------------------------------------------

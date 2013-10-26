@@ -142,7 +142,15 @@ bool configParserStruct::structParserUtil::program::build( const std::string &Pr
   Mutex.unlock();
   return Result;
 }
+
+// -----------------------------------------------------
         
+void configParserStruct::structParserUtil::program::execute() 
+{ 
+  Commands.resetCurrentCommandIndex();
+  Commands.execute( this ); 
+}
+
 // -----------------------------------------------------
 
 bool configParserStruct::structParserUtil::program::rebuildAndExecute( const std::string &ProgramText )
