@@ -85,3 +85,21 @@ void configParserStruct::mutex::unlock()
 
 // =====================================================
 
+configParserStruct::mutexLocker::mutexLocker( mutex *M ) :
+  Mutex( M )
+{
+  if ( Mutex != NULL )
+    Mutex->lock();
+}
+
+// -----------------------------------------------------
+      
+configParserStruct::mutexLocker::~mutexLocker()
+{
+  if ( Mutex != NULL )
+    Mutex->unlock();
+  Mutex = NULL;
+}
+
+// =====================================================
+

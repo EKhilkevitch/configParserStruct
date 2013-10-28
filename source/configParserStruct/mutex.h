@@ -6,6 +6,8 @@
 namespace configParserStruct
 {
 
+  // =====================================================
+
   class mutex
   {
     private:
@@ -22,6 +24,20 @@ namespace configParserStruct
       void lock();
       void unlock();
   };
+  
+  // =====================================================
+  
+  class mutexLocker
+  {
+    private:
+      mutex *Mutex;
+
+    public:
+      mutexLocker( mutex *M );
+      ~mutexLocker();
+  };
+  
+  // =====================================================
 
 }
 

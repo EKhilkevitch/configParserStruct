@@ -118,28 +118,21 @@ void configParserStruct::structParserUtil::program::clear()
         
 bool configParserStruct::structParserUtil::program::build( const std::string &ProgramText )
 {
+  mutexLocker MutexLocker( &Mutex );
+
   bool Result = true;
+  
+  setStructPrserProgram( this );
+  setInputString( ProgramText ); 
+  CPSSPU_lexResetLineNumber();
+  CPSSPU_lexSetNewLineEnabled(false);
+  
+  int ParseResult = CPSSPU_parse();
+  if ( ErrorLine >= 0 || ParseResult != 0 )
+    Result = false;
 
-  Mutex.lock();
-  try
-  {
-    setStructPrserProgram( this );
-    setInputString( ProgramText ); 
-    CPSSPU_lexResetLineNumber();
-    CPSSPU_lexSetNewLineEnabled(false);
-    
-    int ParseResult = CPSSPU_parse();
-    if ( ErrorLine >= 0 || ParseResult != 0 )
-      Result = false;
-
-    setStructPrserProgram( NULL );
-  } catch ( ... )
-  {
-    Mutex.unlock();
-    throw;
-  }
-    
-  Mutex.unlock();
+  setStructPrserProgram( NULL );
+  
   return Result;
 }
 
