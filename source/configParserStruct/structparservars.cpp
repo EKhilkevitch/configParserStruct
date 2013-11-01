@@ -298,7 +298,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::arrayVariableValue::getItemPointer( int Index )
 {
-  if ( Index >= Array.size() )
+  if ( Index >= (int)Array.size() || Index < 0 )
     return NULL;
   return &Array[Index];
 }
