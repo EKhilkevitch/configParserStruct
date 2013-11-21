@@ -86,8 +86,8 @@ configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser( cons
 
 void configParserStruct::commandLineArgumentsParser::clearOptions()
 {
-  for ( std::vector< option >::const_iterator o = Options.begin(); o != Options.end(); ++o )
-    delete o->name;
+  for ( std::vector< option >::iterator o = Options.begin(); o != Options.end(); ++o )
+    std::free( (void*)(o->name) );
   Options.clear();
 }
 
