@@ -259,7 +259,7 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
             NumberStr[ 1 ] = ( si < SourceSize-1 ? Source[si++] : '\0' );
             NumberStr[ 2 ] = ( si < SourceSize-1 ? Source[si]   : '\0' );
             NumberStr[ 3 ] = '\0';
-            Destination[di] = strtol( NumberStr, NULL, 8 );
+            Destination[di] = (char)strtol( NumberStr, NULL, 8 );
             break;
           }
 
@@ -270,7 +270,7 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
             NumberStr[ 0 ] = ( si < SourceSize-1 ? Source[si++] : '\0' );
             NumberStr[ 1 ] = ( si < SourceSize-1 ? Source[si]   : '\0' );
             NumberStr[ 2 ] = '\0';
-            Destination[di] = strtol( NumberStr, NULL, 16 );
+            Destination[di] = (char)strtol( NumberStr, NULL, 16 );
             break;
           }
 

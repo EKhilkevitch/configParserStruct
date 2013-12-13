@@ -8,6 +8,49 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <iostream>
+#include <getopt.h>
+
+// =====================================================
+
+namespace 
+{
+  option createOption( const configParserStruct::commandLineArgumentsParser::getoptOption &Option )
+  {
+    option Result = 
+    {
+      Option.Name.empty() ? NULL : strdup( Option.Name.c_str() ),
+      Option.HasArg,
+      NULL,
+      Option.ShortName
+    };
+
+    return Result;
+  }
+
+  void destroyOption( option *Option )
+  {
+    assert( Option != NULL );
+    std::free( (void*)(Option->name) );
+    std::memset( Option, 0, sizeof(Option) );
+  }
+
+  std::vector< option > createOptionsVector( const std::vector< configParserStruct::commandLineArgumentsParser::getoptOption > &Options )
+  {
+    std::vector< option > Result;
+    for ( unsigned i = 0; i < Options.size(); i++ )
+      Result.push_back( createOption(Options[i]) );
+    return Result;
+  }
+
+  void destroyOptionsVector( std::vector<option> *Options )
+  {
+    assert( Options != NULL );
+    for ( unsigned i = 0; i < Options->size(); i++ )
+      destroyOption( &( ( *Options )[i] ) );
+    Options->clear();
+  }
+
+}
 
 // =====================================================
                     
@@ -77,35 +120,6 @@ double configParserStruct::commandLineArgumentsParser::parsedArguments::argDoubl
 
 // =====================================================
       
-configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser( const commandLineArgumentsParser &Parser )
-{
-  copyOptions( Parser.Options );
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::commandLineArgumentsParser::clearOptions()
-{
-  for ( std::vector< option >::iterator o = Options.begin(); o != Options.end(); ++o )
-    std::free( (void*)(o->name) );
-  Options.clear();
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::commandLineArgumentsParser::copyOptions( const std::vector< option > &Source )
-{
-  clearOptions();
-  for ( std::vector< option >::const_iterator o = Source.begin(); o != Source.end(); ++o )
-  {
-    option NewOption = *o;
-    NewOption.name = strdup( o->name );
-    Options.push_back( NewOption );
-  }
-}
-
-// -----------------------------------------------------
-
 void configParserStruct::commandLineArgumentsParser::addOption( const std::string &FullName, const bool NeedParameter, const char ShortName )
 {
   if ( FullName.empty() )
@@ -120,7 +134,7 @@ void configParserStruct::commandLineArgumentsParser::addOption( const std::strin
   if ( isOptionExist(FullName) )
     throw std::runtime_error( std::string() + "Option with full name '" + FullName + "' already exist in list" );
 
-  option NextOption = { strdup( FullName.c_str() ), NeedParameter, NULL, ShortName };
+  getoptOption NextOption = { FullName, NeedParameter, ShortName };
   Options.push_back( NextOption );
 }
 
@@ -128,7 +142,7 @@ void configParserStruct::commandLineArgumentsParser::addOption( const std::strin
 
 bool configParserStruct::commandLineArgumentsParser::isOptionExist( char ShortName )
 {
-  for ( std::vector< option >::const_iterator o = Options.begin(); o != Options.end(); ++o )
+  for ( std::vector< getoptOption >::const_iterator o = Options.begin(); o != Options.end(); ++o )
     if ( configParserStruct::commandLineArgumentsParser::optionShortName(*o) == ShortName )
       return true;
   return false;
@@ -138,7 +152,7 @@ bool configParserStruct::commandLineArgumentsParser::isOptionExist( char ShortNa
 
 bool configParserStruct::commandLineArgumentsParser::isOptionExist( const std::string &FullName )
 {
-  for ( std::vector< option >::const_iterator o = Options.begin(); o != Options.end(); ++o )
+  for ( std::vector< getoptOption >::const_iterator o = Options.begin(); o != Options.end(); ++o )
     if ( configParserStruct::commandLineArgumentsParser::optionFullName(*o) == FullName )
       return true;
   return false;
@@ -149,7 +163,7 @@ bool configParserStruct::commandLineArgumentsParser::isOptionExist( const std::s
 std::string configParserStruct::commandLineArgumentsParser::shortOptions() const
 {
   std::string Result;
-  for ( std::vector< option >::const_iterator o = Options.begin(); o != Options.end(); ++o )
+  for ( std::vector< getoptOption >::const_iterator o = Options.begin(); o != Options.end(); ++o )
   {
     Result += optionShortName(*o);
     if ( optionHasArgument(*o) )
@@ -160,14 +174,14 @@ std::string configParserStruct::commandLineArgumentsParser::shortOptions() const
 
 // -----------------------------------------------------
 
-std::vector<configParserStruct::commandLineArgumentsParser::option> configParserStruct::commandLineArgumentsParser::longOptions() const
+std::vector<configParserStruct::commandLineArgumentsParser::getoptOption> configParserStruct::commandLineArgumentsParser::longOptions() const
 {
-  std::vector< option > Result;
+  std::vector< getoptOption > Result;
  
-  for ( std::vector< option >::const_iterator opt = Options.begin(); opt != Options.end(); ++opt )
+  for ( std::vector< getoptOption >::const_iterator opt = Options.begin(); opt != Options.end(); ++opt )
     Result.push_back( *opt );
 
-  option LastOption = { NULL, false, NULL, '\0' };
+  getoptOption LastOption = { std::string(), false, '\0' };
   Result.push_back( LastOption );
 
   return Result;
@@ -188,10 +202,10 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromParameters(
   assert( ParsingResults != NULL );
 
   if ( argv == NULL )
-    throw std::invalid_argument("argv == NULL");
+    throw std::invalid_argument( "argv == NULL" );
   
   std::string ShortOptions = shortOptions();
-  std::vector<option> LongOptions = longOptions();
+  std::vector<option> LongOptions = createOptionsVector( longOptions() );
 
   while ( true )
   {
@@ -210,6 +224,8 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromParameters(
 
     ParsingResults->insert( NextOption, optarg );
   };
+
+  destroyOptionsVector( &LongOptions );
 }
 
 // -----------------------------------------------------

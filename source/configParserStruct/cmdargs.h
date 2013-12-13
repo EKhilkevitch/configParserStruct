@@ -11,8 +11,6 @@
 #include <stdexcept>
 #include <functional>
 
-#include <getopt.h>
-
 // =====================================================
 
 /**
@@ -37,8 +35,15 @@ namespace configParserStruct
   class commandLineArgumentsParser
   {
     public:
-      typedef struct ::option option;
-        
+      struct getoptOption
+      {
+	std::string Name;
+	bool HasArg;
+	char ShortName;
+      };
+      
+    public:
+
       /**
        * @brief
        * Распарсеные аргументы командной строки.
@@ -72,30 +77,25 @@ namespace configParserStruct
 
 
     private:
-      std::vector< option > Options;
+      std::vector< getoptOption > Options;
 
-      void clearOptions();
-      void copyOptions( const std::vector< option > &Source );
+    private:
+      void clearOptions() { Options.clear(); }
 
     protected:
       std::string shortOptions() const;
-      std::vector<option> longOptions() const;
+      std::vector<getoptOption> longOptions() const;
 
       void clearGetoptInternalIndexes() const;
       void setArgumentsFromParameters( parsedArguments *ParsingResults, int argc, char *argv[] ) const;
       void setArgumentsFromFileList( parsedArguments *ParsingResults, int argc, char *argv[] ) const;
 
-      static char optionShortName( const option &Option ) { return Option.val; }
-      static std::string optionFullName( const option &Option ) { return Option.name == NULL ? "" : Option.name; }
-      static bool optionHasArgument( const option &Option ) { return Option.has_arg; }
-
-    private:
-      commandLineArgumentsParser& operator=( const commandLineArgumentsParser& );
+      static char optionShortName( const getoptOption &Option ) { return Option.ShortName; }
+      static std::string optionFullName( const getoptOption &Option ) { return Option.Name; }
+      static bool optionHasArgument( const getoptOption &Option ) { return Option.HasArg; }
 
     public:
-      commandLineArgumentsParser() {};
-      commandLineArgumentsParser( const commandLineArgumentsParser &Parser );
-      virtual ~commandLineArgumentsParser() { clearOptions(); }
+      commandLineArgumentsParser() {}
 
       void addOption( const std::string &FullName, const bool NeedParameter, const char ShortName );
       void addOption( const std::string &FullName, const bool NeedParameter ) 
