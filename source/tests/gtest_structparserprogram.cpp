@@ -310,7 +310,7 @@ TEST( program, dict )
   program Program;
   Program.build( "a = 3; b = { .x = 0.1, .z = 2*a, .y = { .l = 'abcd' } };\n"
     "c = b; d = b.y;\n"
-    "e = { .a = 2 }; e['m'] = 12; f['n'] = 13; f['sp ace'] = 'ab';\n");
+    "e = { .a = 2 }; e['m'] = 12; f['n'] = 13; f['sp ace' .+. '!!!'] = 'ab';\n");
   //std::cerr << Program.toString() << std::endl;
   Program.execute();
   
@@ -320,7 +320,7 @@ TEST( program, dict )
   EXPECT_EQ( Program.getNamedVariable("b").string(), Program.getNamedVariable("c").string() );
   EXPECT_EQ( "{ .l = abcd }", Program.getNamedVariable("d").string() );
   EXPECT_EQ( "{ .a = 2, .m = 12 }", Program.getNamedVariable("e").string() );
-  EXPECT_EQ( "{ .n = 13, .sp ace = ab }", Program.getNamedVariable("f").string() );
+  EXPECT_EQ( "{ .n = 13, .sp ace!!! = ab }", Program.getNamedVariable("f").string() );
   try
   {
     dictVariableValue Struct = Program.getNamedVariable("b").value<dictVariableValue>();
