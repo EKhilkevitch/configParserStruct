@@ -95,7 +95,7 @@ namespace configParserStruct
       static bool optionHasArgument( const getoptOption &Option ) { return Option.HasArg; }
 
     public:
-      commandLineArgumentsParser() {}
+      commandLineArgumentsParser();
 
       void addOption( const std::string &FullName, const bool NeedParameter, const char ShortName );
       void addOption( const std::string &FullName, const bool NeedParameter ) 

@@ -53,6 +53,12 @@ namespace
 }
 
 // =====================================================
+      
+configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser() 
+{
+}
+
+// -----------------------------------------------------
                     
 void configParserStruct::commandLineArgumentsParser::parsedArguments::insert( char ArgShortName, const char *Value ) 
 { 
