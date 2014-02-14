@@ -54,7 +54,11 @@ namespace
 
 // =====================================================
       
+<<<<<<< HEAD
 configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser() 
+=======
+configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser()
+>>>>>>> 02f367cb0122e3c4e3ff170b194df98f234cf398
 {
 }
 
