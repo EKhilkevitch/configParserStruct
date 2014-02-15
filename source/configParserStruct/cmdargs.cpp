@@ -10,6 +10,8 @@
 #include <iostream>
 #include <getopt.h>
 
+#  pragma warning( disable : 4996 )  // The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup. See online help for details.
+
 // =====================================================
 
 namespace 
@@ -54,11 +56,7 @@ namespace
 
 // =====================================================
       
-<<<<<<< HEAD
 configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser() 
-=======
-configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser()
->>>>>>> 02f367cb0122e3c4e3ff170b194df98f234cf398
 {
 }
 
@@ -220,7 +218,7 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromParameters(
   while ( true )
   {
     char *ShortOptsCStr = strdup( ShortOptions.c_str() );
-    int NextOption = getopt_long( argc, argv, ShortOptsCStr, LongOptions.data(), NULL );
+    int NextOption = getopt_long( argc, argv, ShortOptsCStr, &LongOptions[0], NULL );
     free( ShortOptsCStr );
 
     if ( NextOption == -1 )

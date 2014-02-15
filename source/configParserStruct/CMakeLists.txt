@@ -2,8 +2,12 @@
 cmake_minimum_required( VERSION 2.6 )
 project( configParserLib ) 
 
-find_package( BISON )
+if ( WIN32 )
+  set( CMAKE_SYSTEM_PROGRAM_PATH "${CMAKE_SYSTEM_PROGRAM_PATH}" "${PROJECT_SOURCE_DIR}/../../win_programs/" )
+endif()
+
 find_package( FLEX )
+find_package( BISON )
 
 if ( WIN32 )
   set( BISON_FLAGS "--name-prefix=CPSSPU_ -v" )

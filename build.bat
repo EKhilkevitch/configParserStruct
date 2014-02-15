@@ -3,9 +3,13 @@
 
 rem =========================================
 
+SETLOCAL
+
 set ROOT_DIR=%~dp0
 set BUILD_DIR=build
 set CURRENT_DIR=%CD%
+
+if not defined BISON_SIMPLE set BISON_SIMPLE=%ROOT_DIR%\win_programs\bison.simple
 
 rem =========================================
 
@@ -44,4 +48,6 @@ if %ERRORLEVEL% GTR 0 (
 ) else (
   exit /b 0
 )
+
+endlocal
 
