@@ -9,6 +9,7 @@
 #include "configParserStruct/structparsercompiler.h"
 #include "configParserStruct/structparserbuiltin.h"
 #include "configParserStruct/structparserinput.h"
+#include "configParserStruct/structparserextmath.h"
 #include "configParserStruct/stringcast.h"
 #include "configParserStruct/mutex.h"
 
@@ -67,6 +68,8 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, atan2 );
 
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "abs", std::fabs );
+  SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "erf", erf );
+  SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "erfc", erfc );
 
   setNamedVariable( "print", printBuiltIn() );
   setNamedVariable( "defined", definedBuiltIn() );

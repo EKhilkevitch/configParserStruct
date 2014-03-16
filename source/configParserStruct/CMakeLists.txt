@@ -49,6 +49,7 @@ if ( FLEX_EXECUTABLE AND BISON_EXECUTABLE )
       structparsercommand.cpp
       structparservars.cpp
       structparserbuiltin.cpp
+      structparserextmath.cpp
       structparserprogram.cpp
       structparser.cpp
       ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c
