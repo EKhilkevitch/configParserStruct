@@ -594,7 +594,8 @@ TEST( program, functionBuiltIn )
     "a = 2; z1 = exp( a*pi() );\n"
     "z2 = pow( 3.0, 5.5 );\n"
     "z3 = atan2( 4, 7 );\n"
-    "z4 = abs(-3.4); z5 = defined(z4); z6 = defined(ABC);\n");
+    "z4 = abs(-3.4); z5 = defined(z4); z6 = defined(ABC);\n"
+    "z7 = erf(0.5); z8 = erfc(0.5); z9 = erf(-0.3) + 0.7*erfc(-0.4); \n");
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
@@ -611,6 +612,9 @@ TEST( program, functionBuiltIn )
   EXPECT_NEAR( 3.4, Program.getNamedVariable("z4").number(), 1e-5 );
   EXPECT_TRUE( Program.getNamedVariable("z5").boolean() );
   EXPECT_FALSE( Program.getNamedVariable("z6").boolean() );
+  EXPECT_NEAR( 0.52049987781, Program.getNamedVariable("z7").number(), 1e-7 );
+  EXPECT_NEAR( 0.47950012218, Program.getNamedVariable("z8").number(), 1e-7 );
+  EXPECT_NEAR( 0.67124788907, Program.getNamedVariable("z9").number(), 1e-7 );
 }
 
 // ---------------------------------------------------------

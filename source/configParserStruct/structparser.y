@@ -16,7 +16,7 @@
 #if __cplusplus
 #  define EXTERN extern "C" 
 #else
-#  define EXTERN extern
+#  define EXTERN 
 #endif
 
 EXTERN int CPSSPU_parse( void );
@@ -199,14 +199,14 @@ idRef          : idRef '.' TOKEN_ID                { CPSSPU_setAttributeToTopRef
 
 // ==================================================
 
-int CPSSPU_wrap( void )
+EXTERN int CPSSPU_wrap( void )
 {
   return 1;
 }
 
 // --------------------------------------------------
 
-void CPSSPU_error( const char *String )
+EXTERN void CPSSPU_error( const char *String )
 {
   CPSSPU_setStructParserError();
 }
