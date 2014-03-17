@@ -87,6 +87,16 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
+    class printlnBuiltIn : public namedBuiltIn
+    {
+      public: 
+        printlnBuiltIn() : namedBuiltIn("println") {}
+        const variable execute( const program &Program ) const;
+        variableValue* clone() const { return new printlnBuiltIn(*this); }
+    };
+    
+    // -----------------------------------------------------
+    
     class definedBuiltIn : public namedBuiltIn
     {
       public:

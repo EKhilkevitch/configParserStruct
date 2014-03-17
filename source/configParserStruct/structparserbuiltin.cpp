@@ -26,6 +26,17 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   int NumberOfArgs = getNumberOfArguments(Program);
   for ( int i = 1; i <= NumberOfArgs; i++ )
     std::cout << getArgument( i, Program ).string();
+  std::cout << std::flush;
+  return createVariable( NumberOfArgs );
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::printlnBuiltIn::execute( const program &Program ) const
+{
+  int NumberOfArgs = getNumberOfArguments(Program);
+  for ( int i = 1; i <= NumberOfArgs; i++ )
+    std::cout << getArgument( i, Program ).string();
   std::cout << std::endl;
   return createVariable( NumberOfArgs );
 }

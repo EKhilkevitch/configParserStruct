@@ -32,6 +32,7 @@ endif()
 
 add_subdirectory( ./source/configParserStruct/ )
 add_subdirectory( ./source/tests/ )
+add_subdirectory( ./source/interpreter/ )
 
 if ( WIN32 )
   add_custom_command( COMMAND "sed -i 's/machine:[a-z0-9]*/machine:x86/g" TARGET Makefile )

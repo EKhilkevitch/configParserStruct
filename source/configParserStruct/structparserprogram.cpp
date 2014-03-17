@@ -69,6 +69,7 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "abs", std::fabs );
 
   setNamedVariable( "print", printBuiltIn() );
+  setNamedVariable( "println", printlnBuiltIn() );
   setNamedVariable( "defined", definedBuiltIn() );
 
 #undef SET_BUILTIN_FUNCTION 
