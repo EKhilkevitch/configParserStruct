@@ -95,14 +95,15 @@ std::set<std::string> configParserStruct::structParserUtil::program::onBuildVari
   std::set<std::string> VariableNames;
   for ( commandsList::const_iterator c = Commands.begin(); c != Commands.end(); ++c )
   {
-    try
-    {
-      const pushValueCommand &PushCommand = dynamic_cast< const pushValueCommand& > ( c->action() );
-      const variable &ReferenceVariable = PushCommand.pushedVariable();
-      const referenceVariableValue &ReferenceVariableValue = ReferenceVariable.value<referenceVariableValue>();
-      const std::string &PushedName = ReferenceVariableValue.name();
-      VariableNames.insert( PushedName );
-    } catch ( std::bad_cast& ) {}
+    const pushValueCommand *PushCommand = dynamic_cast< const pushValueCommand* > ( &c->action() );
+    if ( PushCommand == NULL )
+      continue;
+    const variable &ReferenceVariable = PushCommand->pushedVariable();
+    if ( ! ReferenceVariable.isValueDerivedFrom<referenceVariableValue>() )
+      continue;
+    const referenceVariableValue &ReferenceVariableValue = ReferenceVariable.value<referenceVariableValue>();
+    const std::string &PushedName = ReferenceVariableValue.name();
+    VariableNames.insert( PushedName );
   }
   return VariableNames;
 }
