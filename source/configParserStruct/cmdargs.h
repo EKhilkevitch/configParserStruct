@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <functional>
 
+#include "configParserStruct/exception.h"
+
 // =====================================================
 
 /**
@@ -22,8 +24,8 @@
 
 namespace configParserStruct
 {
-
-// =====================================================
+  
+  // =====================================================
 
   /**
    * @brief 
@@ -34,6 +36,27 @@ namespace configParserStruct
    */
   class commandLineArgumentsParser
   {
+    public:
+      struct exception : public ::configParserStruct::exception
+      {
+        exception( const std::string &What ) : ::configParserStruct::exception(What) {}
+      };
+
+      struct invalidArgumentNameException : public exception
+      {
+        invalidArgumentNameException( const std::string &ArgName ) : exception( "Invalid argument name '" + ArgName + "'" ) {}
+      };
+
+      struct invalidArgumentValueException : public exception
+      {
+        invalidArgumentValueException( const std::string &ArgName ) : exception( "Value of argument '" + ArgName + "' must be integer" ) {}
+      };
+
+      struct doubleInsertingOptionException : public exception
+      {
+        doubleInsertingOptionException( const std::string &Name ) : exception( "Option with name '" + Name + "' already exisis in list of options" ) {}
+      };
+
     public:
       struct getoptOption
       {

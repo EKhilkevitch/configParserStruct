@@ -86,7 +86,7 @@ std::string configParserStruct::commandLineArgumentsParser::parsedArguments::arg
   if ( i == Arguments.end() )
   {
     if ( EnableException )
-      throw std::runtime_error( std::string("Invalid argument name ") + ArgShortName );
+      throw invalidArgumentNameException( std::string() + ArgShortName );
     return DefaultValue;
   }
   return i->second; 
@@ -103,7 +103,7 @@ int configParserStruct::commandLineArgumentsParser::parsedArguments::argInt( cha
   if ( *End != '\0' || ArgValue.empty() )
   {
     if ( EnableException )
-      throw std::runtime_error( std::string("Invalid value of argument '") + ArgShortName + "' : must be integer" );
+      throw invalidArgumentValueException( std::string() + ArgShortName );
     return DefaultValue;
   }
   return Result;
@@ -120,7 +120,7 @@ double configParserStruct::commandLineArgumentsParser::parsedArguments::argDoubl
   if ( *End != '\0' || ArgValue.empty() )
   {
     if ( EnableException )
-      throw std::runtime_error( std::string("Invalid value of argument '") + ArgShortName + "' : must be integer" );
+      throw invalidArgumentValueException( std::string() + ArgShortName );
     return DefaultValue;
   }
   return Result;
@@ -137,10 +137,10 @@ void configParserStruct::commandLineArgumentsParser::addOption( const std::strin
     throw std::invalid_argument( "Value of ShortName must be > 0" );
 
   if ( isOptionExist(ShortName) )
-    throw std::runtime_error( std::string() + "Option with short name '" + ShortName + "' already exist in list" );
+    throw doubleInsertingOptionException( std::string() + ShortName);
 
   if ( isOptionExist(FullName) )
-    throw std::runtime_error( std::string() + "Option with full name '" + FullName + "' already exist in list" );
+    throw doubleInsertingOptionException( FullName );
 
   getoptOption NextOption = { FullName, NeedParameter, ShortName };
   Options.push_back( NextOption );

@@ -11,6 +11,14 @@
 
 // =====================================================
 
+configParserStruct::structParser::parsingException::parsingException( int L ) :
+  exception( "Error while parsing in line " + convertToString( L ) ),
+  Line( L )
+{
+}
+
+// =====================================================
+
 configParserStruct::structParser::structParser( const std::string &ConfigText ) :
   Program(NULL)
 {
@@ -42,7 +50,7 @@ void configParserStruct::structParser::build( const std::string &Text )
   Program->initBuiltInVariables();
   bool OK = Program->build( Text );
   if ( ! OK )
-    throw std::runtime_error( "Error while parsing in line " + convertToString( Program->errorLine() ) );
+    throw parsingException( Program->errorLine() );
 }
 
 // -----------------------------------------------------

@@ -7,6 +7,8 @@
 #include <set>
 #include <list>
 
+#include "configParserStruct/exception.h"
+
 // =====================================================
 
 /**
@@ -25,6 +27,32 @@ namespace configParserStruct
   */
   class parser
   {
+    public:
+      struct exception : public ::configParserStruct::exception
+      {
+        exception( const std::string &What ) : ::configParserStruct::exception(What) {}
+      };
+
+      class openFileException : public exception
+      {
+        private:
+          std::string FileName;
+        public:
+          openFileException( const std::string &FName, const std::string &Reason ); 
+          ~openFileException() throw() {}
+          const std::string &fileName() const { return FileName; }
+      };
+
+      class readFileException : public exception
+      {
+        private:
+          std::string FileName;
+        public:
+          readFileException( const std::string &FName, const std::string &Reason ); 
+          ~readFileException() throw() {}
+          const std::string &fileName() const { return FileName; }
+      };
+
     public:
       typedef std::set<std::string> containerForVariables;
 

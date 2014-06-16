@@ -4,6 +4,7 @@
 // =====================================================
 
 #include "configParserStruct/parser.h"
+#include "configParserStruct/exception.h"
 
 // =====================================================
 
@@ -14,6 +15,21 @@ namespace configParserStruct
 
   class structParser : public parser
   {
+    public:
+      struct exception : public ::configParserStruct::exception 
+      {
+        exception( const std::string &What ) : ::configParserStruct::exception(What) {}
+      };
+
+      class parsingException : public exception
+      {
+        private:
+          int Line;
+        public:
+          parsingException( int Line );
+          int line() { return Line; }
+      };
+
     private:
       structParserUtil::program *Program;
 

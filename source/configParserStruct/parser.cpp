@@ -13,6 +13,22 @@
 
 // =====================================================
       
+configParserStruct::parser::openFileException::openFileException( const std::string &FName, const std::string &Reason ) : 
+  exception( "Can not open file '" + FName + "' : " + Reason ), 
+  FileName(FName) 
+{
+}
+
+// -----------------------------------------------------
+          
+configParserStruct::parser::readFileException::readFileException( const std::string &FName, const std::string &Reason ) : 
+  exception( "Can not read from file '" + FName + "' : " + Reason ), 
+  FileName(FName) 
+{
+}
+
+// =====================================================
+
 std::list<std::string> configParserStruct::parser::readFileContent( const std::string &FileName )
 {
   FILE *File = NULL;
@@ -24,7 +40,7 @@ std::list<std::string> configParserStruct::parser::readFileContent( const std::s
   } else {
     File = std::fopen( FileName.c_str(), "r" );
     if ( File == NULL )
-      throw std::runtime_error("Can not open file '" + FileName + "': error is " + std::strerror(errno) );
+      throw openFileException( FileName, std::strerror(errno) );
   }
 
   char Buffer[8192];
@@ -38,8 +54,15 @@ std::list<std::string> configParserStruct::parser::readFileContent( const std::s
     Result.push_back(Buffer);
   }
 
+  bool IsReadingError = false;
+  if ( std::ferror( File ) )
+    IsReadingError = true;
+
   if ( File != stdin )
     std::fclose(File);
+
+  if ( IsReadingError )
+    throw readFileException( FileName, std::strerror(errno) );
 
   return Result;
 }
