@@ -268,8 +268,8 @@ std::string configParserStruct::pythonParser::dequoteString( const std::string &
 {
   size_t QuotesLength = Quotes.length();
 
-  unsigned FirstQuotesIndex = String.find( Quotes );
-  unsigned LastQuotesIndex = String.rfind( Quotes );
+  size_t FirstQuotesIndex = String.find( Quotes );
+  size_t LastQuotesIndex  = String.rfind( Quotes );
 
   if ( FirstQuotesIndex == 0 && LastQuotesIndex == String.length() - QuotesLength )
     return String.substr( QuotesLength, String.length() - 2*QuotesLength );

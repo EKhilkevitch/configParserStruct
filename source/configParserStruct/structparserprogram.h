@@ -33,14 +33,14 @@ namespace configParserStruct
 
         void initBuiltInVariables();
 
-        unsigned pushCommand( const commandAction &A ) { return Commands.push(A); }
+        size_t pushCommand( const commandAction &A ) { return Commands.push(A); }
         size_t numberOfCommands() const { return Commands.size(); }
         void executeOneCommand() { Commands.executeOneCommand(this); }
-        template <class JmpCmd> unsigned replaceCommandMarkerToJmp( int Shift = 0 ) { return Commands.replaceMarker( JmpCmd(Commands.size()+Shift)); }
-        unsigned replaceCommandMarkerToNop() { return Commands.replaceMarker( nopCommand() ); }
+        template <class JmpCmd> size_t replaceCommandMarkerToJmp( int Shift = 0 ) { return Commands.replaceMarker( JmpCmd(Commands.size()+Shift)); }
+        size_t replaceCommandMarkerToNop() { return Commands.replaceMarker( nopCommand() ); }
 
-        void setCurrentCommandIndex( unsigned Index ) { Commands.setCurrentCommandIndex(Index); }
-        unsigned currentCommandIndex()  const { return Commands.currentCommandIndex(); }
+        void setCurrentCommandIndex( size_t Index ) { Commands.setCurrentCommandIndex(Index); }
+        size_t currentCommandIndex()  const { return Commands.currentCommandIndex(); }
 
         void pushStackVariable( const variableValue &V ) { Stack.push(V); }
         void pushStackVariable( const variable &V )      { Stack.push(V); }

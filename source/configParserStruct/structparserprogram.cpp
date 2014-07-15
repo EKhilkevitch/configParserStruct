@@ -171,7 +171,7 @@ std::string configParserStruct::structParserUtil::program::toString() const
   Stream << "Program: " << Commands.size() << " commands, " << Variables.size() << " named variabled" << std::endl;
 
   Stream << std::endl << "Commands:" << std::endl;
-  for ( unsigned i = 0; i < Commands.size(); i++ )
+  for ( size_t i = 0; i < Commands.size(); i++ )
     Stream << "  " << Commands.getCommand(i).toString() << std::endl;
   
   Stream << std::endl << "Variables:" << std::endl;

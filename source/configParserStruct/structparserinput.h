@@ -37,7 +37,7 @@ namespace configParserStruct
     {
       private:
         std::string String;
-        unsigned Position;
+        size_t Position;
 
       public:
         inputString( const std::string &S = std::string() );

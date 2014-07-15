@@ -26,7 +26,7 @@ DELIM                   [ \t\v\r\f]
 #include <assert.h>
 
 extern void     CPSSPU_lexResetLineNumber( void );
-extern unsigned CPSSPU_lexCurrentLineNumber( void ); 
+extern size_t   CPSSPU_lexCurrentLineNumber( void ); 
 extern void     CPSSPU_lexSetNewLineEnabled( int Enabled );
 static void     CPSSPU_lexUpdateLineNumber( void );
 
@@ -159,7 +159,7 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 #define TRUE 1
 #define FALSE 0
 
-static unsigned CPSSPU_LineNumber = 0;
+static size_t CPSSPU_LineNumber = 0;
 static int CPSSPU_EnableNewline = FALSE;
 
 // -----------------------------------------------------
@@ -171,7 +171,7 @@ void CPSSPU_lexResetLineNumber( void )
 
 // -----------------------------------------------------
 
-unsigned CPSSPU_lexCurrentLineNumber( void )
+size_t CPSSPU_lexCurrentLineNumber( void )
 {
   return CPSSPU_LineNumber;
 }
@@ -187,7 +187,7 @@ void CPSSPU_lexSetNewLineEnabled( int Enabled )
 
 static void CPSSPU_lexUpdateLineNumber( void )
 {
-  unsigned i;
+  size_t i;
   for ( i = 0; CPSSPU_text[i] != '\0'; i++ )
   {
     if ( CPSSPU_text[i] == '\n' )
@@ -216,7 +216,7 @@ static int CPSSPU_lexEnableTokenNewline( void )
 
 static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t DestinationSize, const char *const Source )
 {
-  unsigned si, di;
+  size_t si, di;
   size_t SourceSize = 0;
 
   assert( Source != NULL );

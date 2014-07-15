@@ -80,17 +80,17 @@ namespace configParserStruct
           bool FoundUnknownOption;
 
         public:
-          parsedArguments( const std::string &Name ) : ProgramName(Name), FoundUnknownOption(false) {}
+          parsedArguments( const std::string &Name );
 
           const std::string& programName() const { return ProgramName; }
 
           void insert( char ArgShortName, const char *Value );
           void setFoundUnknownOption() { FoundUnknownOption = true; }
-          void pushFileArgument( const std::string &Arg ) { ListOfFileArguments.push_back(Arg); }
+          void pushFileArgument( const std::string &Arg );
 
           bool foundUnknownOption() const { return FoundUnknownOption; }
-          bool exist( char ArgShortName ) const { return Arguments.find(ArgShortName) != Arguments.end(); }
-          const std::list<std::string>& listOfFileArguments() const { return ListOfFileArguments; }
+          bool exist( char ArgShortName ) const;
+          const std::list<std::string>& listOfFileArguments() const;
           std::set<char> existingArguments() const;
           
           std::string arg( char ArgShortName, const std::string &DefaultValue = std::string(), bool EnableException = false ) const;
@@ -128,9 +128,9 @@ namespace configParserStruct
       bool isOptionExist( const std::string &FullName );
 
       size_t numberOfOptions() const { return Options.size(); }
-      std::string optionFullName( unsigned i ) const { return i < numberOfOptions() ? optionFullName(Options[i]) : ""; }
-      bool optionHasArgument( unsigned i ) const { return i < numberOfOptions() ? optionHasArgument(Options[i]) : false; } 
-      char optionShortName( unsigned i ) const { return i < numberOfOptions() ? optionShortName(Options[i]) : '\0'; }
+      std::string optionFullName( size_t Index ) const;
+      bool optionHasArgument( size_t Index ) const;
+      char optionShortName( size_t Index ) const;
 
       parsedArguments parse( int argc, char *argv[] ) const;
       parsedArguments parse( const std::list< std::string > &Arguments ) const;

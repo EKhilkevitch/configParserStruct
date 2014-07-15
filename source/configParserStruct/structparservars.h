@@ -156,10 +156,10 @@ namespace configParserStruct
     class commandAddressVariableValue : public variableValue
     {
       private:
-        unsigned CommandIndex;
+        size_t CommandIndex;
 
       public:
-        commandAddressVariableValue( unsigned Index ) : CommandIndex(Index) {}
+        commandAddressVariableValue( size_t Index ) : CommandIndex(Index) {}
         
         variableValue* clone() const { return new commandAddressVariableValue(*this); }
         
@@ -167,7 +167,7 @@ namespace configParserStruct
         double number() const { return CommandIndex; }
         int integer() const { return CommandIndex; }
         bool boolean() const { return true; }
-        unsigned address() const { return CommandIndex; }
+        size_t address() const { return CommandIndex; }
     };
     
     // -----------------------------------------------------
@@ -203,8 +203,8 @@ namespace configParserStruct
     class builtinFunctionValue : public variableValue
     {
       protected:
-        unsigned getNumberOfArguments( const program &Program ) const;
-        const variable getArgument( unsigned Index, const program &Program ) const;
+        size_t getNumberOfArguments( const program &Program ) const;
+        const variable getArgument( size_t Index, const program &Program ) const;
         const variable getVariable( const std::string &Name, const program &Program ) const;
 
       public:
@@ -254,7 +254,7 @@ namespace configParserStruct
         bool boolean() const { return ! Array.empty(); }
 
         void pushItem( const variable &Value ) { addItem( numberOfItems(), Value ); }
-        void addItem( unsigned Index, const variable &Value );
+        void addItem( size_t Index, const variable &Value );
         const variable getItem( int Index ) const;
         variable* getItemPointer( int Index );
         size_t numberOfItems() const { return Array.size(); }

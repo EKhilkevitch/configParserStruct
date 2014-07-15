@@ -39,7 +39,7 @@ namespace
   std::vector< option > createOptionsVector( const std::vector< configParserStruct::commandLineArgumentsParser::getoptOption > &Options )
   {
     std::vector< option > Result;
-    for ( unsigned i = 0; i < Options.size(); i++ )
+    for ( size_t i = 0; i < Options.size(); i++ )
       Result.push_back( createOption(Options[i]) );
     return Result;
   }
@@ -47,7 +47,7 @@ namespace
   void destroyOptionsVector( std::vector<option> *Options )
   {
     assert( Options != NULL );
-    for ( unsigned i = 0; i < Options->size(); i++ )
+    for ( size_t i = 0; i < Options->size(); i++ )
       destroyOption( &( ( *Options )[i] ) );
     Options->clear();
   }
@@ -56,7 +56,9 @@ namespace
 
 // =====================================================
       
-configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser() 
+configParserStruct::commandLineArgumentsParser::parsedArguments::parsedArguments( const std::string &Name ) : 
+  ProgramName(Name), 
+  FoundUnknownOption(false) 
 {
 }
 
@@ -66,6 +68,27 @@ void configParserStruct::commandLineArgumentsParser::parsedArguments::insert( ch
 { 
   std::string String = ( Value == NULL ? "" : Value );
   Arguments[ ArgShortName ] = String;
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::commandLineArgumentsParser::parsedArguments::pushFileArgument( const std::string &Arg ) 
+{ 
+  ListOfFileArguments.push_back(Arg); 
+}
+
+// -----------------------------------------------------
+
+bool configParserStruct::commandLineArgumentsParser::parsedArguments::exist( char ArgShortName ) const 
+{ 
+  return Arguments.find(ArgShortName) != Arguments.end(); 
+}
+
+// -----------------------------------------------------
+
+const std::list<std::string>& configParserStruct::commandLineArgumentsParser::parsedArguments::listOfFileArguments() const 
+{ 
+  return ListOfFileArguments; 
 }
 
 // -----------------------------------------------------
@@ -127,7 +150,13 @@ double configParserStruct::commandLineArgumentsParser::parsedArguments::argDoubl
 }
 
 // =====================================================
-      
+
+configParserStruct::commandLineArgumentsParser::commandLineArgumentsParser() 
+{
+}
+
+// -----------------------------------------------------
+
 void configParserStruct::commandLineArgumentsParser::addOption( const std::string &FullName, const bool NeedParameter, const char ShortName )
 {
   if ( FullName.empty() )
@@ -250,6 +279,27 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromFileList( p
 
 // -----------------------------------------------------
 
+std::string configParserStruct::commandLineArgumentsParser::optionFullName( size_t i ) const 
+{ 
+  return i < numberOfOptions() ? optionFullName(Options[i]) : ""; 
+}
+
+// -----------------------------------------------------
+
+bool configParserStruct::commandLineArgumentsParser::optionHasArgument( size_t i ) const 
+{ 
+  return i < numberOfOptions() ? optionHasArgument(Options[i]) : false; 
+} 
+
+// -----------------------------------------------------
+
+char configParserStruct::commandLineArgumentsParser::optionShortName( size_t i ) const 
+{ 
+  return i < numberOfOptions() ? optionShortName(Options[i]) : '\0'; 
+}
+
+// -----------------------------------------------------
+
 configParserStruct::commandLineArgumentsParser::parsedArguments configParserStruct::commandLineArgumentsParser::parse( int argc, char *argv[] ) const
 {
   if ( argv == NULL || argc <= 0 )
@@ -275,7 +325,7 @@ configParserStruct::commandLineArgumentsParser::parsedArguments configParserStru
   size_t argc = Arguments.size();
   char **argv = new char*[ argc + 1 ];
 
-  unsigned i = 0;
+  size_t i = 0;
   std::list< std::string >::const_iterator a = Arguments.begin();
   while ( a != Arguments.end() )
   {
@@ -289,7 +339,7 @@ configParserStruct::commandLineArgumentsParser::parsedArguments configParserStru
 
   parsedArguments Result = parse( argc, argv );
 
-  for ( unsigned i = 0; i < argc; i++ )
+  for ( size_t i = 0; i < argc; i++ )
     delete [] argv[i];
   delete [] argv;
 

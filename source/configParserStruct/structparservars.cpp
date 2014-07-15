@@ -67,14 +67,14 @@ void configParserStruct::structParserUtil::variable::setValueByReference( const 
 
 // =====================================================
 
-unsigned configParserStruct::structParserUtil::builtinFunctionValue::getNumberOfArguments( const program &Program ) const
+size_t configParserStruct::structParserUtil::builtinFunctionValue::getNumberOfArguments( const program &Program ) const
 {
   return Program.getNamedVariableFromTopOfStack( "$N" ).integer();
 }
 
 // -----------------------------------------------------
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getArgument( unsigned Index, const program &Program ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getArgument( size_t Index, const program &Program ) const
 {
   std::string Name = "$" + convertToString(Index);
   return Program.getNamedVariableFromTopOfStack( Name );
@@ -277,7 +277,7 @@ const std::string configParserStruct::structParserUtil::arrayVariableValue::stri
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::arrayVariableValue::addItem( unsigned Index, const variable &Value )
+void configParserStruct::structParserUtil::arrayVariableValue::addItem( size_t Index, const variable &Value )
 {
   if ( Array.size() <= Index )
     Array.resize( Index+1, variable() );

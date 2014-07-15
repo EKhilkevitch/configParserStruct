@@ -205,7 +205,7 @@ void CPSSPU_beginOfNewFunctionAssignName( void )
 {
   if ( Program == NULL )
     return;
-  unsigned Index = Program->numberOfCommands();
+  size_t Index = Program->numberOfCommands();
   Program->pushCommand( pushValueCommand( commandAddressVariableValue( Index+4 ) ) );
   Program->pushCommand( assignVariableCommand() );
   Program->pushCommand( popCommand() );
@@ -317,8 +317,8 @@ void CPSSPU_endOfWhileStatement( void )
 {
   if ( Program != NULL )
   {
-    unsigned IndexIf = Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>(+1);
-    unsigned IndexBegin = Program->replaceCommandMarkerToNop();
+    size_t IndexIf = Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>(+1);
+    size_t IndexBegin = Program->replaceCommandMarkerToNop();
     Program->pushCommand( jumpToCommand(IndexBegin) );
   }
 }

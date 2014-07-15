@@ -57,27 +57,27 @@ namespace configParserStruct
 
       private:
         container Commands;
-        unsigned CurrentCommandIndex;
+        size_t CurrentCommandIndex;
 
       public:
         commandsList() : CurrentCommandIndex(0) {}
 
-        unsigned push( const command &Cmd );
-        unsigned push( const commandAction &Action );
-        void set( unsigned Index, const command &Cmd );
-        unsigned replaceMarker( const commandAction &Action );
+        size_t push( const command &Cmd );
+        size_t push( const commandAction &Action );
+        void set( size_t Index, const command &Cmd );
+        size_t replaceMarker( const commandAction &Action );
 
         void clear();
 
         size_t size() const { return Commands.size(); }
         const command& currentCommand() const;
-        const command& getCommand( unsigned Index ) const { return Commands.at(Index); }
-        unsigned currentCommandIndex() const { return CurrentCommandIndex; }
+        const command& getCommand( size_t Index ) const { return Commands.at(Index); }
+        size_t currentCommandIndex() const { return CurrentCommandIndex; }
         void resetCurrentCommandIndex() { CurrentCommandIndex = 0; }
-        void setCurrentCommandIndex( unsigned Index ) { CurrentCommandIndex = Index; }
+        void setCurrentCommandIndex( size_t Index ) { CurrentCommandIndex = Index; }
 
         bool isAllCommandsDone() const { return CurrentCommandIndex >= Commands.size(); }
-        unsigned executeOneCommand( program *Program );
+        size_t executeOneCommand( program *Program );
         void execute( program *Program );
 
         const_iterator begin() const { return Commands.begin(); }
@@ -187,9 +187,9 @@ namespace configParserStruct
     class jumpToCommand : public commandAction
     {
       private:
-        unsigned Index;
+        size_t Index;
       public:
-        jumpToCommand( unsigned I ) : Index(I) {}
+        jumpToCommand( size_t I ) : Index(I) {}
         void execute( program *Program ) const; 
         commandAction* clone() const { return new jumpToCommand(*this); }
         std::string toString() const { return "jump to " + convertToString(Index); }
@@ -200,9 +200,9 @@ namespace configParserStruct
     class jumpIfFalseCommand : public commandAction
     {
       private:
-        unsigned Index;
+        size_t Index;
       public:
-        jumpIfFalseCommand( unsigned I ) : Index(I) {}
+        jumpIfFalseCommand( size_t I ) : Index(I) {}
         void execute( program *Program ) const; 
         commandAction* clone() const { return new jumpIfFalseCommand(*this); }
         std::string toString() const { return "jump if false to " + convertToString(Index); }

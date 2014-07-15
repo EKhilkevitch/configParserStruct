@@ -10,7 +10,7 @@
 
 // =====================================================
 
-unsigned configParserStruct::structParserUtil::commandsList::push( const command &Cmd )
+size_t configParserStruct::structParserUtil::commandsList::push( const command &Cmd )
 {
   Commands.push_back( Cmd );
   return Commands.size() - 1;
@@ -18,7 +18,7 @@ unsigned configParserStruct::structParserUtil::commandsList::push( const command
 
 // -----------------------------------------------------
 
-unsigned configParserStruct::structParserUtil::commandsList::push( const commandAction &Action )
+size_t configParserStruct::structParserUtil::commandsList::push( const commandAction &Action )
 {
   command Cmd(Action);
   return push(Cmd);
@@ -26,14 +26,14 @@ unsigned configParserStruct::structParserUtil::commandsList::push( const command
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::commandsList::set( unsigned Index, const command &Cmd )
+void configParserStruct::structParserUtil::commandsList::set( size_t Index, const command &Cmd )
 {
   Commands.at(Index) = Cmd;
 }
 
 // -----------------------------------------------------
 
-unsigned configParserStruct::structParserUtil::commandsList::replaceMarker( const commandAction &Action )
+size_t configParserStruct::structParserUtil::commandsList::replaceMarker( const commandAction &Action )
 {
   for ( int i = Commands.size()-1; i >= 0; i-- )
   {
@@ -67,7 +67,7 @@ void configParserStruct::structParserUtil::commandsList::clear()
 
 // -----------------------------------------------------
         
-unsigned configParserStruct::structParserUtil::commandsList::executeOneCommand( program *Program )
+size_t configParserStruct::structParserUtil::commandsList::executeOneCommand( program *Program )
 {
   if ( Program == NULL )
     throw std::invalid_argument("Program must be not NULL");
@@ -113,7 +113,7 @@ void configParserStruct::structParserUtil::callCommand::execute( program *Progra
   
   if ( Function.valueType() == typeid(commandAddressVariableValue) )
   {
-    unsigned NextCommandAddress = Program->currentCommandIndex() + 1;
+    size_t NextCommandAddress = Program->currentCommandIndex() + 1;
     variable RetAddress = commandAddressVariableValue( NextCommandAddress );
     Program->pushStackVariable( RetAddress );
     Program->setCurrentCommandIndex( Function.value<commandAddressVariableValue>().address() - 1 );
