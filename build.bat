@@ -3,8 +3,6 @@
 
 rem =========================================
 
-SETLOCAL
-
 set ROOT_DIR=%~dp0
 set BUILD_DIR=build
 
@@ -26,17 +24,17 @@ popd
 rem =========================================
 
 if %ERRORLEVEL% GTR 0 (
-echo.
-echo Build failure.
-echo.
-popd
-exit /b 1
+  echo.
+  echo Build failure.
+  echo.
+  popd
+  exit /b 1
 ) else (
-echo.
-echo Successfully build
-echo.
-popd
-exit /b 0
+  echo.
+  echo Successfully build
+  echo.
+  popd
+  exit /b 0
 )
 
 rem =========================================
