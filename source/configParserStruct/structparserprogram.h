@@ -6,6 +6,7 @@
 #include <string>
 #include <list>
 #include <set>
+#include <cstddef>
 
 #include "configParserStruct/structparservars.h"
 #include "configParserStruct/structparsercommand.h"
@@ -33,14 +34,14 @@ namespace configParserStruct
 
         void initBuiltInVariables();
 
-        size_t pushCommand( const commandAction &A ) { return Commands.push(A); }
-        size_t numberOfCommands() const { return Commands.size(); }
-        void executeOneCommand() { Commands.executeOneCommand(this); }
-        template <class JmpCmd> size_t replaceCommandMarkerToJmp( int Shift = 0 ) { return Commands.replaceMarker( JmpCmd(Commands.size()+Shift)); }
-        size_t replaceCommandMarkerToNop() { return Commands.replaceMarker( nopCommand() ); }
+        size_t pushCommand( const commandAction &Action );
+        size_t numberOfCommands() const;
+        void executeOneCommand();
+        template <class jmpCommandAction> size_t replaceCommandMarkerToJmp( ptrdiff_t Shift = 0 );
+        size_t replaceCommandMarkerToNop();
 
-        void setCurrentCommandIndex( size_t Index ) { Commands.setCurrentCommandIndex(Index); }
-        size_t currentCommandIndex()  const { return Commands.currentCommandIndex(); }
+        void setCurrentCommandIndex( size_t Index );
+        size_t currentCommandIndex() const;
 
         void pushStackVariable( const variableValue &V ) { Stack.push(V); }
         void pushStackVariable( const variable &V )      { Stack.push(V); }
@@ -68,12 +69,20 @@ namespace configParserStruct
         int errorLine() { return ErrorLine; }
         void execute();
         bool rebuildAndExecute( const std::string &ProgramText );
+        
+        static std::string lastResultVariableName();
 
         std::string toString() const;
-
-        static std::string lastResultVariableName() { return ":LAST_EXPRESSION:"; }
     };
   
+    // =====================================================
+    
+    template <class jmpCommandAction> size_t program::replaceCommandMarkerToJmp( ptrdiff_t Shift ) 
+    { 
+      jmpCommandAction JmpCommandAction( Commands.size()+Shift );
+      return Commands.replaceMarker( JmpCommandAction ); 
+    }
+    
     // =====================================================
     
   }

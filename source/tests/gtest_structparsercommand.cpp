@@ -52,6 +52,7 @@ TEST( commandsList, execute )
   program Program;
   List.execute( &Program );
 
+  EXPECT_TRUE( List.isAllCommandsDone() );
   EXPECT_EQ( 1, Program.stackSize() );
   EXPECT_NEAR( 15, Program.topStackVariable().number(), 1e-5 );
 }

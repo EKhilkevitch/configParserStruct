@@ -273,8 +273,10 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromFileList( p
   assert( argv != NULL );
 
   for ( int i = optind; i < argc; i++ )
+  {
     if ( argv[i] != NULL )
       ParsingResults->pushFileArgument( argv[i] );
+  }
 }
 
 // -----------------------------------------------------

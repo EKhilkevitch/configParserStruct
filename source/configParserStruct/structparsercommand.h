@@ -39,12 +39,12 @@ namespace configParserStruct
         clonablePointer<commandAction,nopCommand> Action;
 
       public:
-        command() {}
-        command( const commandAction &A ) : Action(A) {}
-        void execute( program *Program ) const { Action->execute(Program); }
-        const std::type_info& actionType() const { return typeid(*Action); }
-        const std::string toString() const { return Action->toString(); }
-        const commandAction& action() const { return *Action; }
+        command();
+        command( const commandAction &Action );
+        void execute( program *Program ) const;
+        const std::type_info& actionType() const;
+        const std::string toString() const;
+        const commandAction& action() const;
     };
     
     // =====================================================
@@ -60,7 +60,7 @@ namespace configParserStruct
         size_t CurrentCommandIndex;
 
       public:
-        commandsList() : CurrentCommandIndex(0) {}
+        commandsList();
 
         size_t push( const command &Cmd );
         size_t push( const commandAction &Action );
@@ -69,14 +69,14 @@ namespace configParserStruct
 
         void clear();
 
-        size_t size() const { return Commands.size(); }
+        size_t size() const;
         const command& currentCommand() const;
-        const command& getCommand( size_t Index ) const { return Commands.at(Index); }
-        size_t currentCommandIndex() const { return CurrentCommandIndex; }
-        void resetCurrentCommandIndex() { CurrentCommandIndex = 0; }
-        void setCurrentCommandIndex( size_t Index ) { CurrentCommandIndex = Index; }
+        const command& getCommand( size_t Index ) const;
+        size_t currentCommandIndex() const;
+        void resetCurrentCommandIndex();
+        void setCurrentCommandIndex( size_t Index );
 
-        bool isAllCommandsDone() const { return CurrentCommandIndex >= Commands.size(); }
+        bool isAllCommandsDone() const;
         size_t executeOneCommand( program *Program );
         void execute( program *Program );
 

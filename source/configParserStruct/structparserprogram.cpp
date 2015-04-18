@@ -80,6 +80,48 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
 }
 
 // -----------------------------------------------------
+        
+size_t configParserStruct::structParserUtil::program::pushCommand( const commandAction &Action ) 
+{ 
+  return Commands.push(Action); 
+}
+
+// -----------------------------------------------------
+        
+size_t configParserStruct::structParserUtil::program::numberOfCommands() const 
+{ 
+  return Commands.size(); 
+}
+
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::program::executeOneCommand() 
+{ 
+  Commands.executeOneCommand(this); 
+}
+
+// -----------------------------------------------------
+        
+size_t configParserStruct::structParserUtil::program::replaceCommandMarkerToNop() 
+{ 
+  return Commands.replaceMarker( nopCommand() ); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::program::setCurrentCommandIndex( size_t Index ) 
+{ 
+  Commands.setCurrentCommandIndex(Index); 
+}
+
+// -----------------------------------------------------
+        
+size_t configParserStruct::structParserUtil::program::currentCommandIndex()  const 
+{ 
+  return Commands.currentCommandIndex(); 
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::structParserUtil::program::pushFunctionArgument( const variable &V )
 {
@@ -160,6 +202,13 @@ bool configParserStruct::structParserUtil::program::rebuildAndExecute( const std
     return false;
   execute();
   return true;
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::structParserUtil::program::lastResultVariableName() 
+{ 
+  return ":LAST_EXPRESSION:"; 
 }
 
 // -----------------------------------------------------

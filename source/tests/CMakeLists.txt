@@ -25,11 +25,11 @@ find_library( gtest_main  NAMES gtest_main )
 
 if ( NOT ${gtest} MATCHES gtest-NOTFOUND AND ENABLE_TESTS )
 
-  find_program( ICPC_PROGRAM icpc )
-  if ( ICPC_PROGRAM )
-    set( CMAKE_CXX_COMPILER icpc ) 
-    set( CMAKE_C_COMPILER icc ) 
-  endif()
+  #find_program( ICPC_PROGRAM icpc )
+  #if ( ICPC_PROGRAM )
+  #  set( CMAKE_CXX_COMPILER icpc ) 
+  #  set( CMAKE_C_COMPILER icc ) 
+  #endif()
 
   message( "Tests enabled" )
   add_executable( selfTest ${tests_source_files} )

@@ -140,6 +140,7 @@ namespace configParserStruct
     {
       private:
         std::string Value;
+
       public:
         stringVariableValue( const std::string &V ) : Value(V) {}
         

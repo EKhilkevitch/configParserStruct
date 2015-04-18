@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <cassert>
 #include <cstdlib>
+#include <cstddef>
 #include <iostream>
 
 #ifndef PYTHON_INCLUDE_HEADER
@@ -182,7 +183,7 @@ configParserStruct::pythonParser::containerForVariables configParserStruct::pyth
   PyObject *KeysList = PyDict_Keys( Dict );
   Py_ssize_t KeysListSize = PyList_Size( KeysList );
 
-  for ( int Index = 0; Index < (int)KeysListSize; Index++ )
+  for ( ptrdiff_t Index = 0; Index < static_cast<ptrdiff_t>(KeysListSize); Index++ )
   {
     PyObject *Key = PyList_GetItem( KeysList, Index );
     PyObject *KeyRepr = PyObject_Repr( Key );

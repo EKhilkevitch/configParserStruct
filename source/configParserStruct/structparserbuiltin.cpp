@@ -23,35 +23,36 @@ configParserStruct::structParserUtil::namedBuiltIn::namedBuiltIn( const std::str
 
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::printBuiltIn::execute( const program &Program ) const
 {
-  int NumberOfArgs = getNumberOfArguments(Program);
-  for ( int i = 1; i <= NumberOfArgs; i++ )
+  size_t NumberOfArgs = getNumberOfArguments(Program);
+  for ( size_t i = 1; i <= NumberOfArgs; i++ )
     std::cout << getArgument( i, Program ).string();
   std::cout << std::flush;
-  return createVariable( NumberOfArgs );
+  return createVariable<int>( NumberOfArgs );
 }
 
 // -----------------------------------------------------
 
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::printlnBuiltIn::execute( const program &Program ) const
 {
-  int NumberOfArgs = getNumberOfArguments(Program);
-  for ( int i = 1; i <= NumberOfArgs; i++ )
+  size_t NumberOfArgs = getNumberOfArguments(Program);
+  for ( size_t i = 1; i <= NumberOfArgs; i++ )
     std::cout << getArgument( i, Program ).string();
   std::cout << std::endl;
-  return createVariable( NumberOfArgs );
+  return createVariable<int>( NumberOfArgs );
 }
 
 // -----------------------------------------------------
 
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::definedBuiltIn::execute( const program &Program ) const
 {
-  int NumberOfArgs = getNumberOfArguments(Program);
+  size_t NumberOfArgs = getNumberOfArguments(Program);
   if ( NumberOfArgs <= 0 )
     return createVariable( false );
+
   bool Result = true;
-  for ( int i = 1; i <= NumberOfArgs; i++ )
+  for ( size_t i = 1; i <= NumberOfArgs; i++ )
     Result = Result && getArgument( i, Program ).isDefined();
-  return createVariable( Result );
+  return createVariable<bool>( Result );
 }
 
 // =====================================================

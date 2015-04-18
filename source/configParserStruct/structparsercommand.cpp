@@ -6,9 +6,58 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cstddef>
 #include <cassert>
 
 // =====================================================
+
+configParserStruct::structParserUtil::command::command() 
+{
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::command::command( const commandAction &A ) : 
+  Action(A) 
+{
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::command::execute( program *Program ) const 
+{ 
+  Action->execute(Program); 
+}
+
+// -----------------------------------------------------
+
+const std::type_info& configParserStruct::structParserUtil::command::actionType() const 
+{ 
+  return typeid(*Action); 
+}
+
+// -----------------------------------------------------
+
+const std::string configParserStruct::structParserUtil::command::toString() const 
+{ 
+  return Action->toString(); 
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::commandAction& configParserStruct::structParserUtil::command::action() const 
+{ 
+  return *Action; 
+}
+
+// =====================================================
+        
+configParserStruct::structParserUtil::commandsList::commandsList() : 
+  CurrentCommandIndex(0) 
+{
+}
+
+// -----------------------------------------------------
 
 size_t configParserStruct::structParserUtil::commandsList::push( const command &Cmd )
 {
@@ -35,7 +84,7 @@ void configParserStruct::structParserUtil::commandsList::set( size_t Index, cons
 
 size_t configParserStruct::structParserUtil::commandsList::replaceMarker( const commandAction &Action )
 {
-  for ( int i = Commands.size()-1; i >= 0; i-- )
+  for ( ptrdiff_t i = Commands.size()-1; i >= 0; i-- )
   {
     if ( Commands[i].actionType() == typeid(markerCommand) )
     {
@@ -63,6 +112,48 @@ void configParserStruct::structParserUtil::commandsList::clear()
 {
   Commands.clear();
   CurrentCommandIndex = 0;
+}
+
+// -----------------------------------------------------
+
+size_t configParserStruct::structParserUtil::commandsList::size() const 
+{ 
+  return Commands.size(); 
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::command& configParserStruct::structParserUtil::commandsList::getCommand( size_t Index ) const 
+{ 
+  return Commands.at(Index); 
+}
+        
+// -----------------------------------------------------
+
+size_t configParserStruct::structParserUtil::commandsList::currentCommandIndex() const 
+{ 
+  return CurrentCommandIndex; 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::commandsList::resetCurrentCommandIndex() 
+{ 
+  CurrentCommandIndex = 0; 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::commandsList::setCurrentCommandIndex( size_t Index ) 
+{ 
+  CurrentCommandIndex = Index; 
+}
+
+// -----------------------------------------------------
+
+bool configParserStruct::structParserUtil::commandsList::isAllCommandsDone() const 
+{ 
+  return CurrentCommandIndex >= Commands.size(); 
 }
 
 // -----------------------------------------------------
