@@ -25,6 +25,8 @@ cd ..
 
 rem =========================================
 
+:End
+
 if %ERRORLEVEL% GTR 0 (
   echo.
   echo Build failure.
