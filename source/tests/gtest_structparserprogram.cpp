@@ -310,9 +310,12 @@ TEST( program, dict )
   program Program;
   Program.build( "a = 3; b = { .x = 0.1, .z = 2*a, .y = { .l = 'abcd' } };\n"
     "c = b; d = b.y;\n"
-    "e = { .a = 2 }; e['m'] = 12; f['n'] = 13; f['sp ace' .+. '!!!'] = 'ab';\n");
+    "e = { .a = 2 }; e['m'] = 12; f['n'] = 13; f['sp ace' .+. '!!!'] = 'ab';\n"
+    "g.x = 12; g.z = 14; g.b = 'xyz';\n");
   //std::cerr << Program.toString() << std::endl;
   Program.execute();
+  
+  ASSERT_EQ( -1, Program.errorLine() );
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( 3.0, Program.getNamedVariable("a").number(), 1e-5 );
@@ -333,6 +336,8 @@ TEST( program, dict )
   {
     FAIL() << "Exception!";
   }
+  
+  EXPECT_EQ( "{ .b = xyz, .x = 12, .z = 14 }", Program.getNamedVariable("g").string() );
 }
 
 // ---------------------------------------------------------
@@ -345,10 +350,29 @@ TEST( program, dictFieldAssign )
  
   //std::cerr << Program.toString() << std::endl;
   
+  ASSERT_EQ( -1, Program.errorLine() );
   EXPECT_EQ( 0, Program.stackSize() );
+
   EXPECT_EQ( "{ .x = 3, .y = 2 }", Program.getNamedVariable("a").string() );
   EXPECT_EQ( "{ .z = 4 }", Program.getNamedVariable("b").string() );
   EXPECT_EQ( "5", Program.getNamedVariable("c").string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, dictLastComma )
+{
+  program Program;
+  Program.build( "a = { .x = 1, .y = 2, .z = 3, };" );
+  Program.execute();
+ 
+  //std::cerr << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( "{ .x = 1, .y = 2, .z = 3 }", Program.getNamedVariable("a").string() );
+  EXPECT_EQ( "3", Program.getNamedVariable("a.z").string() );
 }
 
 // ---------------------------------------------------------
@@ -595,7 +619,7 @@ TEST( program, functionBuiltIn )
     "z2 = pow( 3.0, 5.5 );\n"
     "z3 = atan2( 4, 7 );\n"
     "z4 = abs(-3.4); z5 = defined(z4); z6 = defined(ABC);\n"
-    "z7 = erf(0.5); z8 = erfc(0.5); z9 = erf(-0.3) + 0.7*erfc(-0.4); \n");
+    "z7 = erf(0.5); z8 = erfc(0.5); z9 = erf(-0.3) + 0.7*erfc(-0.4); \n" );
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );

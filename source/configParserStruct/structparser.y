@@ -179,7 +179,8 @@ arrayElementsList : arrayElementsList ',' expression { CPSSPU_setArrayElementFro
                | expression                          { CPSSPU_setArrayElementFromStack(); }
                ;
 
-structFields   : structFields ',' structField
+structFields   : structFields ',' 
+               | structFields ',' structField
                | structField
                |
                ;

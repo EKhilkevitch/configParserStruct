@@ -39,6 +39,6 @@ if ( NOT ${gtest} MATCHES gtest-NOTFOUND AND ENABLE_TESTS )
   target_link_libraries( selfTest pthread )
   set_target_properties( selfTest PROPERTIES COMPILE_FLAGS "-std=c++0x")
 else()
-  message( "Tests disabed" )
+  message( "Tests disabed (use -DENABLE_TESTS=1)" )
 endif()  
 

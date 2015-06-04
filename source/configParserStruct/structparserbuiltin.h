@@ -104,7 +104,7 @@ namespace configParserStruct
         const variable execute( const program &Program ) const;
         variableValue* clone() const { return new definedBuiltIn(*this); }
     };
-
+    
     // =====================================================
    
     typedef zeroArgumentBuiltIn<double>                 mathZeroArgumentBuiltIn;
