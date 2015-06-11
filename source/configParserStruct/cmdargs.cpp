@@ -10,17 +10,29 @@
 #include <iostream>
 #include <getopt.h>
 
-#  pragma warning( disable : 4996 )  // The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup. See online help for details.
-
 // =====================================================
 
 namespace 
 {
+  
+  // Replacement of strdup becouse of icc problems on Win32 with this.
+  char* stringCopy( const char *String )
+  {
+    if ( String == NULL )
+      return NULL;
+    size_t Length = strlen( String );
+    char *CopyOfString = static_cast<char*>( malloc( Length + 1 ) );
+    if ( CopyOfString == NULL )
+      throw std::bad_alloc();
+    std::strcpy( CopyOfString, String );
+    return CopyOfString;
+  }
+
   option createOption( const configParserStruct::commandLineArgumentsParser::getoptOption &Option )
   {
     option Result = 
     {
-      Option.Name.empty() ? NULL : strdup( Option.Name.c_str() ),
+      Option.Name.empty() ? NULL : stringCopy( Option.Name.c_str() ),
       Option.HasArg,
       NULL,
       Option.ShortName
@@ -246,7 +258,7 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromParameters(
 
   while ( true )
   {
-    char *ShortOptsCStr = strdup( ShortOptions.c_str() );
+    char *ShortOptsCStr = stringCopy( ShortOptions.c_str() );
     int NextOption = getopt_long( argc, argv, ShortOptsCStr, &LongOptions[0], NULL );
     free( ShortOptsCStr );
 
