@@ -167,7 +167,7 @@ arguments      : argumentsList
                |        
                ;
 
-argumentsList  : argumentsList ',' expression  { CPSSPU_pushFunctionArgument();  }
+argumentsList  : argumentsList ',' expression  { CPSSPU_pushFunctionArgument(); }
                | expression                    { CPSSPU_pushFunctionArgument(); }
                ;
 
@@ -176,6 +176,8 @@ arrayElements  : arrayElementsList
                ;
 
 arrayElementsList : arrayElementsList ',' expression { CPSSPU_setArrayElementFromStack(); }
+               | arrayElementsList ',' { CPSSPU_pushDictToStack(); }  '{' structFields '}' { CPSSPU_setArrayElementFromStack(); }
+               | arrayElementsList ',' { CPSSPU_pushArrayToStack(); } '[' arrayElements ']' { CPSSPU_setArrayElementFromStack(); }
                | expression                          { CPSSPU_setArrayElementFromStack(); }
                ;
 
@@ -186,7 +188,8 @@ structFields   : structFields ','
                ;
 
 structField    : '.' TOKEN_ID '=' exprSet { CPSSPU_setDictFieldFromStack($2); }
-               | '.' TOKEN_ID '=' { CPSSPU_pushDictToStack(); } '{' structFields '}' { CPSSPU_setDictFieldFromStack($2); }
+               | '.' TOKEN_ID '=' { CPSSPU_pushDictToStack(); }  '{' structFields '}' { CPSSPU_setDictFieldFromStack($2); }
+               | '.' TOKEN_ID '=' { CPSSPU_pushArrayToStack(); } '[' arrayElements ']' { CPSSPU_setDictFieldFromStack($2); }
                ;
 
 idRef          : idRef '.' TOKEN_ID                { CPSSPU_setAttributeToTopReferenceString( $3 );   }

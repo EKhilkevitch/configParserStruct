@@ -180,7 +180,9 @@ void configParserStruct::structParserUtil::composerVariableValue::setValueByRefe
 
 std::pair<std::string,std::string> configParserStruct::structParserUtil::composerVariableValue::splitKey( const std::string &Key )
 {
-  assert( dictSeparator().length() == 1 );
+  assert( dictVariableValue::dictSeparator().length() == 1 );
+  assert( arrayVariableValue::arraySeparatorBegin().length() == 1 );
+  assert( arrayVariableValue::arraySeparatorEnd().length() == 1 );
     
   size_t DelimiterDictPos = Key.find_first_of( dictVariableValue::dictSeparator() );
   size_t DelimiterArrayBeginPos = Key.find_first_of( arrayVariableValue::arraySeparatorBegin() );
@@ -316,28 +318,6 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
   variable *Item = &( Iterator->second );
   
   return composerVariableValue::getItemPointer( Item, KeyParts.second );
-
-#if 0
-  std::pair<std::string,std::string> KeyParts = splitKey(Key);
-  std::map< std::string, variable >::iterator Iterator = Dict.find( KeyParts.first );
-
-  if ( Iterator == Dict.end() )
-    return NULL;
-
-  variable *Item = &( Iterator->second );
-
-  if ( KeyParts.second.empty() )
-    return Item;
-  
-  if ( Item->valueType() == typeid(dictVariableValue) )
-    return Item->value<dictVariableValue>().getItemPointer( KeyParts.second );
-  
-  if ( Item->valueType() == typeid(arrayVariableValue) )
-  {
-  }
-
-  return NULL;
-#endif
 }
 
 // -----------------------------------------------------

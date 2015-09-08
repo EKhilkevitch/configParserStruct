@@ -325,14 +325,33 @@ TEST( program, arrayFieldUse )
 TEST( program, arrayFieldDict )
 {
   program Program;
-  Program.rebuildAndExecute( "b1 = [ 4, 3, 2, { .x = 3, .y = 'a' } ];\n" );
+  Program.build( "b1 = [ 4, 3, 2, { .x = 3, .y = 'abcd' } ];\n" );
   
   //std::cout << Program.toString();
+
+  Program.execute();
   
   ASSERT_EQ( -1, Program.errorLine() );
   
   EXPECT_EQ( 0, Program.stackSize() );
-  EXPECT_EQ( "[ 4, 3, 2, { .x = 3, .y = \"a\" } ]", Program.getNamedVariable("b1").string() );
+  EXPECT_EQ( "[ 4, 3, 2, { .x = 3, .y = abcd } ]", Program.getNamedVariable("b1").string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, arrayFieldArray )
+{
+  program Program;
+  Program.build( "b1 = [ 4, 3, 2, [ 7, 8 ] ];\n" );
+  
+  //std::cout << Program.toString();
+
+  Program.execute();
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( "[ 4, 3, 2, [ 7, 8 ] ]", Program.getNamedVariable("b1").string() );
 }
 
 // ---------------------------------------------------------
