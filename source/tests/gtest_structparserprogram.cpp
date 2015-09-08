@@ -280,6 +280,23 @@ TEST( program, array )
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( 3.0, Program.getNamedVariable("a").number(), 1e-5 );
   EXPECT_EQ( "[ 4, 3, 2 ]", Program.getNamedVariable("b1").string() );
+  EXPECT_EQ( 3, Program.getNamedVariable("b1").integer() );
+
+  try
+  {
+    arrayVariableValue Array = Program.getNamedVariable("b1").value<arrayVariableValue>();
+    EXPECT_EQ( 3, Array.numberOfItems() );
+    EXPECT_EQ( 4, Array.getItem(0).integer() );
+    EXPECT_EQ( 3, Array.getItem(1).integer() );
+    EXPECT_EQ( 2, Array.getItem(2).integer() );
+    EXPECT_EQ( 0, Array.getItem(9).integer() );
+  } catch ( ... ) {
+    FAIL() << "Exception!";
+  }
+  
+  EXPECT_EQ( 4, Program.getNamedVariable("b1[0]").integer() );
+  EXPECT_EQ( 3, Program.getNamedVariable("b1[1]").integer() );
+  EXPECT_EQ( 2, Program.getNamedVariable("b1[2]").integer() );
 }
 
 // ---------------------------------------------------------
@@ -301,6 +318,21 @@ TEST( program, arrayFieldUse )
   EXPECT_EQ( 4, Program.getNamedVariable("c").integer() );
   EXPECT_EQ( 2, Program.getNamedVariable("d").integer() );
   EXPECT_FALSE( Program.getNamedVariable("e").isDefined() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, arrayFieldDict )
+{
+  program Program;
+  Program.rebuildAndExecute( "b1 = [ 4, 3, 2, { .x = 3, .y = 'a' } ];\n" );
+  
+  //std::cout << Program.toString();
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_EQ( "[ 4, 3, 2, { .x = 3, .y = \"a\" } ]", Program.getNamedVariable("b1").string() );
 }
 
 // ---------------------------------------------------------
@@ -332,8 +364,7 @@ TEST( program, dict )
     EXPECT_NEAR( 6.0, Struct.getItem("z").number(), 1e-5 );
     EXPECT_FALSE( Struct.getItem("xy").isDefined() );
     EXPECT_EQ( "abcd", Struct.getItem("y").value<dictVariableValue>().getItem("l").string() );
-  } catch ( ... )
-  {
+  } catch ( ... ) {
     FAIL() << "Exception!";
   }
   
@@ -373,6 +404,23 @@ TEST( program, dictLastComma )
 
   EXPECT_EQ( "{ .x = 1, .y = 2, .z = 3 }", Program.getNamedVariable("a").string() );
   EXPECT_EQ( "3", Program.getNamedVariable("a.z").string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, dictFieldArray )
+{
+  program Program;
+  Program.build( "a = { .x = 1, .y = [ 2, 3 ] };" );
+  Program.execute();
+ 
+  //std::cerr << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( "{ .x = 1, .y = [ 2, 3 ] }", Program.getNamedVariable("a").string() );
+  EXPECT_EQ( "[ 2, 3 ]", Program.getNamedVariable("a.y").string() );
 }
 
 // ---------------------------------------------------------

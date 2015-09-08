@@ -30,13 +30,28 @@ TEST( variable, variable )
 
 // ---------------------------------------------------------
 
-TEST( variable, dictVariableValue_splitKey )
+TEST( variable, composerVariableValue_splitKey )
 {
   EXPECT_EQ( "abc", dictVariableValue::splitKey("abc").first );
   EXPECT_EQ( "", dictVariableValue::splitKey("abc").second );
   
   EXPECT_EQ( "abc", dictVariableValue::splitKey("abc.xyz").first );
   EXPECT_EQ( "xyz", dictVariableValue::splitKey("abc.xyz").second );
+  EXPECT_EQ( "xyz[4]", dictVariableValue::splitKey("abc.xyz[4]").second );
+  
+  EXPECT_EQ( "abc", dictVariableValue::splitKey("abc[1]").first );
+  EXPECT_EQ( "1]", dictVariableValue::splitKey("abc[1]").second );
+  
+  EXPECT_EQ( "abc", dictVariableValue::splitKey("abc[1]").first );
+  EXPECT_EQ( "1][5]", dictVariableValue::splitKey("abc[1][5]").second );
+  EXPECT_EQ( "1][5].xyz", dictVariableValue::splitKey("abc[1][5].xyz").second );
+  EXPECT_EQ( "1][5].xyz[3]", dictVariableValue::splitKey("abc[1][5].xyz[3]").second );
+  
+  EXPECT_EQ( "1]", dictVariableValue::splitKey("1][5].xyz[3]").first );
+  EXPECT_EQ( "5].xyz[3]", dictVariableValue::splitKey("1][5].xyz[3]").second );
+  
+  EXPECT_EQ( "1]", dictVariableValue::splitKey("1].xyz[3]").first );
+  EXPECT_EQ( "xyz[3]", dictVariableValue::splitKey("1].xyz[3]").second );
 }
 
 // ---------------------------------------------------------

@@ -50,8 +50,8 @@ namespace configParserStruct
         clonablePointer<variableValue,undefVariableValue> Value;
 
       public:
-        variable() {}
-        variable( const variableValue &V ) : Value(V) {}
+        variable();
+        variable( const variableValue &Value );
 
         const std::string string() const { return Value->string(); }
         double number() const { return Value->number(); }
@@ -106,13 +106,13 @@ namespace configParserStruct
         double Value;
 
       public:
-        realVariableValue( double V ) : Value(V) {}
+        explicit realVariableValue( double V ) : Value(V) {}
         
         variableValue* clone() const { return new realVariableValue(*this); }
         
         const std::string string() const { return convertToString(Value); }
         double number() const { return Value; }
-        int integer() const { return (int)Value; }
+        int integer() const { return static_cast<int>(Value); }
         bool boolean() const { return Value != 0.0; }
     };
     
@@ -124,7 +124,7 @@ namespace configParserStruct
         int Value;
 
       public:
-        integerVariableValue( int V ) : Value(V) {}
+        explicit integerVariableValue( int V ) : Value(V) {}
         
         variableValue* clone() const { return new integerVariableValue(*this); }
         
@@ -142,7 +142,7 @@ namespace configParserStruct
         std::string Value;
 
       public:
-        stringVariableValue( const std::string &V ) : Value(V) {}
+        explicit stringVariableValue( const std::string &V ) : Value(V) {}
         
         variableValue* clone() const { return new stringVariableValue(*this); }
         
@@ -160,7 +160,7 @@ namespace configParserStruct
         size_t CommandIndex;
 
       public:
-        commandAddressVariableValue( size_t Index ) : CommandIndex(Index) {}
+        explicit commandAddressVariableValue( size_t Index ) : CommandIndex(Index) {}
         
         variableValue* clone() const { return new commandAddressVariableValue(*this); }
         
@@ -180,7 +180,7 @@ namespace configParserStruct
         std::vector< variable > Attributes;
 
       public:
-        referenceVariableValue( const std::string &N ) : Name(N) {}
+        explicit referenceVariableValue( const std::string &N ) : Name(N) {}
         
         variableValue* clone() const { return new referenceVariableValue(*this); }
         
@@ -235,6 +235,9 @@ namespace configParserStruct
 
         virtual size_t numberOfItems() const = 0;
         virtual void clear() = 0;
+        
+        static variable* getItemPointer( variable *Variable, const std::string &KeySuffix );
+        static std::pair<std::string,std::string> splitKey( const std::string &Key );
     };
 
     // -----------------------------------------------------
@@ -254,16 +257,19 @@ namespace configParserStruct
         int integer() const { return Array.size(); }
         bool boolean() const { return ! Array.empty(); }
 
-        void pushItem( const variable &Value ) { addItem( numberOfItems(), Value ); }
+        void pushItem( const variable &Value );
         void addItem( size_t Index, const variable &Value );
         const variable getItem( int Index ) const;
         variable* getItemPointer( int Index );
         size_t numberOfItems() const { return Array.size(); }
         void clear() { Array.clear(); }
         
-        variable* getItemPointerByVariableKey( const variable &Key ) { return getItemPointer( Key.integer() ); }
-        const variable getItemByVariableKey( const variable &Key ) const { return getItem( Key.integer() ); }
-        void addItemByVariableKey( const variable &Key, const variable &Value ) { addItem( Key.integer(), Value ); }
+        variable* getItemPointerByVariableKey( const variable &Key );
+        const variable getItemByVariableKey( const variable &Key ) const;
+        void addItemByVariableKey( const variable &Key, const variable &Value );
+
+        static std::string arraySeparatorBegin();
+        static std::string arraySeparatorEnd();
     };
 
     // -----------------------------------------------------
@@ -291,12 +297,12 @@ namespace configParserStruct
         const std::set<std::string> listOfKeys() const;
         const std::set<std::string> listOfKeysIncludeSubdict() const;
         
-        variable* getItemPointerByVariableKey( const variable &Key ) { return getItemPointer( Key.string() ); }
-        const variable getItemByVariableKey( const variable &Key ) const { return getItem( Key.string() ); }
-        void addItemByVariableKey( const variable &Key, const variable &Value ) { addItem( Key.string(), Value ); }
+        variable* getItemPointerNotFollow( const std::string &Key );
+        variable* getItemPointerByVariableKey( const variable &Key );
+        const variable getItemByVariableKey( const variable &Key ) const;
+        void addItemByVariableKey( const variable &Key, const variable &Value );
         
-        static std::pair<std::string,std::string> splitKey( const std::string &Key );
-        static std::string dictSeparator() { return "."; }
+        static std::string dictSeparator();
     };
 
     // =====================================================
@@ -330,14 +336,14 @@ namespace configParserStruct
         varListStack Stack;
 
       public:
-        variablesListStack() { clear(); }
+        variablesListStack();
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
         variable* getPointer( const std::string &Name );
-        const variable getFromTopOfStack( const std::string &Name ) const { return Stack.back().get(Name); }
+        const variable getFromTopOfStack( const std::string &Name ) const;
 
-        void pushNewList() { Stack.push_back( variablesList() ); }
+        void pushNewList();
         void popList();
         
         std::set<std::string> listOfNames() const;
@@ -346,7 +352,7 @@ namespace configParserStruct
 
         void clear();
 
-        static std::string globalPrefix() { return "::"; }
+        static std::string globalPrefix();
         static std::string globalName( const std::string &Name ); 
     };
     

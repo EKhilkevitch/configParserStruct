@@ -50,7 +50,7 @@ namespace configParserStruct
         size_t stackSize() const { return Stack.size(); }
 
         void pushVariableFrame() { Variables.pushNewList(); }
-        void pushFunctionArgument( const variable &V );
+        void pushFunctionArgument( const variable &Variable );
         void popVariableFrame() { Variables.popList(); }
         size_t functionLevel() const { return Variables.size(); }
 

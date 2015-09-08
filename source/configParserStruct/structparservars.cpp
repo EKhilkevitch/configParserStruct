@@ -18,6 +18,19 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 }
 
 // =====================================================
+        
+configParserStruct::structParserUtil::variable::variable() 
+{
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variable::variable( const variableValue &V ) : 
+  Value(V) 
+{
+}
+
+// -----------------------------------------------------
 
 bool configParserStruct::structParserUtil::variable::isDefined() const 
 { 
@@ -163,6 +176,53 @@ void configParserStruct::structParserUtil::composerVariableValue::setValueByRefe
   Item->setValueByReference( Reference, Value, AttrLevel + 1 );
 }
 
+// -----------------------------------------------------
+
+std::pair<std::string,std::string> configParserStruct::structParserUtil::composerVariableValue::splitKey( const std::string &Key )
+{
+  assert( dictSeparator().length() == 1 );
+    
+  size_t DelimiterDictPos = Key.find_first_of( dictVariableValue::dictSeparator() );
+  size_t DelimiterArrayBeginPos = Key.find_first_of( arrayVariableValue::arraySeparatorBegin() );
+  size_t DelimiterArrayEndPos = Key.find_last_of( arrayVariableValue::arraySeparatorEnd() );
+
+  if ( DelimiterDictPos != std::string::npos && DelimiterDictPos < DelimiterArrayBeginPos )
+    return std::make_pair( Key.substr( 0, DelimiterDictPos ), Key.substr( DelimiterDictPos+1, std::string::npos ) );
+
+  if ( DelimiterArrayBeginPos != std::string::npos && DelimiterArrayEndPos != std::string::npos )
+    return std::make_pair( Key.substr( 0, DelimiterArrayBeginPos ), Key.substr( DelimiterArrayBeginPos+1, std::string::npos ) );
+  
+  return std::make_pair( Key, std::string() );
+}
+
+// -----------------------------------------------------
+        
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::composerVariableValue::getItemPointer( variable *Variable, const std::string &KeySuffix )
+{
+  if ( KeySuffix.empty() )
+    return Variable;
+
+  if ( Variable == NULL )
+    return Variable;
+
+  std::pair<std::string,std::string> KeyParts = splitKey(KeySuffix);
+
+  if ( Variable->valueType() == typeid(dictVariableValue) )
+  {
+    Variable = Variable->value<dictVariableValue>().getItemPointerNotFollow( KeyParts.first );
+    return composerVariableValue::getItemPointer( Variable, KeyParts.second );
+  }
+
+  if ( Variable->valueType() == typeid(arrayVariableValue) )
+  {
+    int Index = std::atoi( KeyParts.first.c_str() );
+    Variable = Variable->value<arrayVariableValue>().getItemPointer( Index );
+    return composerVariableValue::getItemPointer( Variable, KeyParts.second );
+  }
+
+  return NULL;
+}
+
 // =====================================================
 
 const std::string configParserStruct::structParserUtil::dictVariableValue::string() const
@@ -181,14 +241,11 @@ const std::string configParserStruct::structParserUtil::dictVariableValue::strin
         
 // -----------------------------------------------------
 
-std::pair<std::string,std::string> configParserStruct::structParserUtil::dictVariableValue::splitKey( const std::string &Key )
-{
-  assert( dictSeparator().length() == 1 );
-  size_t DelimiterPos = Key.find_first_of( dictSeparator() );
-  if ( DelimiterPos == std::string::npos )
-    return std::make_pair( Key, std::string() );
-  return std::make_pair( Key.substr( 0, DelimiterPos ), Key.substr( DelimiterPos+1, std::string::npos ) );
+std::string configParserStruct::structParserUtil::dictVariableValue::dictSeparator() 
+{ 
+  return "."; 
 }
+
 
 // -----------------------------------------------------
 
@@ -207,6 +264,37 @@ void configParserStruct::structParserUtil::dictVariableValue::addItem( const std
 
 // -----------------------------------------------------
 
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::dictVariableValue::getItemPointerNotFollow( const std::string &Key )
+{
+  std::map< std::string, variable >::iterator Iterator = Dict.find( Key );
+  if ( Iterator == Dict.end() )
+    return NULL;
+  return &( Iterator->second );
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::dictVariableValue::getItemPointerByVariableKey( const variable &Key ) 
+{ 
+  return getItemPointer( Key.string() ); 
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::dictVariableValue::getItemByVariableKey( const variable &Key ) const 
+{ 
+  return getItem( Key.string() ); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::dictVariableValue::addItemByVariableKey( const variable &Key, const variable &Value )
+{ 
+  addItem( Key.string(), Value ); 
+}
+
+// -----------------------------------------------------
+
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::dictVariableValue::getItem( const std::string &Key ) const
 {
   const variable *Pointer = const_cast< dictVariableValue* >(this)->getItemPointer(Key);
@@ -221,13 +309,35 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 {
   std::pair<std::string,std::string> KeyParts = splitKey(Key);
   std::map< std::string, variable >::iterator Iterator = Dict.find( KeyParts.first );
+
   if ( Iterator == Dict.end() )
     return NULL;
-  if ( KeyParts.second.empty() )
-    return &Iterator->second;
-  if ( Dict[ KeyParts.first ].valueType() != typeid(dictVariableValue) )
+
+  variable *Item = &( Iterator->second );
+  
+  return composerVariableValue::getItemPointer( Item, KeyParts.second );
+
+#if 0
+  std::pair<std::string,std::string> KeyParts = splitKey(Key);
+  std::map< std::string, variable >::iterator Iterator = Dict.find( KeyParts.first );
+
+  if ( Iterator == Dict.end() )
     return NULL;
-  return Dict[ KeyParts.first ].value<dictVariableValue>().getItemPointer( KeyParts.second );
+
+  variable *Item = &( Iterator->second );
+
+  if ( KeyParts.second.empty() )
+    return Item;
+  
+  if ( Item->valueType() == typeid(dictVariableValue) )
+    return Item->value<dictVariableValue>().getItemPointer( KeyParts.second );
+  
+  if ( Item->valueType() == typeid(arrayVariableValue) )
+  {
+  }
+
+  return NULL;
+#endif
 }
 
 // -----------------------------------------------------
@@ -286,6 +396,13 @@ void configParserStruct::structParserUtil::arrayVariableValue::addItem( size_t I
 
 // -----------------------------------------------------
 
+void configParserStruct::structParserUtil::arrayVariableValue::pushItem( const variable &Value ) 
+{ 
+  addItem( numberOfItems(), Value ); 
+}
+
+// -----------------------------------------------------
+
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::arrayVariableValue::getItem( int Index ) const
 {
   const variable *Pointer = const_cast< arrayVariableValue* >(this)->getItemPointer(Index);
@@ -301,6 +418,41 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
   if ( Index >= (int)Array.size() || Index < 0 )
     return NULL;
   return &Array[Index];
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::arrayVariableValue::getItemPointerByVariableKey( const variable &Key ) 
+{ 
+  return getItemPointer( Key.integer() ); 
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::arrayVariableValue::getItemByVariableKey( const variable &Key ) const 
+{ 
+  return getItem( Key.integer() ); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::arrayVariableValue::addItemByVariableKey( const variable &Key, const variable &Value ) 
+{ 
+  addItem( Key.integer(), Value ); 
+}
+
+// -----------------------------------------------------
+        
+std::string configParserStruct::structParserUtil::arrayVariableValue::arraySeparatorBegin()
+{
+  return "[";
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::structParserUtil::arrayVariableValue::arraySeparatorEnd()
+{
+  return "]";
 }
 
 // =====================================================
@@ -341,6 +493,13 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 }
 
 // =====================================================
+        
+configParserStruct::structParserUtil::variablesListStack::variablesListStack() 
+{ 
+  clear(); 
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::structParserUtil::variablesListStack::set( const std::string &Name, const variable &Var )
 {
@@ -387,6 +546,21 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 }
 
 // -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesListStack::getFromTopOfStack( const std::string &Name ) const 
+{ 
+  assert( ! Stack.empty() );
+  return Stack.back().get(Name); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::variablesListStack::pushNewList() 
+{ 
+  Stack.push_back( variablesList() ); 
+}
+
+// -----------------------------------------------------
         
 void configParserStruct::structParserUtil::variablesListStack::popList()
 {
@@ -426,6 +600,13 @@ std::set<std::string> configParserStruct::structParserUtil::variablesListStack::
     Result.insert( Names.begin(), Names.end() );
   }
   return Result;
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::structParserUtil::variablesListStack::globalPrefix() 
+{ 
+  return "::"; 
 }
 
 // -----------------------------------------------------
