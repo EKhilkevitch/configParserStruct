@@ -427,6 +427,17 @@ TEST( program, dictLastComma )
 
 // ---------------------------------------------------------
 
+TEST( program, dictErrorComma )
+{
+  program Program;
+  Program.build( "a = { .x = 1, .y = 2 .z = 3, };" ); // No comma between y and z
+  Program.execute();
+  
+  ASSERT_EQ( 0, Program.errorLine() );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, dictFieldArray )
 {
   program Program;
