@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 
 #include <configParserStruct/structparser.h>
 
@@ -11,7 +12,7 @@
 
 void die( const std::string &Message )
 {
-  std::fprintf( stderr, "Error: %s\n", Message.c_str() );
+  std::fprintf( stderr, "%s\n", Message.c_str() );
   std::exit(1);
 }
 
@@ -69,8 +70,14 @@ int main( int argc, char *argv[] )
   std::string FileContent = readFileContent( File );
 
   configParserStruct::structParser Parser;
-  Parser.build( FileContent );
-  Parser.run();
+
+  try
+  {
+    Parser.build( FileContent );
+    Parser.run();
+  } catch ( std::exception &Exception ) {
+    die( Exception.what() );
+  }
 
   closeInputFile( File );
 
