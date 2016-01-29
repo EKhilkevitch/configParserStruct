@@ -202,6 +202,13 @@ configParserStruct::parser::containerForVariables configParserStruct::parser::li
   return Result;
 }
 
+// -----------------------------------------------------
+      
+std::string configParserStruct::parser::structSeparator() 
+{ 
+  return "."; 
+}
+
 // =====================================================
 
 

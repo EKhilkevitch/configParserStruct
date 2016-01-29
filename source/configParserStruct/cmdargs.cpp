@@ -14,19 +14,26 @@
 
 namespace 
 {
+
+  // -----------------------------------------------------
   
   // Replacement of strdup becouse of icc problems on Win32 with this.
   char* stringCopy( const char *String )
   {
     if ( String == NULL )
       return NULL;
+
     size_t Length = strlen( String );
     char *CopyOfString = static_cast<char*>( malloc( Length + 1 ) );
+    
     if ( CopyOfString == NULL )
       throw std::bad_alloc();
+
     std::strcpy( CopyOfString, String );
     return CopyOfString;
   }
+  
+  // -----------------------------------------------------
 
   option createOption( const configParserStruct::commandLineArgumentsParser::getoptOption &Option )
   {
@@ -40,6 +47,8 @@ namespace
 
     return Result;
   }
+  
+  // -----------------------------------------------------
 
   void destroyOption( option *Option )
   {
@@ -47,6 +56,8 @@ namespace
     std::free( (void*)(Option->name) );
     std::memset( Option, 0, sizeof(Option) );
   }
+  
+  // -----------------------------------------------------
 
   std::vector< option > createOptionsVector( const std::vector< configParserStruct::commandLineArgumentsParser::getoptOption > &Options )
   {
@@ -55,6 +66,8 @@ namespace
       Result.push_back( createOption(Options[i]) );
     return Result;
   }
+  
+  // -----------------------------------------------------
 
   void destroyOptionsVector( std::vector<option> *Options )
   {
@@ -67,6 +80,34 @@ namespace
 }
 
 // =====================================================
+
+configParserStruct::commandLineArgumentsParser::exception::exception( const std::string &What ) : 
+  ::configParserStruct::exception(What) 
+{
+}
+        
+// -----------------------------------------------------
+
+configParserStruct::commandLineArgumentsParser::invalidArgumentNameException::invalidArgumentNameException( const std::string &ArgName ) : 
+  exception( "Invalid argument name '" + ArgName + "'" ) 
+{
+}
+
+// -----------------------------------------------------
+        
+configParserStruct::commandLineArgumentsParser::invalidArgumentValueException::invalidArgumentValueException( const std::string &ArgName ) : 
+  exception( "Value of argument '" + ArgName + "' must be integer" ) 
+{
+}
+
+// -----------------------------------------------------
+        
+configParserStruct::commandLineArgumentsParser::doubleInsertingOptionException::doubleInsertingOptionException( const std::string &Name ) : 
+  exception( "Option with name '" + Name + "' already exisis in list of options" ) 
+{
+}
+
+// =====================================================
       
 configParserStruct::commandLineArgumentsParser::parsedArguments::parsedArguments( const std::string &Name ) : 
   ProgramName(Name), 
@@ -75,11 +116,25 @@ configParserStruct::commandLineArgumentsParser::parsedArguments::parsedArguments
 }
 
 // -----------------------------------------------------
+          
+const std::string& configParserStruct::commandLineArgumentsParser::parsedArguments::programName() const 
+{ 
+  return ProgramName; 
+}
+
+// -----------------------------------------------------
                     
 void configParserStruct::commandLineArgumentsParser::parsedArguments::insert( char ArgShortName, const char *Value ) 
 { 
   std::string String = ( Value == NULL ? "" : Value );
   Arguments[ ArgShortName ] = String;
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::commandLineArgumentsParser::parsedArguments::setFoundUnknownOption() 
+{ 
+  FoundUnknownOption = true; 
 }
 
 // -----------------------------------------------------
@@ -94,6 +149,13 @@ void configParserStruct::commandLineArgumentsParser::parsedArguments::pushFileAr
 bool configParserStruct::commandLineArgumentsParser::parsedArguments::exist( char ArgShortName ) const 
 { 
   return Arguments.find(ArgShortName) != Arguments.end(); 
+}
+          
+// -----------------------------------------------------
+
+bool configParserStruct::commandLineArgumentsParser::parsedArguments::foundUnknownOption() const 
+{ 
+  return FoundUnknownOption; 
 }
 
 // -----------------------------------------------------
@@ -189,6 +251,14 @@ void configParserStruct::commandLineArgumentsParser::addOption( const std::strin
 
 // -----------------------------------------------------
 
+void configParserStruct::commandLineArgumentsParser::addOption( const std::string &FullName, const bool NeedParameter ) 
+{ 
+  if ( ! FullName.empty() ) 
+    addOption( FullName, NeedParameter, FullName[0] ); 
+}
+
+// -----------------------------------------------------
+
 bool configParserStruct::commandLineArgumentsParser::isOptionExist( char ShortName )
 {
   for ( std::vector< getoptOption >::const_iterator o = Options.begin(); o != Options.end(); ++o )
@@ -205,6 +275,20 @@ bool configParserStruct::commandLineArgumentsParser::isOptionExist( const std::s
     if ( configParserStruct::commandLineArgumentsParser::optionFullName(*o) == FullName )
       return true;
   return false;
+}
+
+// -----------------------------------------------------
+
+size_t configParserStruct::commandLineArgumentsParser::numberOfOptions() const 
+{ 
+  return Options.size(); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::commandLineArgumentsParser::clearOptions() 
+{ 
+  Options.clear(); 
 }
 
 // -----------------------------------------------------
@@ -358,6 +442,20 @@ configParserStruct::commandLineArgumentsParser::parsedArguments configParserStru
   delete [] argv;
 
   return Result;
+}
+
+// -----------------------------------------------------
+      
+configParserStruct::commandLineArgumentsParser::parsedArguments configParserStruct::commandLineArgumentsParser::operator()( int argc, char *argv[] ) const 
+{ 
+  return parse(argc,argv); 
+}
+
+// -----------------------------------------------------
+
+configParserStruct::commandLineArgumentsParser::parsedArguments configParserStruct::commandLineArgumentsParser::operator()(  const std::list< std::string > &Arguments ) const 
+{ 
+  return parse(Arguments); 
 }
 
 // =====================================================

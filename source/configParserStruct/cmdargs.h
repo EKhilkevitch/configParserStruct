@@ -3,15 +3,13 @@
 
 // =====================================================
 
+#include "configParserStruct/exception.h"
+
 #include <string>
 #include <map>
 #include <vector>
 #include <list>
 #include <set>
-#include <stdexcept>
-#include <functional>
-
-#include "configParserStruct/exception.h"
 
 // =====================================================
 
@@ -39,22 +37,22 @@ namespace configParserStruct
     public:
       struct exception : public ::configParserStruct::exception
       {
-        exception( const std::string &What ) : ::configParserStruct::exception(What) {}
+        exception( const std::string &What );
       };
 
       struct invalidArgumentNameException : public exception
       {
-        invalidArgumentNameException( const std::string &ArgName ) : exception( "Invalid argument name '" + ArgName + "'" ) {}
+        invalidArgumentNameException( const std::string &ArgName );
       };
 
       struct invalidArgumentValueException : public exception
       {
-        invalidArgumentValueException( const std::string &ArgName ) : exception( "Value of argument '" + ArgName + "' must be integer" ) {}
+        invalidArgumentValueException( const std::string &ArgName );
       };
 
       struct doubleInsertingOptionException : public exception
       {
-        doubleInsertingOptionException( const std::string &Name ) : exception( "Option with name '" + Name + "' already exisis in list of options" ) {}
+        doubleInsertingOptionException( const std::string &Name );
       };
 
     public:
@@ -80,15 +78,15 @@ namespace configParserStruct
           bool FoundUnknownOption;
 
         public:
-          parsedArguments( const std::string &Name );
+          explicit parsedArguments( const std::string &Name );
 
-          const std::string& programName() const { return ProgramName; }
+          const std::string& programName() const;
 
           void insert( char ArgShortName, const char *Value );
-          void setFoundUnknownOption() { FoundUnknownOption = true; }
+          void setFoundUnknownOption();
           void pushFileArgument( const std::string &Arg );
 
-          bool foundUnknownOption() const { return FoundUnknownOption; }
+          bool foundUnknownOption() const;
           bool exist( char ArgShortName ) const;
           const std::list<std::string>& listOfFileArguments() const;
           std::set<char> existingArguments() const;
@@ -103,7 +101,7 @@ namespace configParserStruct
       std::vector< getoptOption > Options;
 
     private:
-      void clearOptions() { Options.clear(); }
+      void clearOptions();
 
     protected:
       std::string shortOptions() const;
@@ -121,21 +119,20 @@ namespace configParserStruct
       commandLineArgumentsParser();
 
       void addOption( const std::string &FullName, const bool NeedParameter, const char ShortName );
-      void addOption( const std::string &FullName, const bool NeedParameter ) 
-        { if ( ! FullName.empty() ) addOption( FullName, NeedParameter, FullName[0] ); }
+      void addOption( const std::string &FullName, const bool NeedParameter );
 
       bool isOptionExist( char ShortName );
       bool isOptionExist( const std::string &FullName );
 
-      size_t numberOfOptions() const { return Options.size(); }
+      size_t numberOfOptions() const;
       std::string optionFullName( size_t Index ) const;
       bool optionHasArgument( size_t Index ) const;
       char optionShortName( size_t Index ) const;
 
       parsedArguments parse( int argc, char *argv[] ) const;
       parsedArguments parse( const std::list< std::string > &Arguments ) const;
-      parsedArguments operator()( int argc, char *argv[] ) const { return parse(argc,argv); }
-      parsedArguments operator()(  const std::list< std::string > &Arguments ) const { return parse(Arguments); }
+      parsedArguments operator()( int argc, char *argv[] ) const;
+      parsedArguments operator()(  const std::list< std::string > &Arguments ) const;
   };
 
 // =====================================================

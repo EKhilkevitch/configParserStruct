@@ -85,7 +85,7 @@ namespace configParserStruct
       static std::string readFileContentinSingleString( const std::string &FileName, const std::string &JoinString );
       static std::list<std::string> splitString( const std::string &String, const std::string &PossibleSeparators );
 
-      static std::string structSeparator() { return "."; }
+      static std::string structSeparator();
   };
 
   // =====================================================
