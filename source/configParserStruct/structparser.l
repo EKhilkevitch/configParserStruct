@@ -116,6 +116,7 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 
 "if"            { return TOKEN_IF;          }
 "else"          { return TOKEN_ELSE;        }
+"elif"          { return TOKEN_ELIF;        }
 "while"         { return TOKEN_WHILE;       }
 
 "\${"           { return TOMEN_SYMREF_BEGIN; }

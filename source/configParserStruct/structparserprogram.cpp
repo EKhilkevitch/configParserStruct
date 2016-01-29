@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <sstream>
+#include <iomanip>
 #include <cassert>
 #include <stdexcept>
 
@@ -221,7 +222,7 @@ std::string configParserStruct::structParserUtil::program::toString() const
 
   Stream << std::endl << "Commands:" << std::endl;
   for ( size_t i = 0; i < Commands.size(); i++ )
-    Stream << "  " << Commands.getCommand(i).toString() << std::endl;
+    Stream << "  " << std::setw(4) << i << " " << Commands.getCommand(i).toString() << std::endl;
   
   Stream << std::endl << "Variables:" << std::endl;
   const std::set<std::string> &Names = Variables.listOfNames();

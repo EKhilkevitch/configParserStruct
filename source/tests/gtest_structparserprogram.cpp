@@ -884,6 +884,28 @@ TEST( program, ifelse )
 
 // ---------------------------------------------------------
 
+TEST( program, elif )
+{
+  program Program;
+  bool OK = Program.build( "if ( 1 > 2 ) { x = 1; } elif ( 3 > 2 ) { x = 2; } else { x = 3; }\n"
+    " if ( 2 > 1 ) { y = 2; } elif ( 3 > 2 ) { y = 3; }\n"
+    " if ( 3 < 2 ) { z = 4; } elif ( 4 < 3 ) { z = 5; }\n");
+
+//  std::cout << Program.toString() << std::endl;
+
+  Program.execute();
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_EQ( 2, Program.getNamedVariable("x").integer() );
+  EXPECT_EQ( 2, Program.getNamedVariable("y").integer() );
+  EXPECT_EQ( 0, Program.getNamedVariable("z").integer() );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, whileCycle )
 {
   program Program;

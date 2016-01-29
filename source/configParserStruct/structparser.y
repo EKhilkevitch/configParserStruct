@@ -57,6 +57,7 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_RETURN
 %token TOKEN_IF
 %token TOKEN_ELSE
+%token TOKEN_ELIF
 %token TOKEN_WHILE
 %token TOMEN_SYMREF_BEGIN
 
@@ -101,6 +102,7 @@ ifStatement    : TOKEN_IF '(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block
                ;
 
 elseStatement  : TOKEN_ELSE { CPSSPU_beginOfElseStatement(); } block { CPSSPU_endOfIfElseStatement(); }
+               | TOKEN_ELIF { CPSSPU_beginOfElseStatement(); }'(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block elseStatement { CPSSPU_endOfIfElseStatement(); }
                | { CPSSPU_endOfIfStatement(); }
                ;
 
