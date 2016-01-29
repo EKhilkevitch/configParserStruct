@@ -18,7 +18,7 @@ namespace configParserStruct
     public:
       struct exception : public ::configParserStruct::exception 
       {
-        exception( const std::string &What ) : ::configParserStruct::exception(What) {}
+        exception( const std::string &What );
       };
 
       class parsingException : public exception
@@ -38,7 +38,7 @@ namespace configParserStruct
       structParser& operator=( const structParser& );
 
     public:
-      structParser( const std::string &ConfigText = std::string() );
+      explicit structParser( const std::string &ConfigText = std::string() );
       ~structParser();
 
       void exec( const std::string &ConfigText );

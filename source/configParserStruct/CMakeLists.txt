@@ -23,6 +23,7 @@ endif()
 set( configparser_source_files 
       cmdargs.cpp
       parser.cpp
+      exception.cpp
       simpleparser.cpp
       mutex.cpp
    )

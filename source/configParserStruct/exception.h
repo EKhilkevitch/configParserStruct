@@ -15,7 +15,8 @@ namespace configParserStruct
   class exception : public std::runtime_error
   {
     public:
-      exception( const std::string &What ) : std::runtime_error(What) {}
+      exception( const std::string &What );
+      ~exception() throw();
   };
   
   // =====================================================

@@ -10,6 +10,13 @@
 #include <cmath>
 
 // =====================================================
+        
+configParserStruct::structParser::exception::exception( const std::string &What ) : 
+  ::configParserStruct::exception(What) 
+{
+}
+
+// =====================================================
 
 configParserStruct::structParser::parsingException::parsingException( int L ) :
   exception( "Error while parsing in line " + convertToString( L ) ),

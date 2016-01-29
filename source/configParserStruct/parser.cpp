@@ -12,7 +12,14 @@
 #include <iostream>
 
 // =====================================================
-      
+        
+configParserStruct::parser::exception::exception( const std::string &What ) : 
+  ::configParserStruct::exception(What) 
+{
+}
+
+// -----------------------------------------------------
+
 configParserStruct::parser::openFileException::openFileException( const std::string &FName, const std::string &Reason ) : 
   exception( "Can not open file '" + FName + "' : " + Reason ), 
   FileName(FName) 
@@ -28,6 +35,12 @@ configParserStruct::parser::readFileException::readFileException( const std::str
 }
 
 // =====================================================
+      
+configParserStruct::parser::~parser() 
+{
+}
+
+// -----------------------------------------------------
 
 std::list<std::string> configParserStruct::parser::readFileContent( const std::string &FileName )
 {

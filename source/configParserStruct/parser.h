@@ -3,11 +3,11 @@
 
 // =====================================================
 
+#include "configParserStruct/exception.h"
+
 #include <string>
 #include <set>
 #include <list>
-
-#include "configParserStruct/exception.h"
 
 // =====================================================
 
@@ -30,7 +30,7 @@ namespace configParserStruct
     public:
       struct exception : public ::configParserStruct::exception
       {
-        exception( const std::string &What ) : ::configParserStruct::exception(What) {}
+        exception( const std::string &What );
       };
 
       class openFileException : public exception
@@ -60,7 +60,7 @@ namespace configParserStruct
       virtual void setVariableValueString( const std::string &VarName, const std::string &Value );
 
     public:
-      virtual ~parser() {}
+      virtual ~parser();
 
       virtual void setVariableValue( const std::string &VarName, const std::string &Value );
       virtual void setVariableValue( const std::string &VarName, int Value );
@@ -94,6 +94,8 @@ namespace configParserStruct
   { 
     return static_cast<Enum>( integerVariable(VarName) ); 
   }
+  
+  // -----------------------------------------------------
 
   template <class Enum> Enum parser::enumVariable( const std::string &VarName, Enum DefaultValue ) const 
   { 
