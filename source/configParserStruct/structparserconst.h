@@ -6,6 +6,7 @@
 
 #define STRUCTPARSER_MAX_STRING_LENGTH ( 4096 )
 #define STRUCTPARSER_MAX_ID_LENGTH     (  128 )
+#define STRUCTPARSER_MAX_CMP_LENGTH      ( 32 )
 
 // =====================================================
 

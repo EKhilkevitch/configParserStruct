@@ -220,18 +220,18 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    template <class T> class templateTwoStackOperandsCommand : public twoStackOperandsCommand
+    template <class T, class R = T> class templateTwoStackOperandsCommand : public twoStackOperandsCommand
     {
       protected:
         const variable calculateResultVariable( const variable &Op1, const variable &Op2 ) const
         {
-          return createVariable<T>( calculateResult( Op1.valueScalar<T>(), Op2.valueScalar<T>() ) );
+          return createVariable<R>( calculateResult( Op1.valueScalar<T>(), Op2.valueScalar<T>() ) );
         };
 
-        virtual T calculateResult( const T& Op1, const T& Op2 ) const = 0;
+        virtual R calculateResult( const T& Op1, const T& Op2 ) const = 0;
     };
     
-    // -----------------------------------------------------
+    // =====================================================
 
     class addCommand : public templateTwoStackOperandsCommand<double>
     {
@@ -286,12 +286,12 @@ namespace configParserStruct
         std::string toString() const { return "mod"; }
     };
     
-    // -----------------------------------------------------
+    // =====================================================
     
-    class numEqCommand : public templateTwoStackOperandsCommand<double>
+    class numEqCommand : public templateTwoStackOperandsCommand<double,bool>
     {
       protected:
-        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 == Op1; }
+        bool calculateResult( const double &Op1, const double &Op2 ) const { return Op2 == Op1; }
       public:
         commandAction* clone() const { return new numEqCommand(); }
         std::string toString() const { return "eq numbers"; }
@@ -299,10 +299,10 @@ namespace configParserStruct
 
     // -----------------------------------------------------
     
-    class numNeCommand : public templateTwoStackOperandsCommand<double>
+    class numNeCommand : public templateTwoStackOperandsCommand<double,bool>
     {
       protected:
-        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 != Op1; }
+        bool calculateResult( const double &Op1, const double &Op2 ) const { return Op2 != Op1; }
       public:
         commandAction* clone() const { return new numNeCommand(); }
         std::string toString() const { return "ne numbers"; }
@@ -310,10 +310,10 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    class numGtCommand : public templateTwoStackOperandsCommand<double>
+    class numGtCommand : public templateTwoStackOperandsCommand<double,bool>
     {
       protected:
-        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 > Op1; }
+        bool calculateResult( const double &Op1, const double &Op2 ) const { return Op2 > Op1; }
       public:
         commandAction* clone() const { return new numGtCommand(); }
         std::string toString() const { return "gt numbers"; }
@@ -321,10 +321,10 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    class numLtCommand : public templateTwoStackOperandsCommand<double>
+    class numLtCommand : public templateTwoStackOperandsCommand<double,bool>
     {
       protected:
-        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 < Op1; }
+        bool calculateResult( const double &Op1, const double &Op2 ) const { return Op2 < Op1; }
       public:
         commandAction* clone() const { return new numLtCommand(); }
         std::string toString() const { return "lt numbers"; }
@@ -332,10 +332,10 @@ namespace configParserStruct
 
     // -----------------------------------------------------
     
-    class numGeCommand : public templateTwoStackOperandsCommand<double>
+    class numGeCommand : public templateTwoStackOperandsCommand<double,bool>
     {
       protected:
-        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 >= Op1; }
+        bool calculateResult( const double &Op1, const double &Op2 ) const { return Op2 >= Op1; }
       public:
         commandAction* clone() const { return new numGeCommand(); }
         std::string toString() const { return "ge numbers"; }
@@ -343,16 +343,82 @@ namespace configParserStruct
 
     // -----------------------------------------------------
     
-    class numLeCommand : public templateTwoStackOperandsCommand<double>
+    class numLeCommand : public templateTwoStackOperandsCommand<double,bool>
     {
       protected:
-        double calculateResult( const double &Op1, const double &Op2 ) const { return Op2 <= Op1; }
+        bool calculateResult( const double &Op1, const double &Op2 ) const { return Op2 <= Op1; }
       public:
         commandAction* clone() const { return new numLeCommand(); }
         std::string toString() const { return "le numbers"; }
     };
     
+    // =====================================================
+    
+    class strEqCommand : public templateTwoStackOperandsCommand<std::string,bool>
+    {
+      protected:
+        bool calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 == Op1; }
+      public:
+        commandAction* clone() const { return new strEqCommand(); }
+        std::string toString() const { return "eq strings"; }
+    };    
+
     // -----------------------------------------------------
+    
+    class strNeCommand : public templateTwoStackOperandsCommand<std::string,bool>
+    {
+      protected:
+        bool calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 != Op1; }
+      public:
+        commandAction* clone() const { return new strNeCommand(); }
+        std::string toString() const { return "ne strings"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class strGtCommand : public templateTwoStackOperandsCommand<std::string,bool>
+    {
+      protected:
+        bool calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 > Op1; }
+      public:
+        commandAction* clone() const { return new strGtCommand(); }
+        std::string toString() const { return "gt strings"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class strLtCommand : public templateTwoStackOperandsCommand<std::string,bool>
+    {
+      protected:
+        bool calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 < Op1; }
+      public:
+        commandAction* clone() const { return new strLtCommand(); }
+        std::string toString() const { return "lt strings"; }
+    };    
+
+    // -----------------------------------------------------
+    
+    class strGeCommand : public templateTwoStackOperandsCommand<std::string,bool>
+    {
+      protected:
+        bool calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 >= Op1; }
+      public:
+        commandAction* clone() const { return new strGeCommand(); }
+        std::string toString() const { return "ge strings"; }
+    };
+    
+    // -----------------------------------------------------
+    
+    class strLeCommand : public templateTwoStackOperandsCommand<std::string,bool>
+    {
+      protected:
+        bool calculateResult( const std::string &Op1, const std::string &Op2 ) const { return Op2 <= Op1; }
+      public:
+        commandAction* clone() const { return new strLeCommand(); }
+        std::string toString() const { return "le strings"; }
+    };
+    
+    // =====================================================
     
     class boolAndCommand : public templateTwoStackOperandsCommand<bool>
     {
@@ -384,7 +450,7 @@ namespace configParserStruct
         std::string toString() const { return "bot bool"; }
     };
     
-    // -----------------------------------------------------
+    // =====================================================
     
     class addStrCommand : public templateTwoStackOperandsCommand<std::string>
     {
@@ -395,7 +461,7 @@ namespace configParserStruct
         std::string toString() const { return "add string"; }
     };
 
-    // -----------------------------------------------------
+    // =====================================================
     
     class assignVariableCommand : public commandAction
     {

@@ -181,11 +181,20 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
   CASE_OF_PUSH_COMMAND( ">=", numGeCommand );
   CASE_OF_PUSH_COMMAND( "<=", numLeCommand );
   
+  CASE_OF_PUSH_COMMAND( ".==.", strEqCommand );
+  CASE_OF_PUSH_COMMAND( ".!=.", strNeCommand );
+  CASE_OF_PUSH_COMMAND( ".>.",  strGtCommand );
+  CASE_OF_PUSH_COMMAND( ".<.",  strLtCommand );
+  CASE_OF_PUSH_COMMAND( ".>=.", strGeCommand );
+  CASE_OF_PUSH_COMMAND( ".<=.", strLeCommand );
+  
   CASE_OF_PUSH_COMMAND( "&&",  boolAndCommand );
   CASE_OF_PUSH_COMMAND( "||",  boolOrCommand );
   CASE_OF_PUSH_COMMAND( "!",   boolNotCommand );
   
   CASE_OF_PUSH_COMMAND( ".+.", addStrCommand );
+
+  assert( false );
 
 #undef PUSH_COMMAND
 }

@@ -214,7 +214,11 @@ TEST( program, mod )
 TEST( program, addStr )
 {
   program Program;
-  bool OK = Program.rebuildAndExecute( "x = 'ab' .+. 'cd'; y = x .+. 13; z = 1 .+. 2;" );
+  bool OK = Program.rebuildAndExecute( 
+    "x = 'ab' .+. 'cd';\n"
+    "y = x .+. 13;\n"
+    "z = 1 .+. 2;\n"
+    "w = 'xy'; w .+=. \"abc\"; ");
   
   ASSERT_TRUE( OK );
   EXPECT_EQ( 0, Program.stackSize() );
@@ -222,6 +226,7 @@ TEST( program, addStr )
   EXPECT_EQ( "abcd",   Program.getNamedVariable("x").string() );
   EXPECT_EQ( "abcd13", Program.getNamedVariable("y").string() );
   EXPECT_EQ( "12",     Program.getNamedVariable("z").string() );
+  EXPECT_EQ( "xyabc",  Program.getNamedVariable("w").string() );
 }
 
 // ---------------------------------------------------------
@@ -721,7 +726,7 @@ TEST( program, functionBuiltIn )
 
 // ---------------------------------------------------------
 
-TEST( program, cmp )
+TEST( program, cmpNumbers )
 {
   program Program;
   Program.rebuildAndExecute( "a = 1>2;b = 1<2;c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;\n i = 1+2 > 2.5; j = 1-2 < -1; \n"
@@ -740,6 +745,35 @@ TEST( program, cmp )
   EXPECT_FALSE( Program.getNamedVariable("h").boolean() );
   EXPECT_TRUE( Program.getNamedVariable("i").boolean() );
   EXPECT_FALSE( Program.getNamedVariable("j").boolean() );
+  
+  EXPECT_FALSE( Program.getNamedVariable("x").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("y").boolean() );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, cmpStrings )
+{
+  program Program;
+  Program.rebuildAndExecute( "a = 'a'.>.'b'; b = 'a'.<.'z'; c = 'abc'.==.'abc'; d = 'abcd'.!=.'abcd'; e = 'gfez'.==.'gfe'; f = 'zxy' .>=. 'yyy'; g = 'abc' .<=. 'cde'; h = 'zxy' .<=. 'abc';\n"
+    " i = ( 'b' .+. 'cd' ) .>. 'baaa'; j = 'abcd' .>. 'abc'; \n"
+    "x = ''; y = 'a';\n");
+  
+//  std::cout << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+
+  EXPECT_FALSE( Program.getNamedVariable("a").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("b").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("c").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("d").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("e").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("f").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("g").boolean() );
+  EXPECT_FALSE( Program.getNamedVariable("h").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("i").boolean() );
+  EXPECT_TRUE( Program.getNamedVariable("j").boolean() );
   
   EXPECT_FALSE( Program.getNamedVariable("x").boolean() );
   EXPECT_TRUE( Program.getNamedVariable("y").boolean() );

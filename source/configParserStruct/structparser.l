@@ -60,18 +60,27 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 
 {DELIM}         { CPSSPU_lexUpdateLineNumber(); }
 
-">="            {  CPSSPU_lval.CmpOpStr = ">="; return TOKEN_CMP; }
-">"             {  CPSSPU_lval.CmpOpStr = ">";  return TOKEN_CMP; }
-"<="            {  CPSSPU_lval.CmpOpStr = "<="; return TOKEN_CMP; }
-"<"             {  CPSSPU_lval.CmpOpStr = "<";  return TOKEN_CMP; }
-"=="            {  CPSSPU_lval.CmpOpStr = "=="; return TOKEN_CMP; }
-"!="            {  CPSSPU_lval.CmpOpStr = "!="; return TOKEN_CMP; }
+">="            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+">"             {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+"<="            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+"<"             {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+"=="            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+"!="            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+
+".>=."            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+".>."             {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+".<=."            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+".<."             {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+".==."            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
+".!=."            {  strcpy( CPSSPU_lval.CmpOpStr, CPSSPU_text ); return TOKEN_CMP; }
 
 "+="            { return TOKEN_ADDEQ; }
 "-="            { return TOKEN_SUBEQ; }
 "*="            { return TOKEN_MULEQ; }
 "/="            { return TOKEN_DIVEQ; }
 "="             { return '=';               }
+
+".+=."          { return TOKEN_ADDEQ_STR; }
 
 "("             {  return '(';              }
 ")"             {  return ')';              }

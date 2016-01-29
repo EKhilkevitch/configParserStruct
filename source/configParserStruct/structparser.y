@@ -33,7 +33,7 @@ EXTERN void CPSSPU_error( const char *String );
   char IdName[STRUCTPARSER_MAX_ID_LENGTH];
   int  IntNumber;
   double RealNumber;
-  const char *CmpOpStr;
+  char CmpOpStr[STRUCTPARSER_MAX_CMP_LENGTH];
 }
 
 %token <String>     TOKEN_STRING
@@ -41,11 +41,12 @@ EXTERN void CPSSPU_error( const char *String );
 %token <RealNumber> TOKEN_REALNUMBER
 %token <IdName>     TOKEN_ID
 %token <IdName>     TOKEN_ARGUMENT
-%token <CmpOpStr>   TOKEN_CMP
+%token <CmpOpStr>   TOKEN_CMP 
 
 %token TOKEN_ERROR
 %token TOKEN_NEWLINE
 %token TOKEN_ADDEQ
+%token TOKEN_ADDEQ_STR
 %token TOKEN_SUBEQ
 %token TOKEN_MULEQ
 %token TOKEN_DIVEQ
@@ -116,6 +117,7 @@ exprSet        : idRef '=' exprSet { CPSSPU_assignVariableValueFromStack(); }
                | idRef { CPSSPU_pushVariableValueToStack(); } TOKEN_SUBEQ exprSet { CPSSPU_operatorOnStackTop("-"); CPSSPU_assignVariableValueFromStack(); }
                | idRef { CPSSPU_pushVariableValueToStack(); } TOKEN_MULEQ exprSet { CPSSPU_operatorOnStackTop("*"); CPSSPU_assignVariableValueFromStack(); }
                | idRef { CPSSPU_pushVariableValueToStack(); } TOKEN_DIVEQ exprSet { CPSSPU_operatorOnStackTop("/"); CPSSPU_assignVariableValueFromStack(); }
+               | idRef { CPSSPU_pushVariableValueToStack(); } TOKEN_ADDEQ_STR exprSet { CPSSPU_operatorOnStackTop(".+."); CPSSPU_assignVariableValueFromStack(); }
                | exprThr 
                ;
 
