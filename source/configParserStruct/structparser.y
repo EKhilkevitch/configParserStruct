@@ -102,7 +102,7 @@ ifStatement    : TOKEN_IF '(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block
                ;
 
 elseStatement  : TOKEN_ELSE { CPSSPU_beginOfElseStatement(); } block { CPSSPU_endOfIfElseStatement(); }
-               | TOKEN_ELIF { CPSSPU_beginOfElseStatement(); }'(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block elseStatement { CPSSPU_endOfIfElseStatement(); }
+               | TOKEN_ELIF { CPSSPU_beginOfElseStatement(); } '(' exprSet ')' { CPSSPU_beginOfIfStatement(); } block elseStatement { CPSSPU_endOfIfElseStatement(); }
                | { CPSSPU_endOfIfStatement(); }
                ;
 

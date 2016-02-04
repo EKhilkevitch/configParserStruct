@@ -27,7 +27,19 @@ extern "C" void CPSSPU_lexSetNewLineEnabled( int Enabled );
 
 // =====================================================
 
-static configParserStruct::mutex Mutex;
+namespace
+{
+
+  // =====================================================
+
+  configParserStruct::mutex Mutex;
+
+  // -----------------------------------------------------
+
+  double sqr( double x ) { return x * x; }
+
+  // =====================================================
+}
 
 // =====================================================
 
@@ -71,6 +83,7 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "abs", std::fabs );
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "erf", erf );
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "erfc", erfc );
+  SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "sqr", sqr );
 
   setNamedVariable( "print", printBuiltIn() );
   setNamedVariable( "println", printlnBuiltIn() );
