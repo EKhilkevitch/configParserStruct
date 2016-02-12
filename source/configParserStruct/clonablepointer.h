@@ -21,8 +21,8 @@ namespace configParserStruct
 
     public:
       clonablePointer();
-      clonablePointer( const T &Arg );
-      clonablePointer( T *Ptr );
+      explicit clonablePointer( const T &Arg );
+      explicit clonablePointer( T *Ptr );
       clonablePointer( const clonablePointer &Arg );
       clonablePointer& operator=( const clonablePointer &Arg );
       ~clonablePointer();
@@ -32,8 +32,8 @@ namespace configParserStruct
       T* operator->()             { return Pointer; }
       const T* operator->() const { return Pointer; }
 
-      const std::type_info& type() const { return typeid(*Pointer); }
-      template <class X> bool isDerivedFrom() const { return dynamic_cast<const X*>(Pointer) != NULL; }
+      const std::type_info& type() const;
+      template <class X> bool isDerivedFrom() const;
   };
     
   // =====================================================
@@ -75,13 +75,31 @@ namespace configParserStruct
 
   template <class T, class DefaultT> clonablePointer<T,DefaultT>& clonablePointer<T,DefaultT>::operator=( const clonablePointer &Arg )
   {
-    if ( &Arg != this )
-    {
-      delete Pointer;
-      Pointer = Arg.Pointer->clone();
-    }
+    if ( &Arg == this )
+      return *this;
+
+    T *Clone = Arg.Pointer->clone();
+
+    delete Pointer;
+    Pointer = Clone;
+
     assert( type() == Arg.type() );
+   
     return *this;
+  }
+        
+  // -----------------------------------------------------
+  
+  template <class T, class DefaultT> const std::type_info& clonablePointer<T,DefaultT>::type() const 
+  { 
+    return typeid(*Pointer); 
+  }
+  
+  // -----------------------------------------------------
+  
+  template <class T, class DefaultT> template <class X> bool clonablePointer<T,DefaultT>::isDerivedFrom() const 
+  { 
+    return dynamic_cast<const X*>(Pointer) != NULL; 
   }
   
   // -----------------------------------------------------

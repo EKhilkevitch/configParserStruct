@@ -36,7 +36,9 @@ namespace
 
   // -----------------------------------------------------
 
-  double sqr( double x ) { return x * x; }
+  double doubleSqr( double X ) { return X * X; }
+  double doubleMax( double A, double B ) { return A > B ? A : B; } 
+  double doubleMin( double A, double B ) { return A < B ? A : B; } 
 
   // =====================================================
 }
@@ -83,7 +85,9 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "abs", std::fabs );
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "erf", erf );
   SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "erfc", erfc );
-  SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "sqr", sqr );
+  SET_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, "sqr", doubleSqr );
+  SET_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, "max", doubleMax );
+  SET_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, "min", doubleMin );
 
   setNamedVariable( "print", printBuiltIn() );
   setNamedVariable( "println", printlnBuiltIn() );

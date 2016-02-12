@@ -9,6 +9,12 @@
 #include <iostream>
 
 // =====================================================
+        
+configParserStruct::structParserUtil::variableValue::~variableValue() 
+{
+}
+
+// -----------------------------------------------------
 
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variableValue::valueByReference( const variable &Reference, unsigned AttrLevel ) const
 {
@@ -28,6 +34,34 @@ configParserStruct::structParserUtil::variable::variable()
 configParserStruct::structParserUtil::variable::variable( const variableValue &V ) : 
   Value(V) 
 {
+}
+
+// -----------------------------------------------------
+
+const std::string configParserStruct::structParserUtil::variable::string() const 
+{ 
+  return Value->string(); 
+}
+
+// -----------------------------------------------------
+
+double configParserStruct::structParserUtil::variable::number() const 
+{ 
+  return Value->number(); 
+}
+
+// -----------------------------------------------------
+
+int configParserStruct::structParserUtil::variable::integer() const 
+{ 
+  return Value->integer(); 
+}
+
+// -----------------------------------------------------
+
+bool configParserStruct::structParserUtil::variable::boolean() const 
+{ 
+  return Value->boolean(); 
 }
 
 // -----------------------------------------------------

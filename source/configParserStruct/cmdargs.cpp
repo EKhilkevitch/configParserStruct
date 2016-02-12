@@ -435,7 +435,7 @@ configParserStruct::commandLineArgumentsParser::parsedArguments configParserStru
   assert( i == argc );
   argv[ argc ] = NULL;
 
-  parsedArguments Result = parse( argc, argv );
+  parsedArguments Result = parse( static_cast<int>(argc), argv );
 
   for ( size_t i = 0; i < argc; i++ )
     delete [] argv[i];

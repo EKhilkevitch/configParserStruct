@@ -27,7 +27,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   for ( size_t i = 1; i <= NumberOfArgs; i++ )
     std::cout << getArgument( i, Program ).string();
   std::cout << std::flush;
-  return createVariable<int>( NumberOfArgs );
+  return createVariable( static_cast<int>(NumberOfArgs) );
 }
 
 // -----------------------------------------------------
@@ -38,7 +38,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   for ( size_t i = 1; i <= NumberOfArgs; i++ )
     std::cout << getArgument( i, Program ).string();
   std::cout << std::endl;
-  return createVariable<int>( NumberOfArgs );
+  return createVariable( static_cast<int>(NumberOfArgs) );
 }
 
 // -----------------------------------------------------
@@ -52,7 +52,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   bool Result = true;
   for ( size_t i = 1; i <= NumberOfArgs; i++ )
     Result = Result && getArgument( i, Program ).isDefined();
-  return createVariable<bool>( Result );
+  return createVariable( Result );
 }
 
 // =====================================================

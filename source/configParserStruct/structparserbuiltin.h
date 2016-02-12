@@ -23,7 +23,7 @@ namespace configParserStruct
         std::string Name;
 
       public:
-        namedBuiltIn( const std::string &N );
+        explicit namedBuiltIn( const std::string &N );
         const std::string string() const { return "builtin:" + Name; }
     };
     

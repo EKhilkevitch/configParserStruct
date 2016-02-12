@@ -31,7 +31,7 @@ namespace configParserStruct
     class variableValue
     {
       public:
-        virtual ~variableValue() {}
+        virtual ~variableValue();
         virtual variableValue* clone() const = 0;
         virtual const std::string string() const = 0;
         virtual double number() const = 0;
@@ -53,10 +53,10 @@ namespace configParserStruct
         variable();
         variable( const variableValue &Value );
 
-        const std::string string() const { return Value->string(); }
-        double number() const { return Value->number(); }
-        int integer() const { return Value->integer(); }
-        bool boolean() const { return Value->boolean(); }
+        const std::string string() const;
+        double number() const;
+        int integer() const;
+        bool boolean() const;
         bool isDefined() const;
        
         const variable valueByReference( const variable &Reference, unsigned AttrLevel = 0 ) const;
@@ -165,8 +165,8 @@ namespace configParserStruct
         variableValue* clone() const { return new commandAddressVariableValue(*this); }
         
         const std::string string() const { return convertToString(CommandIndex); }
-        double number() const { return CommandIndex; }
-        int integer() const { return CommandIndex; }
+        double number() const { return static_cast<double>(CommandIndex); }
+        int integer() const { return static_cast<int>(CommandIndex); }
         bool boolean() const { return true; }
         size_t address() const { return CommandIndex; }
     };
@@ -253,8 +253,8 @@ namespace configParserStruct
         variableValue* clone() const { return new arrayVariableValue(*this); }
         
         const std::string string() const;
-        double number() const { return Array.size(); }
-        int integer() const { return Array.size(); }
+        double number() const { return static_cast<double>(Array.size()); }
+        int integer() const { return static_cast<int>(Array.size()); }
         bool boolean() const { return ! Array.empty(); }
 
         void pushItem( const variable &Value );
@@ -285,8 +285,8 @@ namespace configParserStruct
         variableValue* clone() const { return new dictVariableValue(*this); }
 
         const std::string string() const;
-        double number() const { return Dict.size(); }
-        int integer() const { return Dict.size(); }
+        double number() const { return static_cast<double>(Dict.size()); }
+        int integer() const { return static_cast<int>(Dict.size()); }
         bool boolean() const { return ! Dict.empty(); }
 
         void addItem( const std::string &Key, const variable &Value );
