@@ -19,6 +19,19 @@ configParserStruct::structParserUtil::namedBuiltIn::namedBuiltIn( const std::str
     throw std::invalid_argument("Name of builtin function must be not empty");
 }
 
+// -----------------------------------------------------
+        
+configParserStruct::structParserUtil::namedBuiltIn::~namedBuiltIn()
+{
+}
+
+// -----------------------------------------------------
+
+const std::string configParserStruct::structParserUtil::namedBuiltIn::string() const 
+{ 
+  return "builtin:" + Name; 
+}
+
 // =====================================================
 
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::printBuiltIn::execute( const program &Program ) const

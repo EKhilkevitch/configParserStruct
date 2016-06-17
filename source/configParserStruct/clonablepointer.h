@@ -4,7 +4,6 @@
 // =====================================================
 
 #include <cassert>
-#include <cstdlib>
 #include <typeinfo>
 
 // =====================================================
@@ -77,6 +76,9 @@ namespace configParserStruct
   {
     if ( &Arg == this )
       return *this;
+
+    assert( Arg.Pointer != NULL );
+    assert( Arg.Pointer != Pointer );
 
     T *Clone = Arg.Pointer->clone();
 

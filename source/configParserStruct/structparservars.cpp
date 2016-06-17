@@ -310,6 +310,20 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 
 // -----------------------------------------------------
 
+size_t configParserStruct::structParserUtil::dictVariableValue::numberOfItems() const 
+{ 
+  return Dict.size(); 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::dictVariableValue::clear() 
+{ 
+  Dict.clear(); 
+}
+
+// -----------------------------------------------------
+
 configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::dictVariableValue::getItemPointerByVariableKey( const variable &Key ) 
 { 
   return getItemPointer( Key.string() ); 
@@ -507,10 +521,84 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 }
 
 // =====================================================
+
+configParserStruct::structParserUtil::variablesList::variablesList()
+{
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variablesList::~variablesList()
+{
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::variablesList::set( const std::string &Name, const variable &Var ) 
+{ 
+  Dict.addItem( Name, Var ); 
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesList::get( const std::string &Name ) const 
+{ 
+  return Dict.getItem( Name ); 
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::variablesList::getPointer( const std::string &Name ) 
+{ 
+  return Dict.getItemPointer( Name ); 
+}
+
+// -----------------------------------------------------
+
+std::set<std::string> configParserStruct::structParserUtil::variablesList::listOfNames() const 
+{ 
+  return Dict.listOfKeys(); 
+}
+
+// -----------------------------------------------------
+
+std::set<std::string> configParserStruct::structParserUtil::variablesList::listOfNamesIncludeSubdict() const 
+{ 
+  return Dict.listOfKeysIncludeSubdict(); 
+}
+
+// -----------------------------------------------------
+
+size_t configParserStruct::structParserUtil::variablesList::size() const 
+{ 
+  return Dict.numberOfItems(); 
+}
+
+// -----------------------------------------------------
+
+bool configParserStruct::structParserUtil::variablesList::empty() const 
+{ 
+  return Dict.numberOfItems() <= 0; 
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::variablesList::clear() 
+{ 
+  Dict.clear(); 
+}
+
+// =====================================================
         
 configParserStruct::structParserUtil::variablesListStack::variablesListStack() 
 { 
   clear(); 
+}
+
+// -----------------------------------------------------
+
+configParserStruct::structParserUtil::variablesListStack::~variablesListStack()
+{
 }
 
 // -----------------------------------------------------

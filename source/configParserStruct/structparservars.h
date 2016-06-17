@@ -292,8 +292,8 @@ namespace configParserStruct
         void addItem( const std::string &Key, const variable &Value );
         const variable getItem( const std::string &Key ) const;
         variable* getItemPointer( const std::string &Key );
-        size_t numberOfItems() const { return Dict.size(); }
-        void clear() { Dict.clear(); }
+        size_t numberOfItems() const;
+        void clear();
         const std::set<std::string> listOfKeys() const;
         const std::set<std::string> listOfKeysIncludeSubdict() const;
         
@@ -313,17 +313,19 @@ namespace configParserStruct
         dictVariableValue Dict;
 
       public:
-        variablesList() {}
+        variablesList();
+        ~variablesList();
 
-        void set( const std::string &Name, const variable &Var ) { Dict.addItem( Name, Var ); }
-        const variable get( const std::string &Name ) const { return Dict.getItem( Name ); }
-        variable* getPointer( const std::string &Name ) { return Dict.getItemPointer( Name ); }
+        void set( const std::string &Name, const variable &Var );
+        const variable get( const std::string &Name ) const;
+        variable* getPointer( const std::string &Name );
 
-        std::set<std::string> listOfNames() const { return Dict.listOfKeys(); }
-        std::set<std::string> listOfNamesIncludeSubdict() const { return Dict.listOfKeysIncludeSubdict(); }
-        size_t size() const { return Dict.numberOfItems(); }
+        std::set<std::string> listOfNames() const;
+        std::set<std::string> listOfNamesIncludeSubdict() const;
+        size_t size() const;
+        bool empty() const;
 
-        void clear() { Dict.clear(); }
+        void clear();
     };
     
     // =====================================================
@@ -337,6 +339,7 @@ namespace configParserStruct
 
       public:
         variablesListStack();
+        ~variablesListStack();
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
