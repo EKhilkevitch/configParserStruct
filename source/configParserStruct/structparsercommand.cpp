@@ -200,7 +200,7 @@ void configParserStruct::structParserUtil::callCommand::execute( program *Progra
 {
   assert( Program != NULL );
 
-  const variable Function = Program->getNamedVariable( Name );
+  const variable Function = Program->getNamedVariable( variablesListStack::globalPrefix() + Name );
   
   if ( Function.valueType() == typeid(commandAddressVariableValue) )
   {
@@ -231,6 +231,9 @@ void configParserStruct::structParserUtil::retCommand::execute( program *Program
   if ( RetAddress.valueType() == typeid(commandAddressVariableValue) )
     Program->setCurrentCommandIndex( RetAddress.value<commandAddressVariableValue>().address() - 1 );
   Program->pushStackVariable( Result );
+//  std::cout << "------ retCommand::execute ------ " << std::endl;
+//  std::cout << Program->toString();
+//  std::cout << "------                     ------ " << std::endl;
 }
 
 // -----------------------------------------------------

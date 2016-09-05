@@ -256,6 +256,7 @@ void CPSSPU_callFunctionWithArgsFromStack( const char *Name )
   std::string StrName = ( Name == NULL ) ? "" : Name;
   if ( Program != NULL )
   {
+//    Program->pushCommand( pushVarFrameCommand() );
     Program->pushCommand( callCommand( StrName ) );
     Program->pushCommand( popVarFrameCommand() );
   }

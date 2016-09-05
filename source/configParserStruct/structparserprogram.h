@@ -36,6 +36,7 @@ namespace configParserStruct
 
         size_t pushCommand( const commandAction &Action );
         size_t numberOfCommands() const;
+        const command& getCommand( size_t Index ) const;
         void executeOneCommand();
         template <class jmpCommandAction> size_t replaceCommandMarkerToJmp( ptrdiff_t Shift = 0 );
         size_t replaceCommandMarkerToNop();
@@ -47,12 +48,15 @@ namespace configParserStruct
         void pushStackVariable( const variable &V )      { Stack.push(V); }
         const variable popStackVariable() { return Stack.pop(); }
         const variable topStackVariable() const { return Stack.top(); }
-        size_t stackSize() const { return Stack.size(); }
+        size_t stackSize() const;
 
-        void pushVariableFrame() { Variables.pushNewList(); }
+        std::set<std::string> frameVariableNames( size_t FrameIndex ) const;
+        const variable getNamedVariableFromFrame( size_t FrameIndex, const std::string &Name ) const;
+
         void pushFunctionArgument( const variable &Variable );
-        void popVariableFrame() { Variables.popList(); }
-        size_t functionLevel() const { return Variables.size(); }
+        void pushVariableFrame();
+        void popVariableFrame();
+        size_t functionLevel() const;
 
         const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
         variable* getNamedVariablePointer( const std::string &Name ) { return Variables.getPointer(Name); }

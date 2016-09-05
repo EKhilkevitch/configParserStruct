@@ -106,6 +106,26 @@ namespace configParserStruct
         variableValue* clone() const { return new definedBuiltIn(*this); }
     };
     
+    // -----------------------------------------------------
+    
+    class debugProgramTextBuildIn : public namedBuiltIn
+    {
+      public:
+        debugProgramTextBuildIn() : namedBuiltIn("debug_text") {}
+        const variable execute( const program &Program ) const;
+        variableValue* clone() const { return new debugProgramTextBuildIn(*this); }
+    };
+    
+    // -----------------------------------------------------
+    
+    class debugProgramStackBuildIn : public namedBuiltIn
+    {
+      public:
+        debugProgramStackBuildIn() : namedBuiltIn("debug_stack") {}
+        const variable execute( const program &Program ) const;
+        variableValue* clone() const { return new debugProgramStackBuildIn(*this); }
+    };
+
     // =====================================================
    
     typedef zeroArgumentBuiltIn<double>                 mathZeroArgumentBuiltIn;

@@ -591,13 +591,13 @@ TEST( program, functionCall )
   bool OK;
 
   OK = Program.build( "f1 = func { x = 1; return x+2; }; y = f1(); z = 2*f1() + 3; a = 1;" );
-//  std::cout << Program.toString() << std::endl;
+ // std::cout << Program.toString() << std::endl;
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
 
   Program.execute();
 
-  //std::cout << Program.toString() << std::endl;
+ // std::cout << Program.toString() << std::endl;
 
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
@@ -635,7 +635,7 @@ TEST( program, functionComplex )
 
   OK = Program.rebuildAndExecute( "f1 = func { return $1*2; }; f2 = func { return f1($1) + 3.1; }; f1(2.1) + 0.1*f2(4,5);" );
   
- // std::cout << Program.toString() << std::endl;
+  std::cout << Program.toString() << std::endl;
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
@@ -643,6 +643,54 @@ TEST( program, functionComplex )
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
   EXPECT_NEAR( 2.1*2 + 0.1*(2*4+3.1), Program.getLastExpressionReuslt().number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionComplexFrams )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "x=0; f1 = func { x=1; return 2; }; f2 = func { x = 30; return f1() + 5 + x; }; a=f2();" );
+  
+  std::cout << Program.toString() << std::endl;
+  
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
+  EXPECT_NEAR( 0, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 2 + 5 + 30, Program.getNamedVariable("a").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionComplesFib )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.build( "fib = func { x = $1; println('x=>>',x,'<<'); if ( x <= 1 ) { return 1; } println('next'); debug_stack(); y1 = fib(x-1); y2=fib(x-2); return y1+y2; }; "
+    "a = fib(1); b = fib(2); c=fib(10);" );
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+ 
+  std::cout << Program.toString() << std::endl;
+  
+  Program.execute();
+  ASSERT_EQ( 0, Program.stackSize() );
+  ASSERT_EQ( -1, Program.errorLine() );
+  
+ // std::cout << Program.toString() << std::endl;
+  
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_TRUE( Program.getNamedVariable("fib").isDefined() );
+  EXPECT_NEAR( 1, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("b").number(), 1e-5 );
+  EXPECT_NEAR( 55, Program.getNamedVariable("c").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
@@ -697,8 +745,9 @@ TEST( program, functionBuiltIn )
   bool OK;
 
   OK = Program.rebuildAndExecute( "x = exp(2); y = sin(0.3) + cos(4); z = pi();\n"
-    "#print(1+3,' = 1 + 3');\n"
-    "a = 2; z1 = exp( a*pi() );\n"
+    "#println(1+3,' = 1 + 3');\n"
+    "#println('>>',x,'<<');\n"
+    "a = 2; z1 = exp( a+pi() );\n"
     "z2 = pow( 3.0, 5.5 );\n"
     "z3 = atan2( 4, 7 );\n"
     "z4 = abs(-3.4); z5 = defined(z4); z6 = defined(ABC);\n"
@@ -711,15 +760,17 @@ TEST( program, functionBuiltIn )
     );
   
   ASSERT_EQ( -1, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
   ASSERT_TRUE( OK );
  
-  //std::cout << Program.toString() << std::endl;
+//  std::cout << Program.toString() << std::endl;
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_NEAR( std::exp(2), Program.getNamedVariable("x").number(), 1e-5 );
   EXPECT_NEAR( std::sin(0.3) + std::cos(4), Program.getNamedVariable("y").number(), 1e-5 );
   EXPECT_NEAR( M_PI, Program.getNamedVariable("z").number(), 1e-5 );
-  EXPECT_NEAR( std::exp( 2 * M_PI ), Program.getNamedVariable("z1").number(), 1e-5 );
+  EXPECT_NEAR( 2, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( std::exp( 2 + M_PI ), Program.getNamedVariable("z1").number(), 1e-5 );
   EXPECT_NEAR( std::pow( 3, 5.5 ), Program.getNamedVariable("z2").number(), 1e-5 );
   EXPECT_NEAR( std::atan2( 4, 7 ), Program.getNamedVariable("z3").number(), 1e-5 );
   EXPECT_NEAR( 3.4, Program.getNamedVariable("z4").number(), 1e-5 );
@@ -738,7 +789,8 @@ TEST( program, functionBuiltIn )
 TEST( program, cmpNumbers )
 {
   program Program;
-  Program.rebuildAndExecute( "a = 1>2;b = 1<2;c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;\n i = 1+2 > 2.5; j = 1-2 < -1; \n"
+  Program.rebuildAndExecute( "a = 1>2;b = 1<2;c = 1==1; d = 1!=1; e = 1==2; f = 1 >= 2; g = 1 <= 2; h = 2 <= 1;\n"
+    "i = 1+2 > 2.5; j = 1-2 < -1; \n"
     "x = 0; y = 1;\n");
   
   ASSERT_EQ( -1, Program.errorLine() );
@@ -860,7 +912,7 @@ TEST( program, varsAsBool )
 
 // ---------------------------------------------------------
 
-TEST( program, factorial )
+TEST( program, DISABLED_factorial )
 {
   program Program;
   bool OK = Program.rebuildAndExecute( "fact = func { return ($1 >= 1) ? fact($1-1)*$1 : 1; };\n"

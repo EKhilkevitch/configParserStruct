@@ -43,6 +43,8 @@ namespace configParserStruct
     // =====================================================
     
     template <class T> T extractValueScalar( const variable &Var );
+    
+    // =====================================================
 
     class variable
     {
@@ -68,9 +70,12 @@ namespace configParserStruct
         template <class VarT > VarT& value() { return dynamic_cast<VarT&>( *Value ); }
         template <class VarT > const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
 
-        template <class T> T valueScalar() const { return extractValueScalar<T>(*this); }   
+        template <class T> T valueScalar() const { return extractValueScalar<T>(*this); }
     };
+    
+    // =====================================================
 
+    template <class T> T extractValueScalar( const variable &Var );
     template <> inline double extractValueScalar( const variable &Var ) { return Var.number(); }
     template <> inline int extractValueScalar( const variable &Var ) { return Var.integer(); }
     template <> inline bool extractValueScalar( const variable &Var ) { return Var.boolean(); }
@@ -204,9 +209,9 @@ namespace configParserStruct
     class builtinFunctionValue : public variableValue
     {
       protected:
-        size_t getNumberOfArguments( const program &Program ) const;
-        const variable getArgument( size_t Index, const program &Program ) const;
-        const variable getVariable( const std::string &Name, const program &Program ) const;
+        static size_t getNumberOfArguments( const program &Program );
+        static const variable getArgument( size_t Index, const program &Program );
+        static const variable getVariable( const std::string &Name, const program &Program );
 
       public:
         virtual const variable execute( const program &Program ) const = 0;
@@ -290,6 +295,7 @@ namespace configParserStruct
         bool boolean() const { return ! Dict.empty(); }
 
         void addItem( const std::string &Key, const variable &Value );
+        void removeItem( const std::string &Key );
         const variable getItem( const std::string &Key ) const;
         variable* getItemPointer( const std::string &Key );
         size_t numberOfItems() const;
@@ -318,6 +324,7 @@ namespace configParserStruct
 
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
+        void remove( const std::string &Name );
         variable* getPointer( const std::string &Name );
 
         std::set<std::string> listOfNames() const;
@@ -345,13 +352,17 @@ namespace configParserStruct
         const variable get( const std::string &Name ) const;
         variable* getPointer( const std::string &Name );
         const variable getFromTopOfStack( const std::string &Name ) const;
+        const variable getFromLastByOneOfStack( const std::string &Name ) const;
+        const variable getFromStack( size_t Index, const std::string &Name ) const;
+        void removeFromTopOfStack( const std::string &Name );
 
         void pushNewList();
         void popList();
         
         std::set<std::string> listOfNames() const;
         std::set<std::string> listOfNamesInAllStack() const;
-        size_t size() const { return Stack.size(); }
+        std::set<std::string> listOfNamesInStack( size_t Index ) const;
+        size_t size() const;
 
         void clear();
 

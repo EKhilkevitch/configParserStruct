@@ -114,14 +114,14 @@ void configParserStruct::structParserUtil::variable::setValueByReference( const 
 
 // =====================================================
 
-size_t configParserStruct::structParserUtil::builtinFunctionValue::getNumberOfArguments( const program &Program ) const
+size_t configParserStruct::structParserUtil::builtinFunctionValue::getNumberOfArguments( const program &Program ) 
 {
   return Program.getNamedVariableFromTopOfStack( "$N" ).integer();
 }
 
 // -----------------------------------------------------
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getArgument( size_t Index, const program &Program ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getArgument( size_t Index, const program &Program ) 
 {
   std::string Name = "$" + convertToString(Index);
   return Program.getNamedVariableFromTopOfStack( Name );
@@ -129,7 +129,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 // -----------------------------------------------------
 
-const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getVariable( const std::string &Name, const program &Program ) const
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::builtinFunctionValue::getVariable( const std::string &Name, const program &Program ) 
 {
   return Program.getNamedVariable( Name );
 }
@@ -296,6 +296,23 @@ void configParserStruct::structParserUtil::dictVariableValue::addItem( const std
       Dict[ KeyParts.first ] = dictVariableValue();
     Dict[ KeyParts.first ].value<dictVariableValue>().addItem( KeyParts.second, Value );
   }
+}
+
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::dictVariableValue::removeItem( const std::string &Key )
+{
+  std::pair<std::string,std::string> KeyParts = splitKey(Key);
+
+  if ( KeyParts.second.empty() )
+  {
+    Dict.erase( Key );
+  } else {
+    if ( Dict[ KeyParts.first ].valueType() != typeid(dictVariableValue) )
+      return;
+    Dict[ KeyParts.first ].value<dictVariableValue>().removeItem( KeyParts.second );
+  }
+
 }
 
 // -----------------------------------------------------
@@ -548,6 +565,13 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 // -----------------------------------------------------
 
+void configParserStruct::structParserUtil::variablesList::remove( const std::string &Name ) 
+{
+  Dict.removeItem( Name );
+}
+
+// -----------------------------------------------------
+
 configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::variablesList::getPointer( const std::string &Name ) 
 { 
   return Dict.getItemPointer( Name ); 
@@ -635,6 +659,7 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
 
   if ( GlobalName.empty() )
   {
+#if 1
     for ( varListStack::reverse_iterator s = Stack.rbegin(); s != Stack.rend(); ++s )
     {
       variable *Variable = s->getPointer( Name );
@@ -642,6 +667,9 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
         return Variable;
     }
     return NULL;
+#else
+    return Stack.back().getPointer( Name );
+#endif
   } else {
     return Stack.front().getPointer( GlobalName );
   }
@@ -653,6 +681,41 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 { 
   assert( ! Stack.empty() );
   return Stack.back().get(Name); 
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesListStack::getFromLastByOneOfStack( const std::string &Name ) const
+{
+  assert( ! Stack.empty() );
+  varListStack::const_iterator Iterator = Stack.end();
+  --Iterator;
+  if ( Iterator == Stack.begin() )
+    return variable();
+  --Iterator;
+  return Iterator->get(Name);
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::variablesListStack::getFromStack( size_t Index, const std::string &Name ) const
+{
+  varListStack::const_iterator Iterator = Stack.begin();
+  for ( size_t i = 0; i < Index && Iterator != Stack.end(); ++i )
+    ++Iterator;
+
+  if ( Iterator == Stack.end() )
+    return variable();
+
+  return Iterator->get(Name);
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::variablesListStack::removeFromTopOfStack( const std::string &Name )
+{
+  assert( ! Stack.empty() );
+  Stack.back().remove(Name); 
 }
 
 // -----------------------------------------------------
@@ -702,6 +765,26 @@ std::set<std::string> configParserStruct::structParserUtil::variablesListStack::
     Result.insert( Names.begin(), Names.end() );
   }
   return Result;
+}
+
+// -----------------------------------------------------
+
+std::set<std::string> configParserStruct::structParserUtil::variablesListStack::listOfNamesInStack( size_t Index ) const
+{
+  varListStack::const_iterator Iterator = Stack.begin();
+  for ( size_t i = 0; i < Index && Iterator != Stack.end(); ++i )
+    ++Iterator;
+
+  if ( Iterator == Stack.end() )
+    return std::set<std::string>();
+  return Iterator->listOfNames();
+}
+
+// -----------------------------------------------------
+
+size_t configParserStruct::structParserUtil::variablesListStack::size() const 
+{ 
+  return Stack.size(); 
 }
 
 // -----------------------------------------------------

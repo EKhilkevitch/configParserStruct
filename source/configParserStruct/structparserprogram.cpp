@@ -92,6 +92,8 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   setNamedVariable( "print", printBuiltIn() );
   setNamedVariable( "println", printlnBuiltIn() );
   setNamedVariable( "defined", definedBuiltIn() );
+  setNamedVariable( "debug_text", debugProgramTextBuildIn() );
+  setNamedVariable( "debug_stack", debugProgramStackBuildIn() );
 
 #undef SET_BUILTIN_FUNCTION 
 #undef SET_STD_BUILTIN_FUNCTION
@@ -109,6 +111,13 @@ size_t configParserStruct::structParserUtil::program::pushCommand( const command
 size_t configParserStruct::structParserUtil::program::numberOfCommands() const 
 { 
   return Commands.size(); 
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::command& configParserStruct::structParserUtil::program::getCommand( size_t Index ) const
+{
+  return Commands.getCommand(Index);
 }
 
 // -----------------------------------------------------
@@ -141,11 +150,82 @@ size_t configParserStruct::structParserUtil::program::currentCommandIndex()  con
 
 // -----------------------------------------------------
 
-void configParserStruct::structParserUtil::program::pushFunctionArgument( const variable &V )
+size_t configParserStruct::structParserUtil::program::stackSize() const 
+{ 
+  return Stack.size(); 
+}
+
+// -----------------------------------------------------
+
+
+std::set<std::string> configParserStruct::structParserUtil::program::frameVariableNames( size_t StackIndex ) const
+{
+  return Variables.listOfNamesInStack( StackIndex );
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::program::getNamedVariableFromFrame( size_t StackIndex, const std::string &Name ) const
+{
+  return Variables.getFromStack( StackIndex, Name );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::program::pushFunctionArgument( const variable &Value )
 {
   variable NumberOfArgs = Variables.getFromTopOfStack( "$N" );
-  Variables.set( "$" + convertToString( NumberOfArgs.integer() + 1 ), V );
+  Variables.set( "$" + convertToString( NumberOfArgs.integer() + 1 ), Value );
   Variables.set( "$N", createVariable( NumberOfArgs.integer() + 1 ) );
+}
+
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::program::pushVariableFrame() 
+{ 
+  Variables.pushNewList();
+
+#if 0
+  int NumberOfArgs = Variables.getFromLastByOneOfStack( "$N" ).integer();
+  for ( int i = 1; i <= NumberOfArgs; i++ )
+  {
+    std::string Name = "$" + convertToString(i);
+    Variables.set( Name, Variables.getFromLastByOneOfStack(Name) ); 
+  }
+  Variables.set( "$N", createVariable(NumberOfArgs) );
+#endif
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::structParserUtil::program::popVariableFrame() 
+{ 
+  Variables.popList();
+#if 0 
+  int NumberOfArgs = Variables.getFromTopOfStack( "$N" ).integer();
+  for ( int i = 1; i <= NumberOfArgs; i++ )
+  {
+    std::string Name = "$" + convertToString(i);
+    Variables.removeFromTopOfStack( Name );
+  }
+  Variables.removeFromTopOfStack( "$N" );
+
+
+  NumberOfArgs = Variables.getFromLastByOneOfStack( "$N" ).integer();
+  for ( int i = 1; i <= NumberOfArgs; i++ )
+  {
+    std::string Name = "$" + convertToString(i);
+    Variables.set( Name, Variables.getFromLastByOneOfStack(Name) ); 
+  }
+  Variables.set( "$N", createVariable(NumberOfArgs) );
+#endif
+}
+
+// -----------------------------------------------------
+        
+size_t configParserStruct::structParserUtil::program::functionLevel() const 
+{ 
+  return Variables.size(); 
 }
 
 // -----------------------------------------------------
@@ -226,7 +306,7 @@ bool configParserStruct::structParserUtil::program::rebuildAndExecute( const std
 
 std::string configParserStruct::structParserUtil::program::lastResultVariableName() 
 { 
-  return ":LAST_EXPRESSION:"; 
+  return "::LAST_EXPRESSION::"; 
 }
 
 // -----------------------------------------------------
