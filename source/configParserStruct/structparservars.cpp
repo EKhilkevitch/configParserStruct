@@ -7,6 +7,7 @@
 #include <typeinfo>
 #include <set>
 #include <iostream>
+#include <cstdlib>
 
 // =====================================================
         
@@ -169,6 +170,7 @@ void configParserStruct::structParserUtil::referenceVariableValue::setValue( pro
   {
     Program->setNamedVariable( Name, variable() );
     Variable = Program->getNamedVariablePointer( Name );
+    assert( Variable != NULL );
   }
     
   Variable->setValueByReference( *this, Value );
@@ -632,11 +634,21 @@ void configParserStruct::structParserUtil::variablesListStack::set( const std::s
   assert( ! Stack.empty() );
 
   const std::string &GlobalName = globalName(Name);
+  const std::string &LocalName = localName(Name);
 
-  if ( GlobalName.empty() )
-    Stack.back().set( Name, Var );
-  else
+  if ( ! GlobalName.empty() )
+  {
     Stack.front().set( GlobalName, Var );
+    return;
+  }
+
+  if ( ! LocalName.empty() )
+  {
+    Stack.back().set( LocalName, Var );
+    return;
+  }
+
+  Stack.back().set( Name, Var );
 }
 
 // -----------------------------------------------------
@@ -656,23 +668,25 @@ configParserStruct::structParserUtil::variable* configParserStruct::structParser
   assert( ! Stack.empty() );
   
   const std::string &GlobalName = globalName(Name);
+  const std::string &LocalName = localName(Name);
 
-  if ( GlobalName.empty() )
+  if ( ! GlobalName.empty() )
   {
-#if 1
-    for ( varListStack::reverse_iterator s = Stack.rbegin(); s != Stack.rend(); ++s )
-    {
-      variable *Variable = s->getPointer( Name );
-      if ( Variable != NULL )
-        return Variable;
-    }
-    return NULL;
-#else
-    return Stack.back().getPointer( Name );
-#endif
-  } else {
     return Stack.front().getPointer( GlobalName );
   }
+
+  if ( ! LocalName.empty() )
+  {
+    return Stack.back().getPointer( LocalName );
+  }
+
+  for ( varListStack::reverse_iterator s = Stack.rbegin(); s != Stack.rend(); ++s )
+  {
+    variable *Variable = s->getPointer( Name );
+    if ( Variable != NULL )
+      return Variable;
+  }
+  return NULL;
 }
 
 // -----------------------------------------------------
@@ -798,9 +812,28 @@ std::string configParserStruct::structParserUtil::variablesListStack::globalPref
 
 std::string configParserStruct::structParserUtil::variablesListStack::globalName( const std::string &Name )
 {
-  size_t Pos = Name.find( globalPrefix() );
+  const std::string &GlobalPrefix = globalPrefix();
+  size_t Pos = Name.find( GlobalPrefix );
   if ( Pos == 0 )
-    return Name.substr( globalPrefix().size(), std::string::npos );
+    return Name.substr( GlobalPrefix.length(), std::string::npos );
+  return std::string();
+}
+
+// -----------------------------------------------------
+        
+std::string configParserStruct::structParserUtil::variablesListStack::localPrefix()
+{
+  return "@@";
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::structParserUtil::variablesListStack::localName( const std::string &Name )
+{
+  const std::string &LocalPrefix = localPrefix();
+  size_t Pos = Name.find( LocalPrefix );
+  if ( Pos == 0 )
+    return Name.substr( LocalPrefix.length(), std::string::npos );
   return std::string();
 }
 

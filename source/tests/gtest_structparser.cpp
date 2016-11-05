@@ -216,10 +216,11 @@ TEST( structParser, listOfVariablesStruct )
     std::cout << *i << " " << std::endl;
 #endif
 
-  EXPECT_EQ( 2, List.size() );
+  EXPECT_EQ( 3, List.size() );
   EXPECT_EQ( 0, List.count("x") );
   EXPECT_EQ( 1, List.count("y") );
   EXPECT_EQ( 1, List.count("z") );
+  EXPECT_EQ( 1, List.count("LAST_EXPRESSION::") );
 }
 
 // =========================================================

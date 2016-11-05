@@ -366,6 +366,8 @@ namespace configParserStruct
 
         void clear();
 
+        static std::string localPrefix();
+        static std::string localName( const std::string &Name );
         static std::string globalPrefix();
         static std::string globalName( const std::string &Name ); 
     };

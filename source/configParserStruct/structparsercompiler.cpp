@@ -135,6 +135,17 @@ void CPSSPU_pushVariableReferenceToStack( const char *Name )
 
 // -----------------------------------------------------
 
+void CPSSPU_pushVariableLocalReferenceToStack( const char *Name )
+{
+  const std::string &LocalPrefix = variablesListStack::localPrefix();
+
+  std::string StrName = ( Name == NULL ) ? std::string() : Name;
+  if ( Program != NULL )
+    Program->pushCommand( pushValueCommand( referenceVariableValue(LocalPrefix+StrName) ) );
+}
+
+// -----------------------------------------------------
+
 void CPSSPU_assignVariableValueFromStack( void )
 {
   if ( Program != NULL )

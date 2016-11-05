@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstddef>
+#include <cstdlib>
 #include <cassert>
 
 // =====================================================
@@ -180,6 +181,13 @@ void configParserStruct::structParserUtil::commandsList::execute( program *Progr
 }
 
 // =====================================================
+        
+void configParserStruct::structParserUtil::markerCommand::execute( program *Program ) const
+{ 
+  std::abort(); 
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::structParserUtil::pushValueCommand::execute( program *Program ) const
 {

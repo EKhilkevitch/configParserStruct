@@ -5,7 +5,6 @@
 
 #include <vector>
 #include <typeinfo>
-#include <cstdlib>
 
 #include "configParserStruct/clonablepointer.h"
 #include "configParserStruct/structparservars.h"
@@ -99,7 +98,7 @@ namespace configParserStruct
     class markerCommand : public commandAction
     {
       public:
-        void execute( program* ) const { std::abort(); }
+        void execute( program *Program ) const;
         commandAction* clone() const { return new markerCommand(); }
         std::string toString() const { return "<MARKER>"; }
     };

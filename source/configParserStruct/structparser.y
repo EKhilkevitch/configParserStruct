@@ -59,7 +59,8 @@ EXTERN void CPSSPU_error( const char *String );
 %token TOKEN_ELSE
 %token TOKEN_ELIF
 %token TOKEN_WHILE
-%token TOMEN_SYMREF_BEGIN
+%token TOKEN_SYMREF_BEGIN
+%token TOKEN_LOCAL
 
 %right '='
 %right '?' ':'
@@ -200,7 +201,8 @@ idRef          : idRef '.' TOKEN_ID                { CPSSPU_setAttributeToTopRef
                | idRef '[' expression ']'          { CPSSPU_setAttributeToTopReference(); }
                | TOKEN_ID                          { CPSSPU_pushVariableReferenceToStack( $1 ); }
                | TOKEN_ARGUMENT                    { CPSSPU_pushVariableReferenceToStack( $1 ); }
-               | TOMEN_SYMREF_BEGIN expression '}' { CPSSPU_pushVariableSymbolicReferenceToStack(); }
+               | TOKEN_SYMREF_BEGIN expression '}' { CPSSPU_pushVariableSymbolicReferenceToStack(); }
+               | TOKEN_LOCAL TOKEN_ID              { CPSSPU_pushVariableLocalReferenceToStack( $2 ); } 
                ;
 
 %%

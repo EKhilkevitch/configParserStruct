@@ -635,7 +635,7 @@ TEST( program, functionComplex )
 
   OK = Program.rebuildAndExecute( "f1 = func { return $1*2; }; f2 = func { return f1($1) + 3.1; }; f1(2.1) + 0.1*f2(4,5);" );
   
-  std::cout << Program.toString() << std::endl;
+  //std::cout << Program.toString() << std::endl;
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
@@ -647,6 +647,48 @@ TEST( program, functionComplex )
 
 // ---------------------------------------------------------
 
+TEST( program, functionVars )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.rebuildAndExecute( "x = 1; f1 = func { x = 2; z = 3; }; y1 = x; f1(); y2 = x;" );
+
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 2, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("y1").number(), 1e-5 );
+  EXPECT_NEAR( 2, Program.getNamedVariable("y2").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("z").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, functionLocalVars )
+{
+  program Program;
+  bool OK;
+
+  OK = Program.build( "x = 1; y = 2; f1 = func { @@x = 2; @@y = 3; y += 1; z = 3; }; a = x; f1(); b = x;" );
+  ASSERT_EQ( -1, Program.errorLine() );
+  ASSERT_TRUE( OK );
+
+  //std::cerr << Program.toString() << std::endl;
+
+  Program.execute();
+  
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 2, Program.getNamedVariable("y").number(), 1e-5 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("b").number(), 1e-5 );
+  EXPECT_NEAR( 0, Program.getNamedVariable("z").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
 TEST( program, functionComplexFrams )
 {
   program Program;
@@ -654,15 +696,15 @@ TEST( program, functionComplexFrams )
 
   OK = Program.rebuildAndExecute( "x=0; f1 = func { x=1; return 2; }; f2 = func { x = 30; return f1() + 5 + x; }; a=f2();" );
   
-  std::cout << Program.toString() << std::endl;
+  //std::cout << Program.toString() << std::endl;
   
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_TRUE( Program.getNamedVariable("f1").isDefined() );
-  EXPECT_NEAR( 0, Program.getNamedVariable("x").number(), 1e-5 );
-  EXPECT_NEAR( 2 + 5 + 30, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("x").number(), 1e-5 );
+  EXPECT_NEAR( 2 + 5 + 1, Program.getNamedVariable("a").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
@@ -672,19 +714,19 @@ TEST( program, functionComplesFib )
   program Program;
   bool OK;
 
-  OK = Program.build( "fib = func { x = $1; println('x=>>',x,'<<'); if ( x <= 1 ) { return 1; } println('next'); debug_stack(); y1 = fib(x-1); y2=fib(x-2); return y1+y2; }; "
+  OK = Program.build( "fib = func { @@x = $1; "
+    "if ( x <= 0 ) { return 0; }"
+    "if ( x <= 1 ) { return 1; }"
+    "@@y1 = fib(x-1); @@y2=fib(x-2); return y1+y2; }; "
     "a = fib(1); b = fib(2); c=fib(10);" );
   ASSERT_EQ( -1, Program.errorLine() );
   ASSERT_TRUE( OK );
  
-  std::cout << Program.toString() << std::endl;
+  //std::cout << Program.toString() << std::endl;
   
   Program.execute();
   ASSERT_EQ( 0, Program.stackSize() );
   ASSERT_EQ( -1, Program.errorLine() );
-  
- // std::cout << Program.toString() << std::endl;
-  
   
   EXPECT_EQ( 0, Program.stackSize() );
   EXPECT_TRUE( Program.getNamedVariable("fib").isDefined() );
@@ -816,8 +858,10 @@ TEST( program, cmpNumbers )
 TEST( program, cmpStrings )
 {
   program Program;
-  Program.rebuildAndExecute( "a = 'a'.>.'b'; b = 'a'.<.'z'; c = 'abc'.==.'abc'; d = 'abcd'.!=.'abcd'; e = 'gfez'.==.'gfe'; f = 'zxy' .>=. 'yyy'; g = 'abc' .<=. 'cde'; h = 'zxy' .<=. 'abc';\n"
-    " i = ( 'b' .+. 'cd' ) .>. 'baaa'; j = 'abcd' .>. 'abc'; \n"
+  Program.rebuildAndExecute( "a = 'a'.>.'b'; b = 'a'.<.'z';\n"
+    "c = 'abc'.==.'abc'; d = 'abcd'.!=.'abcd'; e = 'gfez'.==.'gfe';\n"
+    "f = 'zxy' .>=. 'yyy'; g = 'abc' .<=. 'cde'; h = 'zxy' .<=. 'abc';\n"
+    "i = ( 'b' .+. 'cd' ) .>. 'baaa'; j = 'abcd' .>. 'abc'; \n"
     "x = ''; y = 'a';\n");
   
 //  std::cout << Program.toString() << std::endl;

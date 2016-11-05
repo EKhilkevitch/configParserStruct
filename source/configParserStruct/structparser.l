@@ -109,6 +109,7 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 ";"             {  return ';';              }
 "."             {  return '.';              }
 ","             {  return ',';              }
+"@@"            {  return TOKEN_LOCAL;      }
 
 
 "func"          { return TOKEN_FUNCTION;    }
@@ -119,7 +120,7 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 "elif"          { return TOKEN_ELIF;        }
 "while"         { return TOKEN_WHILE;       }
 
-"\${"           { return TOMEN_SYMREF_BEGIN; }
+"\${"           { return TOKEN_SYMREF_BEGIN; }
 
 {INTNUM}        {  
                    CPSSPU_lval.RealNumber = atol(CPSSPU_text); 

@@ -28,6 +28,7 @@ void CPSSPU_pushFunctionArgument( void );
 void CPSSPU_callFunctionWithArgsFromStack( const char *Name );
 void CPSSPU_pushVariableValueToStack( void );
 void CPSSPU_pushVariableReferenceToStack( const char *Name );
+void CPSSPU_pushVariableLocalReferenceToStack( const char *Name );
 void CPSSPU_replaceReferenceToValueOnStack( void );
 void CPSSPU_setAttributeToTopReferenceString( const char *Name );
 void CPSSPU_setAttributeToTopReference( void );
