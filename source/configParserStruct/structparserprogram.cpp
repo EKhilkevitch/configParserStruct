@@ -78,6 +78,8 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, acos );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, atan );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, log );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, floor );
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, ceil );
   
   SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, pow );
   SET_STD_BUILTIN_FUNCTION( mathTwoArgumentsBuiltIn, atan2 );

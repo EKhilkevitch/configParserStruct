@@ -799,6 +799,8 @@ TEST( program, functionBuiltIn )
     "z10 = sqr(-3);\n"
     "z11 = max( 3, 4 );\n"
     "z12 = min( 3, 4 );\n"
+    "z13 = floor(1.9);\n"
+    "z14 = ceil(1.9);\n"
     );
   
   ASSERT_EQ( -1, Program.errorLine() );
@@ -824,6 +826,8 @@ TEST( program, functionBuiltIn )
   EXPECT_NEAR( 9, Program.getNamedVariable("z10").number(), 1e-7 );
   EXPECT_NEAR( 4, Program.getNamedVariable("z11").number(), 1e-7 );
   EXPECT_NEAR( 3, Program.getNamedVariable("z12").number(), 1e-7 );
+  EXPECT_NEAR( 1, Program.getNamedVariable("z13").number(), 1e-7 );
+  EXPECT_NEAR( 2, Program.getNamedVariable("z14").number(), 1e-7 );
 }
 
 // ---------------------------------------------------------
