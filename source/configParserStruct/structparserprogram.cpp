@@ -224,7 +224,7 @@ void configParserStruct::structParserUtil::program::popVariableFrame()
 // -----------------------------------------------------
         
 size_t configParserStruct::structParserUtil::program::functionLevel() const 
-{ 
+{
   return Variables.size(); 
 }
 

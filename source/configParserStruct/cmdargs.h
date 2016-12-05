@@ -75,7 +75,7 @@ namespace configParserStruct
           std::string ProgramName;
           std::map< char, std::string > Arguments;
           std::list< std::string > ListOfFileArguments;
-          bool FoundUnknownOption;
+          char FoundUnknownOption;
 
         public:
           explicit parsedArguments( const std::string &Name );
@@ -83,10 +83,10 @@ namespace configParserStruct
           const std::string& programName() const;
 
           void insert( char ArgShortName, const char *Value );
-          void setFoundUnknownOption();
+          void setFoundUnknownOption( char Char );
           void pushFileArgument( const std::string &Arg );
 
-          bool foundUnknownOption() const;
+          char foundUnknownOption() const;
           bool exist( char ArgShortName ) const;
           const std::list<std::string>& listOfFileArguments() const;
           std::set<char> existingArguments() const;

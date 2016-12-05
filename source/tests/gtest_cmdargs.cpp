@@ -34,7 +34,7 @@ TEST( commandLineArgumentsParser, constructor )
   delete Parser;
   Parser = NULL;
 
-  ASSERT_EQ( (size_t)3, Parser2.numberOfOptions() );
+  ASSERT_EQ( 3, Parser2.numberOfOptions() );
   ASSERT_TRUE( Parser2.optionFullName(0)    == "first" );
   ASSERT_TRUE( Parser2.optionHasArgument(1) == false );
   ASSERT_TRUE( Parser2.optionFullName(2)    == "third" );
@@ -120,7 +120,7 @@ TEST( commandLineArgumentsParser, parseOneOptionWithoutArg )
   } catch ( std::runtime_error ) {}
   ASSERT_TRUE( ParsedArguments.arg('Z',"aa",false) == "aa" );
 
-  ASSERT_TRUE( ! ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().empty() );
 
 }
@@ -143,7 +143,7 @@ TEST( commandLineArgumentsParser, parseOneOptionWithArg )
   ASSERT_TRUE( ParsedArguments.arg('i',"aa")      == "filename" );
   ASSERT_TRUE( ParsedArguments.arg('i',"aa",true) == "filename" );
   
-  ASSERT_TRUE( ! ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().empty() );
 }
 
@@ -162,14 +162,33 @@ TEST( commandLineArgumentsParser, parseShortOption )
   commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
   ASSERT_TRUE( ParsedArguments.exist('h') );
   ASSERT_TRUE( ParsedArguments.exist('i') );
-  ASSERT_TRUE( ParsedArguments.arg('i')           == "filename" );
-  ASSERT_TRUE( ! ParsedArguments.exist('v') );
+  ASSERT_EQ( "filename", ParsedArguments.arg('i') );
+  ASSERT_FALSE( ParsedArguments.exist('v') );
 
   auto OptionsSet = ParsedArguments.existingArguments();
-  ASSERT_EQ( (size_t)2, OptionsSet.size() );
+  ASSERT_EQ( 2, OptionsSet.size() );
   ASSERT_TRUE( OptionsSet.find('i') != OptionsSet.end() );
   ASSERT_TRUE( OptionsSet.find('h') != OptionsSet.end() );
   ASSERT_TRUE( OptionsSet.find('v') == OptionsSet.end() );
+}
+
+// ---------------------------------------------------------
+
+TEST( commandLineArgumentsParser, parseLongOption )
+{
+  commandLineArgumentsParser Parser = createParser();
+
+  std::list< std::string > CommandLineArguments;
+  CommandLineArguments.push_back("program_name");
+  CommandLineArguments.push_back( "--input" );
+  CommandLineArguments.push_back( "filename" );
+  CommandLineArguments.push_back( "--help" );
+
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
+  ASSERT_TRUE( ParsedArguments.exist('h') );
+  ASSERT_TRUE( ParsedArguments.exist('i') );
+  ASSERT_EQ( "filename", ParsedArguments.arg('i') );
+  ASSERT_FALSE( ParsedArguments.exist('v') );
 }
 
 // ---------------------------------------------------------
@@ -183,8 +202,20 @@ TEST( commandLineArgumentsParser, parseInvalidOption )
   CommandLineArguments.push_back( "-X" );
 
   commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
-  ASSERT_TRUE( ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( 'X', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().empty() );
+
+  CommandLineArguments.clear();
+  CommandLineArguments.push_back("program_name");
+  CommandLineArguments.push_back( "--verbose" );
+  CommandLineArguments.push_back( "-X" );
+  CommandLineArguments.push_back( "xvalue" );
+
+  ParsedArguments = Parser( CommandLineArguments );
+  ASSERT_EQ( 'X', ParsedArguments.foundUnknownOption() );
+  ASSERT_TRUE( ParsedArguments.exist('v') );
+  ASSERT_EQ( 1, ParsedArguments.listOfFileArguments().size() );
+  ASSERT_EQ( "xvalue", ParsedArguments.listOfFileArguments().front() );
 }
 
 // ---------------------------------------------------------
@@ -202,10 +233,10 @@ TEST( commandLineArgumentsParser, parseOptionWithFile )
 
   commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
   ASSERT_TRUE( ParsedArguments.exist('i') );
-  ASSERT_TRUE( ParsedArguments.listOfFileArguments().size()  == 2 );
-  ASSERT_TRUE( ParsedArguments.listOfFileArguments().front() == "filename1" );
-  ASSERT_TRUE( ParsedArguments.listOfFileArguments().back()  == "filename2" );
-  ASSERT_TRUE( ! ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( 2, ParsedArguments.listOfFileArguments().size() );
+  ASSERT_EQ( "filename1", ParsedArguments.listOfFileArguments().front() );
+  ASSERT_EQ( "filename2", ParsedArguments.listOfFileArguments().back()  );
+  ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
 }
 
 // ---------------------------------------------------------
@@ -220,7 +251,7 @@ TEST( commandLineArgumentsParser, parseIntegerOption )
   CommandLineArguments.push_back( "5" );
 
   auto ParsedArguments = Parser( CommandLineArguments );
-  ASSERT_TRUE( ParsedArguments.arg('I') == "5" );
+  ASSERT_EQ( "5", ParsedArguments.arg('I') );
   ASSERT_EQ( 5, ParsedArguments.argInt('I') );
 }
 
@@ -306,7 +337,7 @@ TEST( commandLineArgumentsParser, twoParsingWithOneParser )
   ASSERT_TRUE( ! ParsedArguments.exist('i') );
   ASSERT_TRUE(   ParsedArguments.exist('O') );
   ASSERT_TRUE(   ParsedArguments.arg('O') == "file2" );
-  ASSERT_TRUE( ! ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().empty() );
 }
 
@@ -327,7 +358,7 @@ TEST( commandLineArgumentsParser, parseWithPointers )
   ASSERT_TRUE( ParsedArguments.arg('i') == "file1" );
   ASSERT_TRUE( ParsedArguments.exist('v') );
   ASSERT_TRUE( ! ParsedArguments.exist('h') );
-  ASSERT_TRUE( ! ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().empty() );
 }
 
@@ -353,7 +384,7 @@ TEST( commandLineArgumentsParser, parse )
 
   auto ParsedArguments = Parser( CommandLineArguments );
 
-  ASSERT_TRUE( ! ParsedArguments.foundUnknownOption() );
+  ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ! ParsedArguments.exist('h') );
   ASSERT_TRUE( ! ParsedArguments.exist('v') );
   ASSERT_TRUE( ParsedArguments.exist('i') );
@@ -362,7 +393,7 @@ TEST( commandLineArgumentsParser, parse )
   ASSERT_NEAR( 12.4, ParsedArguments.argDouble('D'), 1e-5 );
   ASSERT_EQ( 0, ParsedArguments.argInt('I') );
   ASSERT_EQ( 4, ParsedArguments.argInt('I',4) );
-  ASSERT_EQ( (size_t)3, ParsedArguments.listOfFileArguments().size() );
+  ASSERT_EQ( 3, ParsedArguments.listOfFileArguments().size() );
   ASSERT_TRUE( ParsedArguments.listOfFileArguments().back() == "ext_file3" );
 }
 

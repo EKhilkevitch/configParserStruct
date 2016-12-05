@@ -111,7 +111,7 @@ configParserStruct::commandLineArgumentsParser::doubleInsertingOptionException::
       
 configParserStruct::commandLineArgumentsParser::parsedArguments::parsedArguments( const std::string &Name ) : 
   ProgramName(Name), 
-  FoundUnknownOption(false) 
+  FoundUnknownOption('\0') 
 {
 }
 
@@ -132,9 +132,9 @@ void configParserStruct::commandLineArgumentsParser::parsedArguments::insert( ch
 
 // -----------------------------------------------------
 
-void configParserStruct::commandLineArgumentsParser::parsedArguments::setFoundUnknownOption() 
+void configParserStruct::commandLineArgumentsParser::parsedArguments::setFoundUnknownOption( char Char ) 
 { 
-  FoundUnknownOption = true; 
+  FoundUnknownOption = Char;
 }
 
 // -----------------------------------------------------
@@ -153,7 +153,7 @@ bool configParserStruct::commandLineArgumentsParser::parsedArguments::exist( cha
           
 // -----------------------------------------------------
 
-bool configParserStruct::commandLineArgumentsParser::parsedArguments::foundUnknownOption() const 
+char configParserStruct::commandLineArgumentsParser::parsedArguments::foundUnknownOption() const 
 { 
   return FoundUnknownOption; 
 }
@@ -351,7 +351,7 @@ void configParserStruct::commandLineArgumentsParser::setArgumentsFromParameters(
 
     if ( NextOption == '?' )
     {
-      ParsingResults->setFoundUnknownOption();
+      ParsingResults->setFoundUnknownOption( static_cast<char>(optopt) );
       continue;
     }
 
