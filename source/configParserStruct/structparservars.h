@@ -273,8 +273,8 @@ namespace configParserStruct
         const variable getItemByVariableKey( const variable &Key ) const;
         void addItemByVariableKey( const variable &Key, const variable &Value );
 
-        static std::string arraySeparatorBegin();
-        static std::string arraySeparatorEnd();
+        static char arraySeparatorBegin();
+        static char arraySeparatorEnd();
     };
 
     // -----------------------------------------------------
@@ -308,7 +308,7 @@ namespace configParserStruct
         const variable getItemByVariableKey( const variable &Key ) const;
         void addItemByVariableKey( const variable &Key, const variable &Value );
         
-        static std::string dictSeparator();
+        static char dictSeparator();
     };
 
     // =====================================================

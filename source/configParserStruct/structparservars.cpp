@@ -216,13 +216,9 @@ void configParserStruct::structParserUtil::composerVariableValue::setValueByRefe
 
 std::pair<std::string,std::string> configParserStruct::structParserUtil::composerVariableValue::splitKey( const std::string &Key )
 {
-  assert( dictVariableValue::dictSeparator().length() == 1 );
-  assert( arrayVariableValue::arraySeparatorBegin().length() == 1 );
-  assert( arrayVariableValue::arraySeparatorEnd().length() == 1 );
-    
-  size_t DelimiterDictPos = Key.find_first_of( dictVariableValue::dictSeparator() );
-  size_t DelimiterArrayBeginPos = Key.find_first_of( arrayVariableValue::arraySeparatorBegin() );
-  size_t DelimiterArrayEndPos = Key.find_last_of( arrayVariableValue::arraySeparatorEnd() );
+  const size_t DelimiterDictPos = Key.find( dictVariableValue::dictSeparator() );
+  const size_t DelimiterArrayBeginPos = Key.find( arrayVariableValue::arraySeparatorBegin() );
+  const size_t DelimiterArrayEndPos = ( DelimiterArrayBeginPos == std::string::npos ) ? std::string::npos : Key.find( arrayVariableValue::arraySeparatorEnd() );
 
   if ( DelimiterDictPos != std::string::npos && DelimiterDictPos < DelimiterArrayBeginPos )
     return std::make_pair( Key.substr( 0, DelimiterDictPos ), Key.substr( DelimiterDictPos+1, std::string::npos ) );
@@ -279,9 +275,9 @@ const std::string configParserStruct::structParserUtil::dictVariableValue::strin
         
 // -----------------------------------------------------
 
-std::string configParserStruct::structParserUtil::dictVariableValue::dictSeparator() 
+char configParserStruct::structParserUtil::dictVariableValue::dictSeparator() 
 { 
-  return "."; 
+  return '.'; 
 }
 
 
@@ -490,16 +486,16 @@ void configParserStruct::structParserUtil::arrayVariableValue::addItemByVariable
 
 // -----------------------------------------------------
         
-std::string configParserStruct::structParserUtil::arrayVariableValue::arraySeparatorBegin()
+char configParserStruct::structParserUtil::arrayVariableValue::arraySeparatorBegin()
 {
-  return "[";
+  return '[';
 }
 
 // -----------------------------------------------------
 
-std::string configParserStruct::structParserUtil::arrayVariableValue::arraySeparatorEnd()
+char configParserStruct::structParserUtil::arrayVariableValue::arraySeparatorEnd()
 {
-  return "]";
+  return ']';
 }
 
 // =====================================================
