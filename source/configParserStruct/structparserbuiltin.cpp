@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES 1
 
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
@@ -104,6 +105,17 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
   }
   std::cout << Stream.str() << std::flush;
   return createVariable( Stream.str() );
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::envBuiltIn::execute( const program &Program ) const
+{
+  std::string EnvName = getArgument( 1, Program ).string();
+  const char *EnvValue = std::getenv( EnvName.c_str() );
+  if ( EnvValue == NULL )
+    EnvValue = "";
+  return createVariable( std::string(EnvValue) );
 }
 
 // =====================================================

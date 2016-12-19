@@ -3,12 +3,13 @@
 
 #include <gtest/gtest.h>
 
+#include "configParserStruct/structparserprogram.h"
+
 #include <cstdio>
 #include <cmath>
+#include <cstdlib>
 #include <algorithm>
 #include <iostream>
-
-#include "configParserStruct/structparserprogram.h"
 
 using namespace configParserStruct;
 using namespace structParserUtil;
@@ -783,6 +784,8 @@ TEST( program, functionUnknown )
 
 TEST( program, functionBuiltIn )
 {
+  const char *Path = std::getenv("PATH");
+
   program Program;
   bool OK;
 
@@ -801,11 +804,13 @@ TEST( program, functionBuiltIn )
     "z12 = min( 3, 4 );\n"
     "z13 = floor(1.9);\n"
     "z14 = ceil(1.9);\n"
+    "z15 = env('PATH'); z16 = env('abc');\n"
     );
   
   ASSERT_EQ( -1, Program.errorLine() );
   EXPECT_EQ( 0, Program.stackSize() );
   ASSERT_TRUE( OK );
+  
  
 //  std::cout << Program.toString() << std::endl;
   
@@ -828,6 +833,9 @@ TEST( program, functionBuiltIn )
   EXPECT_NEAR( 3, Program.getNamedVariable("z12").number(), 1e-7 );
   EXPECT_NEAR( 1, Program.getNamedVariable("z13").number(), 1e-7 );
   EXPECT_NEAR( 2, Program.getNamedVariable("z14").number(), 1e-7 );
+  EXPECT_EQ( std::string( Path == NULL ? "" : Path ), Program.getNamedVariable("z15").string() );
+  EXPECT_EQ( std::string(), Program.getNamedVariable("z16").string() );
+
 }
 
 // ---------------------------------------------------------

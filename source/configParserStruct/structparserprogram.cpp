@@ -94,6 +94,7 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
   setNamedVariable( "print", printBuiltIn() );
   setNamedVariable( "println", printlnBuiltIn() );
   setNamedVariable( "defined", definedBuiltIn() );
+  setNamedVariable( "env", envBuiltIn() );
   setNamedVariable( "debug_text", debugProgramTextBuildIn() );
   setNamedVariable( "debug_stack", debugProgramStackBuildIn() );
 

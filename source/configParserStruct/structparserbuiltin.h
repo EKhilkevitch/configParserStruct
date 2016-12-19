@@ -40,7 +40,7 @@ namespace configParserStruct
       
       public: 
         zeroArgumentBuiltIn( const std::string &N, const type &V );
-        variableValue* clone() const { return new zeroArgumentBuiltIn<type>(*this); }
+        zeroArgumentBuiltIn<T>* clone() const { return new zeroArgumentBuiltIn<type>(*this); }
         const variable execute( const program &Program ) const;
     };
 
@@ -56,7 +56,7 @@ namespace configParserStruct
 
       public:
         oneArgumentBuiltIn( const std::string &N, function F );
-        variableValue* clone() const { return new oneArgumentBuiltIn<retT,argT>(*this); }
+        oneArgumentBuiltIn<retT,argT>* clone() const { return new oneArgumentBuiltIn<retT,argT>(*this); }
         const variable execute( const program &Program ) const;
     };
     
@@ -72,7 +72,7 @@ namespace configParserStruct
 
       public:
         twoArgumentsBuiltIn( const std::string &N, function F );
-        variableValue* clone() const { return new twoArgumentsBuiltIn<retT,arg1T,arg2T>(*this); }
+        twoArgumentsBuiltIn<retT,arg1T,arg2T>* clone() const { return new twoArgumentsBuiltIn<retT,arg1T,arg2T>(*this); }
         const variable execute( const program &Program ) const;
     };
 
@@ -83,7 +83,7 @@ namespace configParserStruct
       public: 
         printBuiltIn() : namedBuiltIn("print") {}
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new printBuiltIn(*this); }
+        printBuiltIn* clone() const { return new printBuiltIn(*this); }
     };
     
     // -----------------------------------------------------
@@ -93,7 +93,7 @@ namespace configParserStruct
       public: 
         printlnBuiltIn() : namedBuiltIn("println") {}
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new printlnBuiltIn(*this); }
+        printlnBuiltIn* clone() const { return new printlnBuiltIn(*this); }
     };
     
     // -----------------------------------------------------
@@ -103,7 +103,17 @@ namespace configParserStruct
       public:
         definedBuiltIn() : namedBuiltIn("defined") {}
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new definedBuiltIn(*this); }
+        definedBuiltIn* clone() const { return new definedBuiltIn(*this); }
+    };
+    
+    // -----------------------------------------------------
+    
+    class envBuiltIn : public namedBuiltIn
+    {
+      public:
+        envBuiltIn() : namedBuiltIn("env") {}
+        const variable execute( const program &Program ) const;
+        envBuiltIn* clone() const { return new envBuiltIn(*this); }
     };
     
     // -----------------------------------------------------
@@ -113,7 +123,7 @@ namespace configParserStruct
       public:
         debugProgramTextBuildIn() : namedBuiltIn("debug_text") {}
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new debugProgramTextBuildIn(*this); }
+        debugProgramTextBuildIn* clone() const { return new debugProgramTextBuildIn(*this); }
     };
     
     // -----------------------------------------------------
@@ -123,7 +133,7 @@ namespace configParserStruct
       public:
         debugProgramStackBuildIn() : namedBuiltIn("debug_stack") {}
         const variable execute( const program &Program ) const;
-        variableValue* clone() const { return new debugProgramStackBuildIn(*this); }
+        debugProgramStackBuildIn* clone() const { return new debugProgramStackBuildIn(*this); }
     };
 
     // =====================================================
