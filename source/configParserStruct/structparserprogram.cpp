@@ -277,7 +277,10 @@ bool configParserStruct::structParserUtil::program::build( const std::string &Pr
   
   int ParseResult = CPSSPU_parse();
   if ( ErrorLine >= 0 || ParseResult != 0 )
+  {
+    Commands.clear();
     Result = false;
+  }
 
   setStructPrserProgram( NULL );
   
