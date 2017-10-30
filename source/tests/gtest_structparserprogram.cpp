@@ -1078,6 +1078,20 @@ TEST( program, symbolicRef )
   EXPECT_EQ( 40, Program.getNamedVariable("d").integer() );
 }
 
+// ---------------------------------------------------------
+
+TEST( program, incorrect )
+{
+  program Program;
+  bool OK = Program.build( "a = 4; b = 4; C = 2.2; z = +1; z > 0 ? C : C*exp(b-a) * ( exp(a) + b* );" );
+  EXPECT_FALSE( OK );
+
+  Program.execute();
+
+  ASSERT_EQ( 0, Program.errorLine() );
+  EXPECT_EQ( 0, Program.stackSize() );
+}
+
 // =========================================================
 
 
