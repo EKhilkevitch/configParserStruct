@@ -58,13 +58,14 @@ if ( FLEX_EXECUTABLE AND BISON_EXECUTABLE )
      ) 
 endif()
 
-include( FindPythonLibs )
-find_package( PythonLibs )
-if ( PYTHON_INCLUDE_DIRS )
+if ( PYTHON_INCLUDE_DIRS AND ENABLE_PYTHON )
+  include( FindPythonLibs )
+  find_package( PythonLibs )
 
+  message( "Python ENABLED" )
   set( configparser_source_files ${configparser_source_files} pythonparser.cpp )
   
-    if ( UNIX )
+  if ( UNIX )
     include_directories( "${PYTHON_INCLUDE_PATH}/.." )
     set( PYTHON_VERSION ${PYTHON_INCLUDE_PATH} )
     string( REGEX REPLACE "^.*ython" "" PYTHON_VERSION "${PYTHON_VERSION}"  )

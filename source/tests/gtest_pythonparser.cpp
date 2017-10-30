@@ -9,6 +9,8 @@
 
 #include "configParserStruct/pythonparser.h"
 
+#ifdef PYTHON_INCLUDE_HEADER
+
 using namespace configParserStruct;
 
 // =========================================================
@@ -210,4 +212,5 @@ TEST( pythonParser, incorrectProgram )
 
 // =========================================================
 
+#endif
 

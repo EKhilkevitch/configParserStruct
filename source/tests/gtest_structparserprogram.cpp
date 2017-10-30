@@ -260,7 +260,7 @@ TEST( program, braces )
 
 // ---------------------------------------------------------
 
-TEST( program, opEq )
+TEST( program, opEq_1 )
 {
   program Program;
   Program.rebuildAndExecute( "a = b = c = d = 5; a += 2; b -= 2; c *= 2; d /= 2;" );
@@ -272,6 +272,22 @@ TEST( program, opEq )
   EXPECT_NEAR( 3.0, Program.getNamedVariable("b").number(), 1e-5 );
   EXPECT_NEAR( 10,  Program.getNamedVariable("c").number(), 1e-5 );
   EXPECT_NEAR( 2.5, Program.getNamedVariable("d").number(), 1e-5 );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, opEq_2 )
+{
+  program Program;
+  Program.rebuildAndExecute( "a = 3; b = a; c = 1; c = xxxx; d = yyyy;" );
+
+//  std::cout << Program.toString();
+
+  EXPECT_EQ( 0, Program.stackSize() );
+  EXPECT_NEAR( 3.0, Program.getNamedVariable("a").number(), 1e-5 );
+  EXPECT_NEAR( 3.0, Program.getNamedVariable("b").number(), 1e-5 );
+  EXPECT_NEAR(   0, Program.getNamedVariable("c").number(), 1e-5 );
+  EXPECT_NEAR(   0, Program.getNamedVariable("d").number(), 1e-5 );
 }
 
 // ---------------------------------------------------------
