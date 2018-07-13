@@ -11,7 +11,7 @@
 namespace configParserStruct
 {
 
-  namespace structParserUtil { class program; };
+  namespace structParserUtil { class program; }
 
   class structParser : public parser
   {

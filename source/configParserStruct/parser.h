@@ -99,7 +99,7 @@ namespace configParserStruct
 
   template <class Enum> Enum parser::enumVariable( const std::string &VarName, Enum DefaultValue ) const 
   { 
-    return static_cast<Enum>( integerVariable(VarName,DefaultValue) ); 
+    return static_cast<Enum>( integerVariable(VarName, static_cast<int>(DefaultValue) ) ); 
   }   
 
   // =====================================================
