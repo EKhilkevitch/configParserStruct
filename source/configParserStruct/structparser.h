@@ -32,6 +32,7 @@ namespace configParserStruct
 
     private:
       structParserUtil::program *Program;
+      mutable containerForVariables ListOfVariables;
 
     private:
       structParser( const structParser& );
