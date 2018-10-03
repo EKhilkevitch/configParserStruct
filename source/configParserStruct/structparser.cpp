@@ -151,6 +151,7 @@ configParserStruct::structParser::containerForVariables configParserStruct::stru
 void configParserStruct::structParser::setVariableValue( const std::string &VarName, const std::string &Value )
 {
   Program->setNamedVariable( VarName, structParserUtil::createVariable(Value) );
+  ListOfVariables.clear();
 }
 
 // -----------------------------------------------------
@@ -158,6 +159,7 @@ void configParserStruct::structParser::setVariableValue( const std::string &VarN
 void configParserStruct::structParser::setVariableValue( const std::string &VarName, int Value )
 {
   Program->setNamedVariable( VarName, structParserUtil::createVariable(Value) );
+  ListOfVariables.clear();
 }
 
 // -----------------------------------------------------
@@ -165,6 +167,7 @@ void configParserStruct::structParser::setVariableValue( const std::string &VarN
 void configParserStruct::structParser::setVariableValue( const std::string &VarName, double Value )
 {
   Program->setNamedVariable( VarName, structParserUtil::createVariable(Value) );
+  ListOfVariables.clear();
 }
 
 // =====================================================
