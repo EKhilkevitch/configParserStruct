@@ -58,6 +58,7 @@ void configParserStruct::structParser::build( const std::string &Text )
   bool OK = Program->build( Text );
   if ( ! OK )
     throw parsingException( Program->errorLine() );
+  ListOfVariables.clear();
 }
 
 // -----------------------------------------------------
@@ -65,6 +66,7 @@ void configParserStruct::structParser::build( const std::string &Text )
 void configParserStruct::structParser::run()
 {
   Program->execute();
+  ListOfVariables.clear();
 }
 
 // -----------------------------------------------------
@@ -74,6 +76,7 @@ void configParserStruct::structParser::reset()
   assert( Program != NULL );
   Program->clear();
   Program->initBuiltInVariables();
+  ListOfVariables.clear();
 }
 
 // -----------------------------------------------------
