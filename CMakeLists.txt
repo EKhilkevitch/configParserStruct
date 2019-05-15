@@ -26,8 +26,11 @@ if ( UNIX )
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") 
   set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -fPIC") 
 endif()
+
 if ( WIN32 )
   add_definitions( -D_CRT_SECURE_NO_DEPRECATE=1 )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ") 
+  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   /wd4244 /wd4267 /wd4996 /wd4028") 
 endif()
 
 add_subdirectory( ./source/configParserStruct/ )
