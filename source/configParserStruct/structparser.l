@@ -184,6 +184,7 @@ void CPSSPU_lexResetLineNumber( void )
 {
   CPSSPU_LineNumber = 0;
 
+  /* disable unused warnings */
   (void)(&input);
   (void)(&yyunput);
 }

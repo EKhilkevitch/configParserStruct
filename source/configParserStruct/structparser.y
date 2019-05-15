@@ -218,6 +218,7 @@ EXTERN int CPSSPU_wrap( void )
 
 EXTERN void CPSSPU_error( const char *String )
 {
+  (void)(String);
   CPSSPU_setStructParserError();
 }
 
