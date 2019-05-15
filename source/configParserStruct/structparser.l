@@ -167,8 +167,13 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 
 // =====================================================
 
-#define TRUE 1
-#define FALSE 0
+#ifndef TRUE
+#  define TRUE 1
+#endif
+
+#ifndef FALSE
+#  define FALSE 0
+#endif
 
 static size_t CPSSPU_LineNumber = 0;
 static int CPSSPU_EnableNewline = FALSE;
@@ -178,6 +183,9 @@ static int CPSSPU_EnableNewline = FALSE;
 void CPSSPU_lexResetLineNumber( void )
 {
   CPSSPU_LineNumber = 0;
+
+  (void)(&input);
+  (void)(&yyunput);
 }
 
 // -----------------------------------------------------

@@ -338,7 +338,7 @@ void CPSSPU_endOfWhileStatement( void )
 {
   if ( Program != NULL )
   {
-    size_t IndexIf = Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>(+1);
+//    size_t IndexIf = Program->replaceCommandMarkerToJmp<jumpIfFalseCommand>(+1);
     size_t IndexBegin = Program->replaceCommandMarkerToNop();
     Program->pushCommand( jumpToCommand(IndexBegin) );
   }

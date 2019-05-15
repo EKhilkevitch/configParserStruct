@@ -271,7 +271,7 @@ const std::string configParserStruct::structParserUtil::dictVariableValue::strin
   }
   Result += " }";
   return Result;
-};
+}
         
 // -----------------------------------------------------
 
@@ -458,7 +458,7 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::arrayVariableValue::getItemPointer( int Index )
 {
-  if ( Index >= (int)Array.size() || Index < 0 )
+  if ( Index >= static_cast<int>(Array.size()) || Index < 0 )
     return NULL;
   return &Array[Index];
 }

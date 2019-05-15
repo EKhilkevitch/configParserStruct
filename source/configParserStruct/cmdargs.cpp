@@ -53,8 +53,8 @@ namespace
   void destroyOption( option *Option )
   {
     assert( Option != NULL );
-    std::free( (void*)(Option->name) );
-    std::memset( Option, 0, sizeof(Option) );
+    std::free( const_cast<char*>(Option->name) );
+    std::memset( Option, 0, sizeof(*Option) );
   }
   
   // -----------------------------------------------------
