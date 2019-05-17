@@ -69,7 +69,7 @@ bool configParserStruct::structParserUtil::variable::boolean() const
 
 bool configParserStruct::structParserUtil::variable::isDefined() const 
 { 
-  return typeid(*Value) != typeid(undefVariableValue); 
+  return valueType() != typeid(undefVariableValue); 
 }
 
 // -----------------------------------------------------
@@ -111,6 +111,14 @@ void configParserStruct::structParserUtil::variable::setValueByReference( const 
   }
 
   *this = undefVariableValue();
+}
+
+// -----------------------------------------------------
+        
+const std::type_info& configParserStruct::structParserUtil::variable::valueType() const 
+{
+  const variableValue &ValueRef = *Value;
+  return typeid(ValueRef); 
 }
 
 // =====================================================

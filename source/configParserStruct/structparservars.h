@@ -64,7 +64,7 @@ namespace configParserStruct
         const variable valueByReference( const variable &Reference, unsigned AttrLevel = 0 ) const;
         void setValueByReference( const variable &Reference, const variable &Value, unsigned AttrLevel = 0 );
         
-        const std::type_info& valueType() const { return typeid(*Value); }
+        const std::type_info& valueType() const;
         template <class VarT> bool isValueDerivedFrom() const { return Value.isDerivedFrom<VarT>(); }
         
         template <class VarT > VarT& value() { return dynamic_cast<VarT&>( *Value ); }
