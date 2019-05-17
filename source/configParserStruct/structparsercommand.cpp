@@ -183,7 +183,7 @@ void configParserStruct::structParserUtil::commandsList::execute( program *Progr
 
 // =====================================================
         
-void configParserStruct::structParserUtil::markerCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::markerCommand::execute( program* ) const
 { 
   std::abort(); 
 }

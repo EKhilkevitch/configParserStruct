@@ -155,7 +155,7 @@ namespace configParserStruct
     
     // -----------------------------------------------------
     
-    template <class type> const variable zeroArgumentBuiltIn<type>::execute( const program &Program ) const
+    template <class type> const variable zeroArgumentBuiltIn<type>::execute( const program& ) const
     {
       return createVariable( Value );
     }
