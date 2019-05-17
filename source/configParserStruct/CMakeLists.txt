@@ -79,6 +79,11 @@ if ( PYTHON_INCLUDE_DIRS AND ENABLE_PYTHON )
 endif()
 
 add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} )
+target_include_directories( configParserStruct PRIVATE "${PROJECT_SOURCE_DIR}/.." )
+
+if ( WIN32 )
+  target_compile_definitions( configParserStruct PRIVATE "-D_CRT_SECURE_NO_DEPRECATE=1" )
+endif()
 
 if ( USE_INTERNAL_GETOPT )
   target_include_directories( configParserStruct PRIVATE ${WIN_GETOPT_DIR} )
