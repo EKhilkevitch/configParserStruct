@@ -165,7 +165,7 @@ TEST( commandLineArgumentsParser, parseShortOption )
   ASSERT_EQ( "filename", ParsedArguments.arg('i') );
   ASSERT_FALSE( ParsedArguments.exist('v') );
 
-  auto OptionsSet = ParsedArguments.existingArguments();
+  std::set<char> OptionsSet = ParsedArguments.existingArguments();
   ASSERT_EQ( 2, OptionsSet.size() );
   ASSERT_TRUE( OptionsSet.find('i') != OptionsSet.end() );
   ASSERT_TRUE( OptionsSet.find('h') != OptionsSet.end() );
@@ -243,14 +243,14 @@ TEST( commandLineArgumentsParser, parseOptionWithFile )
 
 TEST( commandLineArgumentsParser, parseIntegerOption )
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
   
   std::list< std::string > CommandLineArguments;
   CommandLineArguments.push_back("program_name");
   CommandLineArguments.push_back( "-I" );
   CommandLineArguments.push_back( "5" );
 
-  auto ParsedArguments = Parser( CommandLineArguments );
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
   ASSERT_EQ( "5", ParsedArguments.arg('I') );
   ASSERT_EQ( 5, ParsedArguments.argInt('I') );
 }
@@ -259,14 +259,14 @@ TEST( commandLineArgumentsParser, parseIntegerOption )
 
 TEST( commandLineArgumentsParser, parseDoubleOption )
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
   
   std::list< std::string > CommandLineArguments;
   CommandLineArguments.push_back("program_name");
   CommandLineArguments.push_back( "-D" );
   CommandLineArguments.push_back( "5.3" );
 
-  auto ParsedArguments = Parser( CommandLineArguments );
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
   ASSERT_TRUE( ParsedArguments.arg('D') == "5.3" );
   ASSERT_NEAR( 5.3, ParsedArguments.argDouble('D'), 1e-5 );
 }
@@ -275,14 +275,14 @@ TEST( commandLineArgumentsParser, parseDoubleOption )
 
 TEST( commandLineArgumentsParser, parseInvalidIngegerOption )
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
   
   std::list< std::string > CommandLineArguments;
   CommandLineArguments.push_back("program_name");
   CommandLineArguments.push_back( "-I" );
   CommandLineArguments.push_back( "Text" );
 
-  auto ParsedArguments = Parser( CommandLineArguments );
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
   ASSERT_EQ( 0, ParsedArguments.argInt('I') );
   ASSERT_EQ( 1, ParsedArguments.argInt('I',1) );
   try
@@ -296,7 +296,7 @@ TEST( commandLineArgumentsParser, parseInvalidIngegerOption )
 
 TEST( commandLineArgumentsParser, parseInvalidDoubleOption )
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
   
   std::list< std::string > CommandLineArguments;
   CommandLineArguments.push_back("program_name");
@@ -317,7 +317,7 @@ TEST( commandLineArgumentsParser, parseInvalidDoubleOption )
 
 TEST( commandLineArgumentsParser, twoParsingWithOneParser )
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
   
   std::list< std::string > CommandLineArguments;
   CommandLineArguments.push_back("program_name");
@@ -325,7 +325,7 @@ TEST( commandLineArgumentsParser, twoParsingWithOneParser )
   CommandLineArguments.push_back( "file1" );
   CommandLineArguments.push_back( "filename" );
   
-  auto ParsedArguments = Parser( CommandLineArguments );
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
 
   CommandLineArguments.clear();
   CommandLineArguments.push_back("program_name2");
@@ -345,14 +345,14 @@ TEST( commandLineArgumentsParser, twoParsingWithOneParser )
 
 TEST( commandLineArgumentsParser, parseWithPointers )
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
 
   char argv1[] = "program_name", argv2[] = "-i", argv3[] = "file1", argv4[] = "-v";
 
   char* argv[] = { argv1, argv2, argv3, argv4, NULL };
   const int argc = sizeof(argv)/sizeof(argv[0]) - 1;
   
-  auto ParsedArguments = Parser( argc, argv );
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( argc, argv );
   
   ASSERT_TRUE( ParsedArguments.exist('i') );
   ASSERT_TRUE( ParsedArguments.arg('i') == "file1" );
@@ -366,7 +366,7 @@ TEST( commandLineArgumentsParser, parseWithPointers )
 
 TEST( commandLineArgumentsParser, parse ) 
 {
-  auto Parser = createParser();
+  commandLineArgumentsParser Parser = createParser();
 
   std::list< std::string > CommandLineArguments;
 
@@ -382,7 +382,7 @@ TEST( commandLineArgumentsParser, parse )
   CommandLineArguments.push_back( "ext_file2" );
   CommandLineArguments.push_back( "ext_file3" );
 
-  auto ParsedArguments = Parser( CommandLineArguments );
+  commandLineArgumentsParser::parsedArguments ParsedArguments = Parser( CommandLineArguments );
 
   ASSERT_EQ( '\0', ParsedArguments.foundUnknownOption() );
   ASSERT_TRUE( ! ParsedArguments.exist('h') );
