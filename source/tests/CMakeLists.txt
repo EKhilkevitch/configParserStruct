@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 2.6 )
 
 if ( ENABLE_TESTS )
 
-  project( selfTest ) 
+  project( selfTestconfigParserStruct ) 
 
   set ( tests_source_files
           gtest_stringcast.cpp
