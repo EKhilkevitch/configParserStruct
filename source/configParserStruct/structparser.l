@@ -22,6 +22,7 @@ DELIM                   [ \t\v\r\f]
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -123,7 +124,15 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
 "\${"           { return TOKEN_SYMREF_BEGIN; }
 
 {INTNUM}        {  
-                   CPSSPU_lval.RealNumber = atol(CPSSPU_text); 
+                   long Number;
+
+                   Number = strtol( CPSSPU_text, NULL, 10 );
+                   if ( Number == LONG_MAX || Number == LONG_MIN )
+                   {
+                     CPSSPU_lval.RealNumber = strtod( CPSSPU_text, NULL );
+                   } else {
+                     CPSSPU_lval.RealNumber = Number; 
+                   }
 		   return TOKEN_REALNUMBER; 
 		}
 
