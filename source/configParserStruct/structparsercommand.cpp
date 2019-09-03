@@ -34,7 +34,8 @@ void configParserStruct::structParserUtil::command::execute( program *Program ) 
 
 const std::type_info& configParserStruct::structParserUtil::command::actionType() const 
 { 
-  return typeid(*Action); 
+  const commandAction &ActionRef = *Action;
+  return typeid(ActionRef); 
 }
 
 // -----------------------------------------------------
@@ -182,7 +183,7 @@ void configParserStruct::structParserUtil::commandsList::execute( program *Progr
 
 // =====================================================
         
-void configParserStruct::structParserUtil::markerCommand::execute( program *Program ) const
+void configParserStruct::structParserUtil::markerCommand::execute( program* ) const
 { 
   std::abort(); 
 }

@@ -136,7 +136,7 @@ void configParserStruct::parser::execFile( const std::string &FileName )
 
 // -----------------------------------------------------
 
-void configParserStruct::parser::setVariableValueString( const std::string &VarName, const std::string &Value ) 
+void configParserStruct::parser::setVariableValueString( const std::string &, const std::string & ) 
 {
   assert( ! "You must implement this function OR reimplement setVariableValue() functions" );
 }
