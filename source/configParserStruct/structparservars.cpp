@@ -145,6 +145,28 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 // =====================================================
 
+configParserStruct::structParserUtil::undefVariableValue::undefVariableValue() 
+{
+}
+
+// =====================================================
+
+configParserStruct::structParserUtil::realVariableValue::realVariableValue( double V ) : 
+  Value(V) 
+{
+}
+
+// -----------------------------------------------------
+        
+const std::string configParserStruct::structParserUtil::realVariableValue::string() const 
+{ 
+  char String[ 128 ];
+  std::sprintf( String, "%.15g", Value );
+  return String;
+}
+
+// =====================================================
+
 const std::string configParserStruct::structParserUtil::referenceVariableValue::string() const
 {
   std::string Result;

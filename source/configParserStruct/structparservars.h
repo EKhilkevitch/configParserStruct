@@ -93,7 +93,7 @@ namespace configParserStruct
     class undefVariableValue : public variableValue
     {
       public:
-        undefVariableValue() {}
+        undefVariableValue();
         
         variableValue* clone() const { return new undefVariableValue(*this); }
 
@@ -111,11 +111,11 @@ namespace configParserStruct
         double Value;
 
       public:
-        explicit realVariableValue( double V ) : Value(V) {}
+        explicit realVariableValue( double Value );
         
         variableValue* clone() const { return new realVariableValue(*this); }
         
-        const std::string string() const { return convertToString(Value); }
+        const std::string string() const;
         double number() const { return Value; }
         int integer() const { return static_cast<int>(Value); }
         bool boolean() const { return Value != 0.0; }

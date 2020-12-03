@@ -130,10 +130,15 @@ static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t Destinatio
                    if ( Number == LONG_MAX || Number == LONG_MIN )
                    {
                      CPSSPU_lval.RealNumber = strtod( CPSSPU_text, NULL );
+		     return TOKEN_REALNUMBER; 
+                   } else if ( Number <= INT_MIN || INT_MAX <= Number ) 
+                   {
+                     CPSSPU_lval.RealNumber = strtod( CPSSPU_text, NULL );
+		     return TOKEN_REALNUMBER; 
                    } else {
-                     CPSSPU_lval.RealNumber = Number; 
+                     CPSSPU_lval.IntNumber = Number;
+		     return TOKEN_INTNUMBER; 
                    }
-		   return TOKEN_REALNUMBER; 
 		}
 
 {REALNUM}       {  
