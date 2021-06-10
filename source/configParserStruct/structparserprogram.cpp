@@ -70,6 +70,7 @@ void configParserStruct::structParserUtil::program::initBuiltInVariables()
 
   SET_BUILTIN_FUNCTION( mathZeroArgumentBuiltIn, "pi", M_PI );
 
+  SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, sqrt );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, sin );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, cos );
   SET_STD_BUILTIN_FUNCTION( mathOneArgumentBuiltIn, tan );
