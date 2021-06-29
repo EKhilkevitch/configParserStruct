@@ -7,7 +7,6 @@ if ( ENABLE_TESTS )
 
   set ( tests_source_files
           gtest_stringcast.cpp
-          gtest_cmdargs.cpp
           gtest_parser.cpp
           gtest_simpleparser.cpp
           gtest_structparser.cpp

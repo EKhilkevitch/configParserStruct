@@ -21,23 +21,11 @@ endif()
 
 
 set( configparser_source_files 
-      cmdargs.cpp
       parser.cpp
       exception.cpp
       simpleparser.cpp
       mutex.cpp
    )
-
-if ( WIN32 )
-  set( USE_INTERNAL_GETOPT 1 )
-  set( WIN_GETOPT_DIR "${PROJECT_SOURCE_DIR}/../../win_getopt" ) 
-  set( configparser_source_files ${configparser_source_files}
-       ${WIN_GETOPT_DIR}/getopt.c
-       ${WIN_GETOPT_DIR}/getopt_long.c
-       ${WIN_GETOPT_DIR}/libecho.c
-     )
-endif()
-
 
 if ( FLEX_EXECUTABLE AND BISON_EXECUTABLE )
   BISON_TARGET( structparserY structparser.y  ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c COMPILE_FLAGS ${BISON_FLAGS} )
