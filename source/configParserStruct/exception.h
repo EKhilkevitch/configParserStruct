@@ -3,7 +3,8 @@
 
 // =====================================================
 
-#include <stdexcept>
+#include <exception>
+#include <string>
 
 // =====================================================
 
@@ -12,10 +13,14 @@ namespace configParserStruct
 
   // =====================================================
   
-  class exception : public std::runtime_error
+  class exception : public std::exception
   {
+    private:
+      std::string What;
+
     public:
-      exception( const std::string &What );
+      explicit exception( const std::string &What );
+      const char* what() const throw();
       ~exception() throw();
   };
   

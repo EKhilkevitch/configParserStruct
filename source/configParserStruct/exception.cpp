@@ -5,9 +5,16 @@
 
 // =====================================================
 
-configParserStruct::exception::exception( const std::string &What ) :
-  std::runtime_error( What )
+configParserStruct::exception::exception( const std::string &W ) :
+  What(W)
 {
+}
+
+// -----------------------------------------------------
+
+const char* configParserStruct::exception::what() const throw()
+{
+  return What.c_str();
 }
 
 // -----------------------------------------------------

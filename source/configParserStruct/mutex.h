@@ -11,7 +11,10 @@ namespace configParserStruct
   class mutex
   {
     private:
-      void *Mutex;
+      struct impl;
+
+    private:
+      impl *Impl;
 
     private:
       mutex( const mutex& );

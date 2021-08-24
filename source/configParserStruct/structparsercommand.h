@@ -35,7 +35,7 @@ namespace configParserStruct
     class command 
     {
       private:
-        clonablePointer<commandAction,nopCommand> Action;
+        clonablePointer<commandAction> Action;
 
       public:
         command();

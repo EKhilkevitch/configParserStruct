@@ -28,9 +28,10 @@ namespace configParserStruct
   class parser
   {
     public:
-      struct exception : public ::configParserStruct::exception
+      class exception : public ::configParserStruct::exception
       {
-        exception( const std::string &What );
+        public:
+          explicit exception( const std::string &What );
       };
 
       class openFileException : public exception

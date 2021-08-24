@@ -49,7 +49,7 @@ namespace configParserStruct
     class variable
     {
       private:
-        clonablePointer<variableValue,undefVariableValue> Value;
+        clonablePointer<variableValue> Value;
 
       public:
         variable();
@@ -65,12 +65,12 @@ namespace configParserStruct
         void setValueByReference( const variable &Reference, const variable &Value, unsigned AttrLevel = 0 );
         
         const std::type_info& valueType() const;
-        template <class VarT> bool isValueDerivedFrom() const { return Value.isDerivedFrom<VarT>(); }
+        template <class VarT> bool isValueDerivedFrom() const;
         
-        template <class VarT > VarT& value() { return dynamic_cast<VarT&>( *Value ); }
-        template <class VarT > const VarT& value() const { return dynamic_cast<const VarT&>( *Value ); }
+        template <class VarT > VarT& value();
+        template <class VarT > const VarT& value() const;
 
-        template <class T> T valueScalar() const { return extractValueScalar<T>(*this); }
+        template <class T> T valueScalar() const;
     };
     
     // =====================================================
@@ -429,6 +429,36 @@ namespace configParserStruct
     {
       stringVariableValue Value( Arg );
       return variable( Value );
+    }
+    
+    // =====================================================
+        
+    template <class VarT> bool variable::isValueDerivedFrom() const 
+    { 
+      const variableValue *ValuePtr = Value.get();
+      const VarT *CastValue = dynamic_cast<const VarT*>( ValuePtr );
+      return CastValue != NULL; 
+    }
+    
+    // -----------------------------------------------------
+        
+    template <class VarT > VarT& variable::value() 
+    { 
+      return dynamic_cast<VarT&>( *Value ); 
+    }
+    
+    // -----------------------------------------------------
+    
+    template <class VarT > const VarT& variable::value() const 
+    { 
+      return dynamic_cast<const VarT&>( *Value ); 
+    }
+    
+    // -----------------------------------------------------
+
+    template <class T> T variable::valueScalar() const 
+    { 
+      return extractValueScalar<T>(*this); 
     }
     
     // =====================================================

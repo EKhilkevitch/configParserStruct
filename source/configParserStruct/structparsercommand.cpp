@@ -12,14 +12,15 @@
 
 // =====================================================
 
-configParserStruct::structParserUtil::command::command() 
+configParserStruct::structParserUtil::command::command() :
+  Action( new nopCommand() )
 {
 }
 
 // -----------------------------------------------------
 
 configParserStruct::structParserUtil::command::command( const commandAction &A ) : 
-  Action(A) 
+  Action( A.clone() ) 
 {
 }
 

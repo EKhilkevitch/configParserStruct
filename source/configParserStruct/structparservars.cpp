@@ -8,6 +8,7 @@
 #include <set>
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
 
 // =====================================================
         
@@ -26,14 +27,15 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 // =====================================================
         
-configParserStruct::structParserUtil::variable::variable() 
+configParserStruct::structParserUtil::variable::variable() :
+  Value( new undefVariableValue() )
 {
 }
 
 // -----------------------------------------------------
 
 configParserStruct::structParserUtil::variable::variable( const variableValue &V ) : 
-  Value(V) 
+  Value( V.clone() ) 
 {
 }
 
