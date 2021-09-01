@@ -77,7 +77,6 @@ void configParserStruct::mutex::lock()
 
 void configParserStruct::mutex::unlock()
 {
-  assert( Mutex != NULL );
 #if __unix__
   pthread_mutex_unlock( &Impl->Mutex );
 #endif
