@@ -54,7 +54,7 @@ configParserStruct::mutex::~mutex()
   pthread_mutex_destroy( &Impl->Mutex );
 #endif
 #if _WIN32
-  if ( Impl.Mutex != INVALID_HANDLE_VALUE )
+  if ( Impl->Mutex != INVALID_HANDLE_VALUE )
     CloseHandle( Impl->Mutex );
 #endif
 
