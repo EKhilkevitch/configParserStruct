@@ -166,7 +166,7 @@ size_t configParserStruct::structParserUtil::commandsList::executeOneCommand( pr
   if ( Program == NULL )
     throw std::invalid_argument("Program must be not NULL");
   if ( CurrentCommandIndex < Commands.size() )
-    Commands.at( CurrentCommandIndex ).execute( Program );
+    Commands[ CurrentCommandIndex ].execute( Program );
   CurrentCommandIndex += 1;
   return CurrentCommandIndex;
 }

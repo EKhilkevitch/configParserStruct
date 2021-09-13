@@ -241,7 +241,7 @@ namespace configParserStruct
         virtual size_t numberOfItems() const = 0;
         virtual void clear() = 0;
         
-        static variable* getItemPointer( variable *Variable, const std::string &KeySuffix );
+        static const variable* getItemPointer( const variable *Variable, const std::string &KeySuffix );
         static std::pair<std::string,std::string> splitKey( const std::string &Key );
     };
 
@@ -266,8 +266,9 @@ namespace configParserStruct
         void addItem( size_t Index, const variable &Value );
         const variable getItem( int Index ) const;
         variable* getItemPointer( int Index );
-        size_t numberOfItems() const { return Array.size(); }
-        void clear() { Array.clear(); }
+        const variable* getItemPointer( int Index ) const;
+        size_t numberOfItems() const;
+        void clear();
         
         variable* getItemPointerByVariableKey( const variable &Key );
         const variable getItemByVariableKey( const variable &Key ) const;
@@ -298,12 +299,13 @@ namespace configParserStruct
         void removeItem( const std::string &Key );
         const variable getItem( const std::string &Key ) const;
         variable* getItemPointer( const std::string &Key );
+        const variable* getItemPointer( const std::string &Key ) const;
         size_t numberOfItems() const;
         void clear();
         const std::set<std::string> listOfKeys() const;
         const std::set<std::string> listOfKeysIncludeSubdict() const;
         
-        variable* getItemPointerNotFollow( const std::string &Key );
+        const variable* getItemPointerNotFollow( const std::string &Key ) const;
         variable* getItemPointerByVariableKey( const variable &Key );
         const variable getItemByVariableKey( const variable &Key ) const;
         void addItemByVariableKey( const variable &Key, const variable &Value );
@@ -326,6 +328,7 @@ namespace configParserStruct
         const variable get( const std::string &Name ) const;
         void remove( const std::string &Name );
         variable* getPointer( const std::string &Name );
+        const variable* getPointer( const std::string &Name ) const;
 
         std::set<std::string> listOfNames() const;
         std::set<std::string> listOfNamesIncludeSubdict() const;
@@ -351,7 +354,9 @@ namespace configParserStruct
         void set( const std::string &Name, const variable &Var );
         const variable get( const std::string &Name ) const;
         variable* getPointer( const std::string &Name );
+        const variable* getPointer( const std::string &Name ) const;
         const variable getFromTopOfStack( const std::string &Name ) const;
+        variable* getPointerFromTopOfStack( const std::string &Name );
         const variable getFromLastByOneOfStack( const std::string &Name ) const;
         const variable getFromStack( size_t Index, const std::string &Name ) const;
         void removeFromTopOfStack( const std::string &Name );

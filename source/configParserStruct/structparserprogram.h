@@ -58,11 +58,12 @@ namespace configParserStruct
         void popVariableFrame();
         size_t functionLevel() const;
 
-        const variable getNamedVariable( const std::string &Name ) const { return Variables.get(Name); }
-        variable* getNamedVariablePointer( const std::string &Name ) { return Variables.getPointer(Name); }
-        const variable getNamedVariableFromTopOfStack( const std::string &Name ) const { return Variables.getFromTopOfStack(Name); }
-        void setNamedVariable( const std::string &Name, const variable &Value ) { Variables.set(Name,Value); }
-        std::set<std::string> onExecuteVariableNames() const { return Variables.listOfNamesInAllStack(); }
+        const variable getNamedVariable( const std::string &Name ) const;
+        variable* getNamedVariablePointer( const std::string &Name );
+        const variable* getNamedVariablePointer( const std::string &Name ) const;
+        const variable getNamedVariableFromTopOfStack( const std::string &Name ) const;
+        void setNamedVariable( const std::string &Name, const variable &Value );
+        std::set<std::string> onExecuteVariableNames() const;
         std::set<std::string> onBuildVariableNames() const;
         const variable getLastExpressionReuslt() const { return Variables.get( lastResultVariableName() ); }
         

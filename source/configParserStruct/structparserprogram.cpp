@@ -178,9 +178,33 @@ const configParserStruct::structParserUtil::variable configParserStruct::structP
 
 void configParserStruct::structParserUtil::program::pushFunctionArgument( const variable &Value )
 {
-  variable NumberOfArgs = Variables.getFromTopOfStack( "$N" );
-  Variables.set( "$" + convertToString( NumberOfArgs.integer() + 1 ), Value );
-  Variables.set( "$N", createVariable( NumberOfArgs.integer() + 1 ) );
+  const std::string NumberOfArgsName = "$N";
+  variable *NumberOfArgsVar = Variables.getPointerFromTopOfStack( NumberOfArgsName );
+  const int NumberOfArgsInt = ( NumberOfArgsVar == NULL ) ? 0 : NumberOfArgsVar->integer();
+
+  switch ( NumberOfArgsInt )
+  {
+    case 0:
+      Variables.set( "$1", Value );
+      break;
+    case 1:
+      Variables.set( "$2", Value );
+      break;
+    case 2:
+      Variables.set( "$3", Value );
+      break;
+    case 3:
+      Variables.set( "$4", Value );
+      break;
+    default:
+      Variables.set( '$' + convertToString( NumberOfArgsInt + 1 ), Value );
+      break;
+  }
+
+  if ( NumberOfArgsVar == NULL )
+    Variables.set( NumberOfArgsName, createVariable<int>( NumberOfArgsInt + 1 ) );
+  else
+    NumberOfArgsVar->value<integerVariableValue>() = integerVariableValue( NumberOfArgsInt + 1 );
 }
 
 // -----------------------------------------------------
@@ -250,6 +274,48 @@ std::set<std::string> configParserStruct::structParserUtil::program::onBuildVari
     VariableNames.insert( PushedName );
   }
   return VariableNames;
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::program::getNamedVariable( const std::string &Name ) const 
+{ 
+  return Variables.get(Name); 
+}
+
+// -----------------------------------------------------
+        
+configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::program::getNamedVariablePointer( const std::string &Name ) 
+{ 
+  return Variables.getPointer(Name); 
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::variable* configParserStruct::structParserUtil::program::getNamedVariablePointer( const std::string &Name ) const
+{ 
+  return Variables.getPointer(Name); 
+}
+
+// -----------------------------------------------------
+        
+const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::program::getNamedVariableFromTopOfStack( const std::string &Name ) const 
+{ 
+  return Variables.getFromTopOfStack(Name); 
+}
+
+// -----------------------------------------------------
+        
+void configParserStruct::structParserUtil::program::setNamedVariable( const std::string &Name, const variable &Value ) 
+{ 
+  Variables.set(Name,Value); 
+}
+
+// -----------------------------------------------------
+        
+std::set<std::string> configParserStruct::structParserUtil::program::onExecuteVariableNames() const 
+{ 
+  return Variables.listOfNamesInAllStack(); 
 }
 
 // -----------------------------------------------------
