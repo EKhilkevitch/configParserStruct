@@ -22,7 +22,8 @@
 // =====================================================
 
 extern "C" int CPSSPU_parse();
-extern "C" void CPSSPU_lexResetLineNumber();
+extern "C" void CPSSPU_clearBuffers( void );
+extern "C" void CPSSPU_lexResetLineNumber( void );
 extern "C" void CPSSPU_lexSetNewLineEnabled( int Enabled );
 
 // =====================================================
@@ -350,6 +351,7 @@ bool configParserStruct::structParserUtil::program::build( const std::string &Pr
   }
 
   setStructPrserProgram( NULL );
+  CPSSPU_clearBuffers();
   
   return Result;
 }

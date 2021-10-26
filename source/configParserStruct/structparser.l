@@ -35,6 +35,8 @@ static int  CPSSPU_lexEnableTokenNewline( void );
 static void CPSSPU_lexProcessLexerPragma( const char *const String );
 static void CPSSPU_lexProcessAndCopyString( char *Destination, size_t DestinationSize, const char *const Source );
 
+extern void CPSSPU_clearBuffers( void );
+
 #ifdef YY_INPUT
 #  undef  YY_INPUT
 #endif
@@ -215,6 +217,14 @@ size_t CPSSPU_lexCurrentLineNumber( void )
 void CPSSPU_lexSetNewLineEnabled( int Enabled )
 {
   CPSSPU_EnableNewline = Enabled;
+}
+
+// -----------------------------------------------------
+
+void CPSSPU_clearBuffers( void )
+{
+  CPSSPU_lex_destroy();
+  CPSSPU__delete_buffer(YY_CURRENT_BUFFER);
 }
 
 // -----------------------------------------------------
