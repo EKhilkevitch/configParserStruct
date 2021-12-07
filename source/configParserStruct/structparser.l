@@ -223,7 +223,7 @@ void CPSSPU_lexSetNewLineEnabled( int Enabled )
 
 void CPSSPU_clearBuffers( void )
 {
-#if ( ( YY_FLEX_MAJOR_VERSION * 10000 + YY_FLEX_MINOR_VERSION * 100 + YY_FLEX_SUBMINOR_VERSION ) >= 20600 )
+#if ( ( YY_FLEX_MAJOR_VERSION * 10000 + YY_FLEX_MINOR_VERSION * 100 + YY_FLEX_SUBMINOR_VERSION ) >= 20530 )
   CPSSPU_lex_destroy();
 #endif
   CPSSPU__delete_buffer(YY_CURRENT_BUFFER);
