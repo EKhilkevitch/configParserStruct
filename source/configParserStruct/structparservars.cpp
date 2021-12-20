@@ -189,7 +189,7 @@ const std::string configParserStruct::structParserUtil::referenceVariableValue::
 const configParserStruct::structParserUtil::variable configParserStruct::structParserUtil::referenceVariableValue::getValue( const program &Program ) const
 {
   const variable *Variable = Program.getNamedVariablePointer(Name);
-  if ( Variable == nullptr )
+  if ( Variable == NULL )
     return variable();
 //  const variable Variable = Program.getNamedVariable( Name );
   return Variable->valueByReference( *this );
