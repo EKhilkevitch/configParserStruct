@@ -1,7 +1,7 @@
 
 // =========================================================
 
-#include "configParserStruct2/lexinput.h"
+#include "configParserStruct/lexinput.h"
 
 #include <gtest/gtest.h>
 

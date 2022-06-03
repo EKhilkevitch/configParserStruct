@@ -1,7 +1,7 @@
 
 // =========================================================
 
-#include "configParserStruct2/variable.h"
+#include "configParserStruct/variable.h"
 
 #include <gtest/gtest.h>
 

@@ -35,10 +35,6 @@ namespace configParserStruct
     private:
       mutex *Mutex;
 
-    private:
-      mutexLocker( const mutexLocker& );
-      mutexLocker& operator=( const mutexLocker& );
-
     public:
       mutexLocker( mutex *M );
       ~mutexLocker();

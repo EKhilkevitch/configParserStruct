@@ -19,78 +19,48 @@ if ( UNIX )
   set( FLAX_FLAGS "--prefix=CPSSPU_" )
 endif()
 
+BISON_TARGET( parserY parser.y  ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c COMPILE_FLAGS ${BISON_FLAGS} )
+FLEX_TARGET(  parserL parser.l  ${CMAKE_CURRENT_BINARY_DIR}/parser.yy.c  COMPILE_FLAGS ${FLAX_FLAGS} )
+ADD_FLEX_BISON_DEPENDENCY( parserL parserY )
 
 set( configparser_source_files 
       parser.cpp
       exception.cpp
-      simpleparser.cpp
       mutex.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.c
+     ${CMAKE_CURRENT_BINARY_DIR}/parser.yy.c
+     variablevalue.cpp
+     reference.cpp
+     variable.cpp
+     command.cpp
+     commandbinops.cpp
+     commandcmp.cpp
+     commandstack.cpp
+     commandjump.cpp
+     buildinfunc.cpp
+     text.cpp
+     memory.cpp
+     program.cpp
+     lexinput.c
+     bisoncompiler.cpp
    )
-
-if ( FLEX_EXECUTABLE AND BISON_EXECUTABLE )
-  BISON_TARGET( structparserY structparser.y  ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c COMPILE_FLAGS ${BISON_FLAGS} )
-  FLEX_TARGET(  structparserL structparser.l  ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c  COMPILE_FLAGS ${FLAX_FLAGS} )
-  ADD_FLEX_BISON_DEPENDENCY( structparserL structparserY )
-  set( USE_BISON_FLEX 1 )
-  set( configparser_source_files ${configparser_source_files}
-      structparserinput.cpp
-      structparsercompiler.cpp
-      structparsercommand.cpp
-      structparservars.cpp
-      structparserbuiltin.cpp
-      structparserextmath.cpp
-      structparserprogram.cpp
-      structparser.cpp
-      ${CMAKE_CURRENT_BINARY_DIR}/structparser.tab.c
-      ${CMAKE_CURRENT_BINARY_DIR}/structparser.yy.c
-     ) 
-endif()
-
-if ( PYTHON_INCLUDE_DIRS AND ENABLE_PYTHON )
-  include( FindPythonLibs )
-  find_package( PythonLibs )
-
-  message( "Python ENABLED" )
-  set( configparser_source_files ${configparser_source_files} pythonparser.cpp )
-  set( USE_PYTHON 1 )
-
-  if ( UNIX )
-    set( PYTHON_VERSION ${PYTHON_INCLUDE_PATH} )
-    string( REGEX REPLACE "^.*ython" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
-    string( REGEX REPLACE "[\\/\\\\]+.*$" "" PYTHON_VERSION "${PYTHON_VERSION}"  )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} '-DPYTHON_INCLUDE_HEADER=<python${PYTHON_VERSION}/Python.h>'") 
-  endif()
-  if ( WIN32 )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPYTHON_INCLUDE_HEADER=<Python.h>") 
-  endif()
-
-endif()
 
 add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} )
 target_include_directories( configParserStruct PRIVATE "${PROJECT_SOURCE_DIR}/.." )
+target_include_directories( configParserStruct PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/.." )
 
 if ( WIN32 )
   target_compile_definitions( configParserStruct PRIVATE "-D_CRT_SECURE_NO_DEPRECATE=1" )
 endif()
 
-if ( USE_INTERNAL_GETOPT )
-  target_include_directories( configParserStruct PRIVATE ${WIN_GETOPT_DIR} )
+if ( UNIX )
+  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs" )
 endif()
 
-if ( USE_BISON_FLEX )
-  target_include_directories( configParserStruct PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/.." )
+if ( UNIX )
+  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -std=c89 -ansi -pedantic") 
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++98" )
 endif()
 
-if ( USE_PYTHON )
-  if ( UNIX )
-    target_include_directories( configParserStruct PRIVATE "${PYTHON_INCLUDE_PATH}/.." )
-  endif()
-  if ( WIN32 )
-    target_include_directories( configParserStruct PRIVATE "${PYTHON_INCLUDE_PATH}" )
-  endif()
-endif()
 
-if ( PYTHON_INCLUDE_DIRS )
-  target_link_libraries( configParserStruct ${PYTHON_LIBRARIES} )
-endif()
 

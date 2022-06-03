@@ -1,8 +1,8 @@
 
 // =========================================================
 
-#include "configParserStruct2/program.h"
-#include "configParserStruct2/exception.h"
+#include "configParserStruct/program.h"
+#include "configParserStruct/exception.h"
 
 #include <iostream>
 #include <cmath>
@@ -949,6 +949,22 @@ TEST( program1, dict_6 )
   
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("dict",named::GlobalScope) );
   EXPECT_EQ( "{ a => 1, b => 4 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, variables_1 )
+{
+  program Program;
+  Program.build( "dict.a = 1; dict.b = 3+1; x = 7; f = func { y = 4; x += 1; @z = 4; }" );
+
+  std::set<std::string> Set = Program.programText().variables();
+
+  EXPECT_EQ( 1, Set.count("dict") );
+  EXPECT_EQ( 1, Set.count("x") );
+  EXPECT_EQ( 1, Set.count("z") );
+  EXPECT_EQ( 0, Set.count("y") );
+  EXPECT_EQ( 0, Set.count("f") );
 }
 
 // =========================================================

@@ -3,108 +3,52 @@
 
 // =====================================================
 
-#include "configParserStruct/exception.h"
-
 #include <string>
-#include <set>
-#include <list>
-
-// =====================================================
-
-/**
- * @file
- * @brief Базовый класс для интерпретаторов конфигурации.
- */
 
 // =====================================================
 
 namespace configParserStruct
 {
+  
+  // =====================================================
+  
+  class program;
 
-  /**
-   * @brief
-   * Базовый класс для интерпретаторов конфигурации.
-  */
-  class parser
+  // =====================================================
+
+  class parser 
   {
     public:
-      class exception : public ::configParserStruct::exception
-      {
-        public:
-          explicit exception( const std::string &What );
-      };
+      static const char *const LastExpressionValueName;
 
-      class openFileException : public exception
-      {
-        private:
-          std::string FileName;
-        public:
-          openFileException( const std::string &FName, const std::string &Reason ); 
-          ~openFileException() throw() {}
-          const std::string &fileName() const { return FileName; }
-      };
-
-      class readFileException : public exception
-      {
-        private:
-          std::string FileName;
-        public:
-          readFileException( const std::string &FName, const std::string &Reason ); 
-          ~readFileException() throw() {}
-          const std::string &fileName() const { return FileName; }
-      };
+    private:
+      program *Program;
 
     public:
-      typedef std::set<std::string> containerForVariables;
+      parser();
+      parser( const parser& );
+      parser& operator=( const parser& );
+      ~parser();
+      void swap( parser &Other );
 
-    protected:
-      virtual void setVariableValueString( const std::string &VarName, const std::string &Value );
+      void exec( const std::string &ConfigText );
+      bool isVariableExist( const std::string &VarName ) const;
 
-    public:
-      virtual ~parser();
-
-      virtual void setVariableValue( const std::string &VarName, const std::string &Value );
-      virtual void setVariableValue( const std::string &VarName, int Value );
-      virtual void setVariableValue( const std::string &VarName, double Value );
-
-      virtual void exec( const std::string &ConfigText ) = 0;
-      virtual void execFile( const std::string &FileName );
-
-      virtual bool isVariableExist( const std::string &VarName ) const = 0;
+      void build( const std::string &ConfigText );
+      void run();
       
-      virtual containerForVariables listOfVariables() const = 0;
-      virtual containerForVariables listOfVariablesStruct() const;
-
-      virtual std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const = 0;
-      virtual double doubleVariable( const std::string &VarName, double DefaultValue = 0 ) const;
-      virtual int integerVariable( const std::string &VarName, int DefaultValue = 0 ) const;
-      template <class Enum> Enum enumVariable( const std::string &VarName ) const;
-      template <class Enum> Enum enumVariable( const std::string &VarName, Enum DefaultValue ) const;
+      void reset();
       
-      static std::list<std::string> readFileContent( const std::string &FileName );
-      static std::string joinStringList( const std::list<std::string> &List, const std::string &JoinString );
-      static std::string readFileContentinSingleString( const std::string &FileName, const std::string &JoinString );
-      static std::list<std::string> splitString( const std::string &String, const std::string &PossibleSeparators );
+      void setVariable( const std::string &Name, const std::string &Value );
+      void setVariable( const std::string &Name, int Value );
+      void setVariable( const std::string &Name, double Value );
 
-      static std::string structSeparator();
+      std::string stringVariable( const std::string &VarName, const std::string &DefaultValue = std::string() ) const;
+      double doubleVariable( const std::string &VarName, double DefaultValue = 0 ) const;
+      int integerVariable( const std::string &VarName, int DefaultValue = 0 ) const;
   };
 
   // =====================================================
-  
-  template <class Enum> Enum parser::enumVariable( const std::string &VarName ) const
-  { 
-    return static_cast<Enum>( integerVariable(VarName) ); 
-  }
-  
-  // -----------------------------------------------------
-
-  template <class Enum> Enum parser::enumVariable( const std::string &VarName, Enum DefaultValue ) const 
-  { 
-    return static_cast<Enum>( integerVariable(VarName, static_cast<int>(DefaultValue) ) ); 
-  }   
-
-  // =====================================================
-  
 
 }
 

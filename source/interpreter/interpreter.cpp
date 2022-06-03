@@ -1,12 +1,12 @@
 
 // =====================================================
 
+#include "configParserStruct/parser.h"
+
 #include <string>
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
-
-#include <configParserStruct/structparser.h>
 
 // =====================================================
 
@@ -69,7 +69,7 @@ int main( int argc, char *argv[] )
 
   std::string FileContent = readFileContent( File );
 
-  configParserStruct::structParser Parser;
+  configParserStruct::parser Parser;
 
   try
   {
