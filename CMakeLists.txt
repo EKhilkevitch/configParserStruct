@@ -30,6 +30,7 @@ if ( WIN32 )
   set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   /wd4244 /wd4267 /wd4996 /wd4028") 
 endif()
 
+add_subdirectory( ./source/configParserStruct2/ )
 add_subdirectory( ./source/configParserStruct/ )
 add_subdirectory( ./source/tests/ )
 add_subdirectory( ./source/interpreter/ )
