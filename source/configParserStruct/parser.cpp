@@ -4,6 +4,7 @@
 #include "configParserStruct/parser.h"
 #include "configParserStruct/program.h"
 #include "configParserStruct/variable.h"
+#include "configParserStruct/variablevalue.h"
 #include "configParserStruct/exception.h"
 
 #include <cassert>
@@ -12,6 +13,7 @@
 // =====================================================
       
 const char *const configParserStruct::parser::LastExpressionValueName = "..LEXP..";
+const int configParserStruct::parser::SuccesssErrorLine = -1;
 
 // -----------------------------------------------------
 
@@ -101,6 +103,33 @@ bool configParserStruct::parser::isVariableExist( const std::string &Name ) cons
 }
 
 // -----------------------------------------------------
+      
+enum configParserStruct::parser::variableType configParserStruct::parser::variableType( const std::string &Name ) const
+{
+  const variable *Variable = ( Name == LastExpressionValueName ) ? 
+    &Program->programMemory().lastResult() :
+    Program->programMemory().findValueByName(Name,named::GlobalScope);
+
+  if ( Variable == NULL )
+    return VarNone;
+
+  const char *Type = Variable->type();
+  if ( Type == undefVariableValue::TypeName )
+    return VarUndef;
+  if ( Type == integerVariableValue::TypeName )
+    return VarInteger;
+  if ( Type == realVariableValue::TypeName )
+    return VarReal;
+  if ( Type == stringVariableValue::TypeName )
+    return VarString;
+  if ( Type == arrayVariableValue::TypeName )
+    return VarArray;
+  if ( Type == dictVariableValue::TypeName )
+    return VarDict;
+  return VarOther;
+}
+
+// -----------------------------------------------------
 
 std::string configParserStruct::parser::stringVariable( const std::string &Name, const std::string &DefaultValue ) const
 {
@@ -167,6 +196,23 @@ void configParserStruct::parser::setVariable( const std::string &Name, double Va
     throw exception( "Can not explicit set last expression value" );
 
   Program->programMemory().setValueByName( Name, variable(Value), named::GlobalScope );
+}
+
+// -----------------------------------------------------
+      
+std::set<std::string> configParserStruct::parser::variables() const
+{
+  return Program->programText().variables();
+}
+
+// -----------------------------------------------------
+
+int configParserStruct::parser::errorLine() const
+{
+  const int Line = Program->programText().errorLine();
+  if ( Line == text::SuccesssErrorLine )
+    return SuccesssErrorLine;
+  return Line;
 }
 
 // =====================================================

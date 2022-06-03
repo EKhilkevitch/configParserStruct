@@ -21,8 +21,10 @@ namespace configParserStruct
     public:
       typedef const command* const_iterator;
 
-    private:
+    public:
       static const int SuccesssErrorLine;
+
+    private:
       static const char PlaceholderByte;
       static const size_t InvalidPlaceholderIndex;
 

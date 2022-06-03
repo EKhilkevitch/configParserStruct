@@ -372,6 +372,7 @@ configParserStruct::variable configParserStruct::assignCommand::createEmpty( con
     return variable( variable::DictCollection );
 
   assert( false );
+  return variable();
 }
 
 // -----------------------------------------------------
