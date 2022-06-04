@@ -101,16 +101,11 @@ void configParserStruct::program::build( const std::string &SourceCode )
 
   const int ParseResult = CPSSPU_parse();
 
+#if 0
   std::cerr << "SourceCode = " << SourceCode << std::endl;
   std::cerr << "ParseResult = " << ParseResult << std::endl;
   std::cerr << Text->toDebugString() << std::endl;
-
-  //std::cerr << "program::build: " << "ParseResult = " << ParseResult << ", ErrorLine = " << Text.errorLine() << std::endl;
-
-  //for ( configParserStruct::text::const_iterator it = Text->begin(); it != Text->end(); ++it )
-  {
-   // std::cerr << std::setw(5) << it - Text.begin() << " " << *it << std::endl;
-  }
+#endif
 
   CPSSPU_setTextForBison( NULL );
   CPSSPU_clearParserInputString();

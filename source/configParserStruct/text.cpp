@@ -284,7 +284,8 @@ std::string configParserStruct::text::toDebugString() const
 {
   std::ostringstream Stream;
 
-  for ( size_t i = 0; i < size(); i++ )
+  const size_t TextSize = size();
+  for ( size_t i = 0; i < TextSize; i++ )
   {
     Stream << std::setw(5) << i << " ";
     const command *Command = commandPointer(i);

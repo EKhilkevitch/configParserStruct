@@ -136,15 +136,11 @@ configParserStruct::variable* configParserStruct::named::findValueByName( const 
   
   Frame = frameForScope(Scope);
   Result = findValueByName( *Frame, Name );
-  if ( Result != NULL )
-    return Result;
 
-  if ( Scope == GlobalScope )
+  if ( Result == NULL && Frame == &Global )
   {
     Frame = frameForScope(PresetScope);
     Result = findValueByName( *Frame, Name );
-    if ( Result != NULL )
-      return Result;
   }
 
   return Result;
