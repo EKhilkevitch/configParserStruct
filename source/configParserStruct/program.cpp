@@ -8,7 +8,6 @@
 #include "configParserStruct/mutex.h"
 
 #include <algorithm>
-#include <iomanip>
 #include <iostream>
 #include <cstdio>
 
@@ -101,6 +100,10 @@ void configParserStruct::program::build( const std::string &SourceCode )
   CPSSPU_lexSetNewLineEnabled( 0 );
 
   const int ParseResult = CPSSPU_parse();
+
+  std::cerr << "SourceCode = " << SourceCode << std::endl;
+  std::cerr << "ParseResult = " << ParseResult << std::endl;
+  std::cerr << Text->toDebugString() << std::endl;
 
   //std::cerr << "program::build: " << "ParseResult = " << ParseResult << ", ErrorLine = " << Text.errorLine() << std::endl;
 

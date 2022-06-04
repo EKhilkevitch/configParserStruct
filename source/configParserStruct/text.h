@@ -42,6 +42,7 @@ namespace configParserStruct
     private:
       command* commandPointer( size_t Index );
       const command* commandPointer( size_t Index ) const;
+      static bool isCommandPointerPlaceholder( const command *Command );
 
     private:
       text& operator=( const text& );
@@ -78,6 +79,8 @@ namespace configParserStruct
 
       const_iterator begin() const;
       const_iterator end() const;
+
+      std::string toDebugString() const;
   };
 
   // =====================================================

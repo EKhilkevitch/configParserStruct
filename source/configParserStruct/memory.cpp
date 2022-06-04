@@ -22,6 +22,7 @@ configParserStruct::named::named()
       
 configParserStruct::named::named( const named &Other )
 {
+  copy( &Preset, Other.Preset );
   copy( &Global, Other.Global );
   for ( std::list< namedFrame >::const_iterator it = Other.Locals.begin(); it != Other.Locals.end(); ++it )
   {
@@ -46,6 +47,8 @@ configParserStruct::named& configParserStruct::named::operator=( const named &Ot
       
 void configParserStruct::named::swap( named &Other )
 {
+  Preset.Map.swap( Other.Preset.Map );
+  Preset.ReferenceMap.swap( Other.Preset.ReferenceMap );
   Global.Map.swap( Other.Global.Map );
   Global.ReferenceMap.swap( Other.Global.ReferenceMap );
   Locals.swap( Other.Locals );
@@ -53,10 +56,22 @@ void configParserStruct::named::swap( named &Other )
 
 // -----------------------------------------------------
 
-void configParserStruct::named::clear()
+void configParserStruct::named::clear( clearMode Mode )
 {
   clear( &Global );
   Locals.clear();
+  switch ( Mode )
+  {
+    case ClearAll:
+      clear( &Preset );
+      break;
+
+    case KeepPreset:
+      break;
+
+    default:
+      assert( false );
+  }
 }
 
 // -----------------------------------------------------
@@ -81,13 +96,16 @@ const configParserStruct::named::namedFrame* configParserStruct::named::frameFor
 {
   switch ( Scope )
   {
-    case GlobalScope:
-      return &Global;
-
     case LocalScope:
       if ( Locals.empty() )
         return &Global;
       return &Locals.back();
+    
+    case GlobalScope:
+      return &Global;
+    
+    case PresetScope:
+      return &Preset;
 
     default:
       assert( false );
@@ -113,9 +131,23 @@ configParserStruct::variable* configParserStruct::named::setValueByName( const s
 
 configParserStruct::variable* configParserStruct::named::findValueByName( const std::string &Name, scope Scope ) const
 {
-  const namedFrame *Frame = frameForScope(Scope);
-  assert( Frame != NULL );
-  return findValueByName( *Frame, Name );
+  variable *Result = NULL;
+  const namedFrame *Frame = NULL;
+  
+  Frame = frameForScope(Scope);
+  Result = findValueByName( *Frame, Name );
+  if ( Result != NULL )
+    return Result;
+
+  if ( Scope == GlobalScope )
+  {
+    Frame = frameForScope(PresetScope);
+    Result = findValueByName( *Frame, Name );
+    if ( Result != NULL )
+      return Result;
+  }
+
+  return Result;
 }
 
 // -----------------------------------------------------
@@ -129,9 +161,19 @@ configParserStruct::variable* configParserStruct::named::setValueByReference( co
 
 configParserStruct::variable* configParserStruct::named::findValueByReference( const char *Name, scope Scope ) const
 {
-  const namedFrame *Frame = frameForScope(Scope);
-  assert( Frame != NULL );
-  return findValueByReference( *Frame, Name );
+  variable *Result = NULL;
+  const namedFrame *Frame = NULL;
+  
+  Frame = frameForScope(Scope);
+  Result = findValueByReference( *Frame, Name );
+
+  if ( Result == NULL && Frame == &Global )
+  {
+    Frame = frameForScope(PresetScope);
+    Result = findValueByReference( *Frame, Name );
+  }
+
+  return Result;
 }
 
 // -----------------------------------------------------
@@ -140,6 +182,7 @@ std::string configParserStruct::named::toDebugString() const
 {
   std::string Result;
 
+  Result += toDebugString( Preset, "Preset" );
   Result += toDebugString( Global, "Global" );
 
   int Index = 0;
@@ -252,7 +295,6 @@ void configParserStruct::named::copy( namedFrame *To, const namedFrame &From )
     variable *Pointer = &( To->Map[ it->first ] );
     To->ReferenceMap[ it->first ] = Pointer;
   }
-
 }
 
 // -----------------------------------------------------
@@ -811,7 +853,7 @@ bool configParserStruct::memory::isHalted() const
 void configParserStruct::memory::clear()
 {
   Stack.clear();
-  Named.clear();
+  Named.clear( named::KeepPreset );
   Registers.reset();
 }
 

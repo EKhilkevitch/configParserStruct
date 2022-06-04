@@ -37,7 +37,7 @@ namespace configParserStruct
     private:
       type Type;
 
-      union
+      union value
       {
         const char *ConstChar;
         size_t SizeT;

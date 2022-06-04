@@ -175,7 +175,7 @@ void configParserStruct::parser::setVariable( const std::string &Name, const std
   if ( Name == LastExpressionValueName )
     throw exception( "Can not explicit set last expression value" );
 
-  Program->programMemory().setValueByName( Name, variable(Value.c_str()), named::GlobalScope );
+  Program->programMemory().setValueByName( Name, variable(Value.c_str()), named::PresetScope );
 }
 
 // -----------------------------------------------------
@@ -185,7 +185,7 @@ void configParserStruct::parser::setVariable( const std::string &Name, int Value
   if ( Name == LastExpressionValueName )
     throw exception( "Can not explicit set last expression value" );
 
-  Program->programMemory().setValueByName( Name, variable(Value), named::GlobalScope );
+  Program->programMemory().setValueByName( Name, variable(Value), named::PresetScope );
 }
 
 // -----------------------------------------------------
@@ -195,7 +195,7 @@ void configParserStruct::parser::setVariable( const std::string &Name, double Va
   if ( Name == LastExpressionValueName )
     throw exception( "Can not explicit set last expression value" );
 
-  Program->programMemory().setValueByName( Name, variable(Value), named::GlobalScope );
+  Program->programMemory().setValueByName( Name, variable(Value), named::PresetScope );
 }
 
 // -----------------------------------------------------

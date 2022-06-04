@@ -5,6 +5,8 @@
 #include "configParserStruct/exception.h"
 
 #include <limits>
+#include <sstream>
+#include <iomanip>
 #include <cstring>
 #include <cstddef>
 #include <cassert>
@@ -92,20 +94,29 @@ size_t configParserStruct::text::indexOfPlaceholder() const
 {
   for ( ptrdiff_t i = static_cast<ptrdiff_t>(size()) - 1; i >= 0; i-- )
   {
-    const void *Pointer = commandPointer(i);
-    
-    bool IsPlaceholder = true;
-    for ( size_t j = 0; j < sizeof(command) && IsPlaceholder; j++ )
-    {
-      if ( static_cast<const char*>(Pointer)[j] != PlaceholderByte )
-        IsPlaceholder = false;
-    }
-
-    if ( IsPlaceholder )
+    const command *Pointer = commandPointer(i);
+    if ( isCommandPointerPlaceholder(Pointer) )
       return i;
   }
 
   return InvalidPlaceholderIndex;
+}
+
+// -----------------------------------------------------
+      
+bool configParserStruct::text::isCommandPointerPlaceholder( const command *Command )
+{
+  assert( Command != NULL );
+    
+  const void *Pointer = Command;
+
+  for ( size_t j = 0; j < sizeof(command); j++ )
+  {
+    if ( static_cast<const char*>(Pointer)[j] != PlaceholderByte )
+      return false;
+  }
+
+  return true;
 }
 
 // -----------------------------------------------------
@@ -265,6 +276,38 @@ std::set<std::string> configParserStruct::text::variables() const
     Result.insert( *it );
 
   return Result;
+}
+
+// -----------------------------------------------------
+      
+std::string configParserStruct::text::toDebugString() const
+{
+  std::ostringstream Stream;
+
+  for ( size_t i = 0; i < size(); i++ )
+  {
+    Stream << std::setw(5) << i << " ";
+    const command *Command = commandPointer(i);
+    if ( isCommandPointerPlaceholder( Command ) )
+      Stream << "PLACEHOLDER";
+    else
+      Stream << *Command;
+    Stream << std::endl;
+  }
+
+  Stream << "ErrorLine = " << ParseTimeStatus.ErrorLine << std::endl;
+  Stream << "FunctionLevel = " << ParseTimeStatus.FunctionLevel << std::endl;
+  Stream << "Variables = { ";
+  for ( std::set< const char* >::const_iterator it = ParseTimeStatus.Variables.begin(); it != ParseTimeStatus.Variables.end(); ++it )
+    Stream << *it << " ";
+  Stream << "}" << std::endl;
+
+
+  return Stream.str();
+    //for ( configParserStruct::text::const_iterator it = Text->begin(); it != Text->end(); ++it )
+  {
+   // std::cerr << std::setw(5) << it - Text.begin() << " " << *it << std::endl;
+  }
 }
 
 // =====================================================

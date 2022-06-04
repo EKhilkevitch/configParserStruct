@@ -26,8 +26,15 @@ namespace configParserStruct
     public:
       enum scope
       {
+        PresetScope,
         LocalScope,
         GlobalScope
+      };
+
+      enum clearMode
+      {
+        ClearAll,
+        KeepPreset
       };
 
     private:
@@ -37,6 +44,7 @@ namespace configParserStruct
         mutable std::map< const char*, variable* > ReferenceMap;
       };
 
+      namedFrame Preset;
       namedFrame Global;
       std::list< namedFrame > Locals;
 
@@ -68,7 +76,7 @@ namespace configParserStruct
       variable* setValueByReference( const char *Name, const variable &Value, scope Scope );
       variable* findValueByReference( const char *Name, scope Scope ) const;
 
-      void clear();
+      void clear( clearMode Mode );
       std::string toDebugString() const;
   };
 

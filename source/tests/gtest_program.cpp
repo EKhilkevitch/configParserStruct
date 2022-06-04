@@ -13,7 +13,7 @@ using namespace configParserStruct;
 
 // =========================================================
 
-TEST( program1, empty )
+TEST( program, empty )
 {
   program Program;
   Program.build( ";" );
@@ -24,7 +24,7 @@ TEST( program1, empty )
 
 // ---------------------------------------------------------
 
-TEST( program1, add_1 )
+TEST( program, add_1 )
 {
   program Program;
   Program.build( "3 + 4;" );
@@ -35,7 +35,7 @@ TEST( program1, add_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, wrong )
+TEST( program, wrong )
 {
   program Program;
   try
@@ -47,7 +47,7 @@ TEST( program1, wrong )
 
 // ---------------------------------------------------------
 
-TEST( program1, add_2 )
+TEST( program, add_2 )
 {
   program Program;
   Program.build( "3 + 4.5;" );
@@ -58,7 +58,7 @@ TEST( program1, add_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, add_3 )
+TEST( program, add_3 )
 {
   program Program;
   Program.build( "'3' + 4.5;" );
@@ -69,7 +69,7 @@ TEST( program1, add_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, sub_1 )
+TEST( program, sub_1 )
 {
   program Program;
   Program.build( "3 - 4.5;" );
@@ -80,7 +80,7 @@ TEST( program1, sub_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, add_mul_1 )
+TEST( program, add_mul_1 )
 {
   program Program;
   Program.build( "2 * ( 3 + 4.5 );" );
@@ -91,7 +91,7 @@ TEST( program1, add_mul_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, add_mul_2 )
+TEST( program, add_mul_2 )
 {
   program Program;
   Program.build( "( 3 + 4.5 ) * 2;" );
@@ -102,7 +102,7 @@ TEST( program1, add_mul_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, div_1 )
+TEST( program, div_1 )
 {
   program Program;
   Program.build( "10 / 2;" );
@@ -113,7 +113,7 @@ TEST( program1, div_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, div_2 )
+TEST( program, div_2 )
 {
   program Program;
   Program.build( "10 / 2.5;" );
@@ -124,7 +124,7 @@ TEST( program1, div_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, div_3 )
+TEST( program, div_3 )
 {
   program Program;
   Program.build( "10 / 0;" );
@@ -135,7 +135,7 @@ TEST( program1, div_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, mod_1 )
+TEST( program, mod_1 )
 {
   program Program;
   Program.build( "17 % 7;" );
@@ -146,7 +146,7 @@ TEST( program1, mod_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, mod_2 )
+TEST( program, mod_2 )
 {
   program Program;
   Program.build( "17 % 7.5;" );
@@ -157,7 +157,7 @@ TEST( program1, mod_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_eq_1 )
+TEST( program, cmp_eq_1 )
 {
   program Program;
   Program.build( "1 + 4 == 2 + 3;" );
@@ -168,7 +168,7 @@ TEST( program1, cmp_eq_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_eq_2 )
+TEST( program, cmp_eq_2 )
 {
   program Program;
   Program.build( "1 + 4.5 == 2 + 6;" );
@@ -179,7 +179,7 @@ TEST( program1, cmp_eq_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_streq_1 )
+TEST( program, cmp_streq_1 )
 {
   program Program;
   Program.build( " \"xxx\" .==. \"xxx\";" );
@@ -190,7 +190,7 @@ TEST( program1, cmp_streq_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_streq_2 )
+TEST( program, cmp_streq_2 )
 {
   program Program;
   Program.build( " \"xxx\" .==. \"yyy\";" );
@@ -201,7 +201,7 @@ TEST( program1, cmp_streq_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_ne_1 )
+TEST( program, cmp_ne_1 )
 {
   program Program;
   Program.build( "1 != 2;" );
@@ -212,7 +212,7 @@ TEST( program1, cmp_ne_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_ne_2 )
+TEST( program, cmp_ne_2 )
 {
   program Program;
   Program.build( "2 != 2;" );
@@ -223,7 +223,7 @@ TEST( program1, cmp_ne_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_lt_1 )
+TEST( program, cmp_lt_1 )
 {
   program Program;
   Program.build( "1 < 2;" );
@@ -234,7 +234,7 @@ TEST( program1, cmp_lt_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_lt_2 )
+TEST( program, cmp_lt_2 )
 {
   program Program;
   Program.build( "3 < 2;" );
@@ -245,7 +245,7 @@ TEST( program1, cmp_lt_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_le_1 )
+TEST( program, cmp_le_1 )
 {
   program Program;
   Program.build( "1 <= 2;" );
@@ -256,7 +256,7 @@ TEST( program1, cmp_le_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_le_2 )
+TEST( program, cmp_le_2 )
 {
   program Program;
   Program.build( "2 <= 2;" );
@@ -267,7 +267,7 @@ TEST( program1, cmp_le_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_le_3 )
+TEST( program, cmp_le_3 )
 {
   program Program;
   Program.build( "3 <= 2;" );
@@ -279,7 +279,7 @@ TEST( program1, cmp_le_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_gt_1 )
+TEST( program, cmp_gt_1 )
 {
   program Program;
   Program.build( "1 > 2;" );
@@ -290,7 +290,7 @@ TEST( program1, cmp_gt_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_gt_2 )
+TEST( program, cmp_gt_2 )
 {
   program Program;
   Program.build( "3 > 2;" );
@@ -301,7 +301,7 @@ TEST( program1, cmp_gt_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_ge_1 )
+TEST( program, cmp_ge_1 )
 {
   program Program;
   Program.build( "1 >= 2;" );
@@ -312,7 +312,7 @@ TEST( program1, cmp_ge_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_ge_2 )
+TEST( program, cmp_ge_2 )
 {
   program Program;
   Program.build( "2 >= 2;" );
@@ -323,7 +323,7 @@ TEST( program1, cmp_ge_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, cmp_ge_3 )
+TEST( program, cmp_ge_3 )
 {
   program Program;
   Program.build( "3 >= 2;" );
@@ -334,7 +334,7 @@ TEST( program1, cmp_ge_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, booland_1 )
+TEST( program, booland_1 )
 {
   program Program;
   Program.build( "2 && 1;" );
@@ -345,7 +345,7 @@ TEST( program1, booland_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, booland_2 )
+TEST( program, booland_2 )
 {
   program Program;
   Program.build( "0 && 1;" );
@@ -356,7 +356,7 @@ TEST( program1, booland_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, boolor_1 )
+TEST( program, boolor_1 )
 {
   program Program;
   Program.build( "2 || 0;" );
@@ -367,7 +367,7 @@ TEST( program1, boolor_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, boolor_2 )
+TEST( program, boolor_2 )
 {
   program Program;
   Program.build( "0 || 0;" );
@@ -378,7 +378,7 @@ TEST( program1, boolor_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, boolnot_1 )
+TEST( program, boolnot_1 )
 {
   program Program;
   Program.build( " ! 4;" );
@@ -389,7 +389,7 @@ TEST( program1, boolnot_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, boolnot_2 )
+TEST( program, boolnot_2 )
 {
   program Program;
   Program.build( " ! 0;" );
@@ -400,7 +400,7 @@ TEST( program1, boolnot_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, stradd_1 )
+TEST( program, stradd_1 )
 {
   program Program;
   Program.build( " 'abc' .+. 'xy' ;" );
@@ -411,7 +411,7 @@ TEST( program1, stradd_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, stradd_2 )
+TEST( program, stradd_2 )
 {
   program Program;
   Program.build( " 'abc' .+. 3.5;" );
@@ -422,7 +422,7 @@ TEST( program1, stradd_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, assign_1 )
+TEST( program, assign_1 )
 {
   program Program;
   Program.build( "x = 3;" );
@@ -435,7 +435,7 @@ TEST( program1, assign_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, assign_2 )
+TEST( program, assign_2 )
 {
   program Program;
   Program.build( "x = 3; x = 5 + 4.5;" );
@@ -448,7 +448,7 @@ TEST( program1, assign_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, assign_add_1 )
+TEST( program, assign_add_1 )
 {
   program Program;
   Program.build( "x = 3; x += 2;" );
@@ -461,7 +461,7 @@ TEST( program1, assign_add_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, assign_deref_1 )
+TEST( program, assign_deref_1 )
 {
   program Program;
   Program.build( "x = 3; 4 + x;" );
@@ -474,7 +474,7 @@ TEST( program1, assign_deref_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, assign_deref_2 )
+TEST( program, assign_deref_2 )
 {
   program Program;
   Program.build( "x = 3; y = 4 + x; zzz = x + y;" );
@@ -491,7 +491,7 @@ TEST( program1, assign_deref_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, if_1 )
+TEST( program, if_1 )
 {
   program Program;
   Program.build( "if ( 1 + 1 == 2 ) { x = 5; }" );
@@ -504,7 +504,7 @@ TEST( program1, if_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, if_2 )
+TEST( program, if_2 )
 {
   program Program;
   Program.build( "if ( 1 + 1 == 2 ) { x = 5; } x = x + 1;" );
@@ -517,7 +517,7 @@ TEST( program1, if_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, if_3 )
+TEST( program, if_3 )
 {
   program Program;
   Program.build( "if ( 1 + 1 == 4 ) { x = 5; } x = x + 1;" );
@@ -530,7 +530,7 @@ TEST( program1, if_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, ifelse_1 )
+TEST( program, ifelse_1 )
 {
   program Program;
   Program.build( "if ( 1 + 3 == 4 ) { x = 5; } else { x = 6; }" );
@@ -543,7 +543,7 @@ TEST( program1, ifelse_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, ifelse_2 )
+TEST( program, ifelse_2 )
 {
   program Program;
   Program.build( "if ( 1 + 3 == 5 ) { x = 5; } else { x = 6; }" );
@@ -556,7 +556,7 @@ TEST( program1, ifelse_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, while_1 )
+TEST( program, while_1 )
 {
   program Program;
   Program.build( "x = 0; while ( x < 5 ) { x += 2; }" );
@@ -569,7 +569,7 @@ TEST( program1, while_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, thrdop_1 )
+TEST( program, thrdop_1 )
 {
   program Program;
   Program.build( "x = ( 1 + 2 == 3 ) ? 5 : 6;" );
@@ -582,7 +582,7 @@ TEST( program1, thrdop_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, thrdop_2 )
+TEST( program, thrdop_2 )
 {
   program Program;
   Program.build( "x = ( 1 + 2 == 7 ) ? 5 : 6;" );
@@ -595,7 +595,7 @@ TEST( program1, thrdop_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_1 )
+TEST( program, func_1 )
 {
   program Program;
   Program.build( "x = 2; f = func { @x = @x + 1; }; f();" );
@@ -609,7 +609,7 @@ TEST( program1, func_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_2 )
+TEST( program, func_2 )
 {
   program Program;
   Program.build( "f = func { return 1 + 3; }; x = f();" );
@@ -623,7 +623,7 @@ TEST( program1, func_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_3 )
+TEST( program, func_3 )
 {
   program Program;
   Program.build( "f = func { return ( $1 + $2 ) * 100; }; x = f(2,5);" );
@@ -637,7 +637,7 @@ TEST( program1, func_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_4 )
+TEST( program, func_4 )
 {
   program Program;
   Program.build( "f = func { return $0 * 100; }; x = f(2,5,3);" );
@@ -651,7 +651,7 @@ TEST( program1, func_4 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_local_1 )
+TEST( program, func_local_1 )
 {
   program Program;
   Program.build( "x = 3; y = 4; f = func { x = 4; @y = 5; }; f();" );
@@ -667,7 +667,7 @@ TEST( program1, func_local_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_5 )
+TEST( program, func_5 )
 {
   program Program;
   Program.build( "g = func { return $1 + 1; }; f = func { return g($1) * 5; }; f(3);" );
@@ -680,7 +680,7 @@ TEST( program1, func_5 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_6 )
+TEST( program, func_6 )
 {
   program Program;
   Program.build( "f = func { if ( $1 < 5 ) { return 1; } return $1 + 1; }; x = f(3); y = f(10);" );
@@ -695,7 +695,7 @@ TEST( program1, func_6 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_7 )
+TEST( program, func_7 )
 {
   program Program;
   Program.build( "g = func { return $1 + 2; }; f = func { if ( $1 < 5 ) { return 1; } else { return g($1+1); } }; x = f(3); y = f(10);" );
@@ -710,7 +710,7 @@ TEST( program1, func_7 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_8 )
+TEST( program, func_8 )
 {
   program Program;
   Program.build( "g = func { x = $1; return x + 2; }; f = func { x = $1; @x += 1; return g(x+3); }; x = 98; y = f(10);" );
@@ -725,7 +725,7 @@ TEST( program1, func_8 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_9 )
+TEST( program, func_9 )
 {
   program Program;
   Program.build( "x = 98; y = f(10);" );
@@ -740,7 +740,7 @@ TEST( program1, func_9 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_fact_1 )
+TEST( program, func_fact_1 )
 {
   program Program;
   Program.build( "fact = func { if ( $1 <= 1 ) { return 1; } else { return $1 * fact($1-1); } }; fact(5);" );
@@ -751,7 +751,7 @@ TEST( program1, func_fact_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_fib_1 )
+TEST( program, func_fib_1 )
 {
   program Program;
   Program.build( "fib = func { if ( $1 <= 2 ) { return 1; } else { return fib($1-1) + fib($1-2); } }; fib(8);" );
@@ -762,7 +762,7 @@ TEST( program1, func_fib_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_buildin_1 )
+TEST( program, func_buildin_1 )
 {
   program Program;
   Program.build( "S = sin(0.3); C = cos(0.7); E = exp( 1.4 ); Pi = pi();" );
@@ -780,7 +780,7 @@ TEST( program1, func_buildin_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, func_buildin_2 )
+TEST( program, func_buildin_2 )
 {
   program Program;
   Program.build( " A = abs(-3); S = sqr(4); P = pow( 3, 4 ); println( \"println 3^4 = \", P );" );
@@ -796,7 +796,7 @@ TEST( program1, func_buildin_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, array_1 )
+TEST( program, array_1 )
 {
   program Program;
   Program.build( "x = arr[2];" );
@@ -809,7 +809,7 @@ TEST( program1, array_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, array_2 )
+TEST( program, array_2 )
 {
   program Program;
   Program.build( "arr[2] = 5; x = arr[2];" );
@@ -823,7 +823,7 @@ TEST( program1, array_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, array_3 )
+TEST( program, array_3 )
 {
   program Program;
   Program.build( "arr[2][6] = 5; x = arr[2][6];" );
@@ -837,7 +837,7 @@ TEST( program1, array_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, array_4 )
+TEST( program, array_4 )
 {
   program Program;
   Program.build( "arr[2] = 5; arr[3] = 6; arr[0] = 9; arr[2] -= 1;" );
@@ -850,7 +850,7 @@ TEST( program1, array_4 )
 
 // ---------------------------------------------------------
 
-TEST( program1, array_5 )
+TEST( program, array_5 )
 {
   program Program;
   Program.build( "arr = [ 3, 5, 7, 9 ];" );
@@ -862,7 +862,7 @@ TEST( program1, array_5 )
 
 // ---------------------------------------------------------
 
-TEST( program1, array_func_1 )
+TEST( program, array_func_1 )
 {
   program Program;
   Program.build( "f = func { return [ $1, $1*2, $1*3, $1*4 ]; } arr = f(3);" );
@@ -874,7 +874,7 @@ TEST( program1, array_func_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, dict_1 )
+TEST( program, dict_1 )
 {
   program Program;
   Program.build( "x = dict{'a'};" );
@@ -887,7 +887,7 @@ TEST( program1, dict_1 )
 
 // ---------------------------------------------------------
 
-TEST( program1, dict_2 )
+TEST( program, dict_2 )
 {
   program Program;
   Program.build( "dict{'key'} = 5; x = dict{'key'};" );
@@ -902,7 +902,7 @@ TEST( program1, dict_2 )
 
 // ---------------------------------------------------------
 
-TEST( program1, dict_3 )
+TEST( program, dict_3 )
 {
   program Program;
   Program.build( "dict{'key_1'}{'key_2'} = 5; x = dict{'key_1'}{'key_2'};" );
@@ -916,7 +916,7 @@ TEST( program1, dict_3 )
 
 // ---------------------------------------------------------
 
-TEST( program1, dict_4 )
+TEST( program, dict_4 )
 {
   program Program;
   Program.build( "dict{'a'} = 5; dict{'b'} = 6; dict{'c'} = 9; dict{'a'} -= 1;" );
@@ -929,7 +929,7 @@ TEST( program1, dict_4 )
 
 // ---------------------------------------------------------
 
-TEST( program1, dict_5 )
+TEST( program, dict_5 )
 {
   program Program;
   Program.build( "dict = { .a = 4, .b = 6, .c = 7 };" );
@@ -941,7 +941,7 @@ TEST( program1, dict_5 )
 
 // ---------------------------------------------------------
 
-TEST( program1, dict_6 )
+TEST( program, dict_6 )
 {
   program Program;
   Program.build( "dict.a = 1; dict.b = 3+1;" );
@@ -965,6 +965,22 @@ TEST( program, variables_1 )
   EXPECT_EQ( 1, Set.count("z") );
   EXPECT_EQ( 0, Set.count("y") );
   EXPECT_EQ( 0, Set.count("f") );
+}
+
+// ---------------------------------------------------------
+
+TEST( program, setValueByName_1 )
+{
+  program Program;
+  Program.build( "x = a; b = b + 1;" );
+  Program.programMemory().setValueByName( "a", variable(3), named::PresetScope );
+  Program.programMemory().setValueByName( "b", variable(5), named::PresetScope );
+  Program.run();
+
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("b",named::GlobalScope) );
+  EXPECT_EQ( 3, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( 6, Program.programMemory().findValueByName("b",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
 }
 
 // =========================================================
