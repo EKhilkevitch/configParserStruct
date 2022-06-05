@@ -4,6 +4,7 @@
 // =====================================================
 
 #include <string>
+#include <vector>
 #include <set>
 
 // =====================================================
@@ -14,6 +15,8 @@ namespace configParserStruct
   // =====================================================
   
   class program;
+  class variable;
+  class reference;
 
   // =====================================================
 
@@ -37,6 +40,13 @@ namespace configParserStruct
 
     private:
       program *Program;
+
+    private:
+      const variable* findVariable( const std::string &Name ) const;
+      void setVariable( const std::string &Name, const variable &Value );
+      static reference referenceForName( const std::string &Name, std::vector<const char*> *ConstChars );
+      static void freeConstChars( std::vector<const char*> *ConstChars );
+      static const char* stringFromInterval( std::string::const_iterator Begin, std::string::const_iterator End );
 
     public:
       parser();

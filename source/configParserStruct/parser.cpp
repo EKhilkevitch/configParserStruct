@@ -5,10 +5,12 @@
 #include "configParserStruct/program.h"
 #include "configParserStruct/variable.h"
 #include "configParserStruct/variablevalue.h"
+#include "configParserStruct/reference.h"
 #include "configParserStruct/exception.h"
 
-#include <cassert>
 #include <stdexcept>
+#include <cassert>
+#include <cstring>
 
 // =====================================================
       
@@ -91,11 +93,7 @@ void configParserStruct::parser::reset()
       
 bool configParserStruct::parser::isVariableExist( const std::string &Name ) const
 {
-  if ( Name == LastExpressionValueName )
-    return true;
-
-  const variable *Variable = Program->programMemory().findValueByName(Name,named::GlobalScope);
-
+  const variable *Variable = findVariable(Name);
   if ( Variable == NULL )
     return false;
   else
@@ -106,9 +104,7 @@ bool configParserStruct::parser::isVariableExist( const std::string &Name ) cons
       
 enum configParserStruct::parser::variableType configParserStruct::parser::variableType( const std::string &Name ) const
 {
-  const variable *Variable = ( Name == LastExpressionValueName ) ? 
-    &Program->programMemory().lastResult() :
-    Program->programMemory().findValueByName(Name,named::GlobalScope);
+  const variable *Variable = findVariable(Name);
 
   if ( Variable == NULL )
     return VarNone;
@@ -133,10 +129,7 @@ enum configParserStruct::parser::variableType configParserStruct::parser::variab
 
 std::string configParserStruct::parser::stringVariable( const std::string &Name, const std::string &DefaultValue ) const
 {
-  if ( Name == LastExpressionValueName )
-    return Program->programMemory().lastResult().string();
-
-  const variable *Variable = Program->programMemory().findValueByName(Name,named::GlobalScope);
+  const variable *Variable = findVariable(Name);
   if ( Variable == NULL )
     return DefaultValue;
   return Variable->string();
@@ -146,10 +139,7 @@ std::string configParserStruct::parser::stringVariable( const std::string &Name,
       
 double configParserStruct::parser::doubleVariable( const std::string &Name, double DefaultValue ) const
 {
-  if ( Name == LastExpressionValueName )
-    return Program->programMemory().lastResult().real();
-
-  const variable *Variable = Program->programMemory().findValueByName(Name,named::GlobalScope);
+  const variable *Variable = findVariable(Name);
   if ( Variable == NULL )
     return DefaultValue;
   return Variable->real();
@@ -159,10 +149,7 @@ double configParserStruct::parser::doubleVariable( const std::string &Name, doub
 
 int configParserStruct::parser::integerVariable( const std::string &Name, int DefaultValue ) const
 {
-  if ( Name == LastExpressionValueName )
-    return Program->programMemory().lastResult().integer();
-
-  const variable *Variable = Program->programMemory().findValueByName(Name,named::GlobalScope);
+  const variable *Variable = findVariable(Name);
   if ( Variable == NULL )
     return DefaultValue;
   return Variable->integer();
@@ -170,32 +157,119 @@ int configParserStruct::parser::integerVariable( const std::string &Name, int De
 
 // -----------------------------------------------------
       
-void configParserStruct::parser::setVariable( const std::string &Name, const std::string &Value )
+const configParserStruct::variable* configParserStruct::parser::findVariable( const std::string &Name ) const
 {
   if ( Name == LastExpressionValueName )
-    throw exception( "Can not explicit set last expression value" );
+    return &Program->programMemory().lastResult();
 
-  Program->programMemory().setValueByName( Name, variable(Value.c_str()), named::PresetScope );
+  const variable *Result = Program->programMemory().findValueByName(Name,named::GlobalScope);
+  if ( Result == NULL )
+  {
+    std::vector<const char*> ConstChars;
+    const reference Reference = referenceForName(Name,&ConstChars);
+    if ( Reference.hasType( reference::None ) )
+    {
+      freeConstChars(&ConstChars);
+      return NULL;
+    }
+    
+    Result = Program->programMemory().findValueByName( Reference.asGlobalName(), named::GlobalScope );
+    const reference *Next = Reference.next();
+
+    while ( Next != NULL && Result != NULL )
+    {
+      Result = Result->getByRef( *Next );
+      Next = Next->next();
+    }
+
+    freeConstChars(&ConstChars);
+    return Result;
+  }
+
+  return Result;
+}
+
+// -----------------------------------------------------
+      
+void configParserStruct::parser::freeConstChars( std::vector<const char*> *ConstChars )
+{
+  assert( ConstChars != NULL );
+
+  for ( std::vector<const char*>::const_iterator it = ConstChars->begin(); it != ConstChars->end(); ++it )
+    delete [] *it;
+  ConstChars->clear();
+}
+
+// -----------------------------------------------------
+      
+const char* configParserStruct::parser::stringFromInterval( std::string::const_iterator Begin, std::string::const_iterator End )
+{
+  char *Result = new char[ End - Begin + 1 ];
+  for ( std::string::const_iterator it = Begin; it != End; it++ )
+    Result[ it - Begin ] = *it;
+  Result[ End - Begin ] = '\0';
+  return Result;
+}
+
+// -----------------------------------------------------
+      
+configParserStruct::reference configParserStruct::parser::referenceForName( const std::string &Name, std::vector<const char*> *ConstChars )
+{
+  assert( ConstChars != NULL );
+  assert( Name != LastExpressionValueName );
+
+  reference Reference;
+
+  std::string::const_iterator Begin = Name.begin();
+  for ( std::string::const_iterator it = Name.begin(); true; ++it )
+  {
+    if ( it == Name.end() || *it == '.' )
+    {
+      ConstChars->push_back( NULL );
+      ConstChars->back() = stringFromInterval( Begin, it );
+      if ( Reference.hasType(reference::None) )
+        Reference = reference( ConstChars->back(), reference::GlobalName );
+      else 
+        Reference.setAsTail( reference( ConstChars->back(), reference::DictKey ) );
+      Begin = it + 1;
+    }
+
+    if ( it == Name.end() )
+      break;
+  }
+
+  return Reference;
+}
+
+// -----------------------------------------------------
+      
+void configParserStruct::parser::setVariable( const std::string &Name, const std::string &Value )
+{
+  setVariable( Name, variable(Value) );
 }
 
 // -----------------------------------------------------
 
 void configParserStruct::parser::setVariable( const std::string &Name, int Value )
 {
-  if ( Name == LastExpressionValueName )
-    throw exception( "Can not explicit set last expression value" );
-
-  Program->programMemory().setValueByName( Name, variable(Value), named::PresetScope );
+  setVariable( Name, variable(Value) );
 }
 
 // -----------------------------------------------------
 
 void configParserStruct::parser::setVariable( const std::string &Name, double Value )
 {
+  setVariable( Name, variable(Value) );
+}
+
+// -----------------------------------------------------
+      
+void configParserStruct::parser::setVariable( const std::string &Name, const variable &Value )
+{
   if ( Name == LastExpressionValueName )
     throw exception( "Can not explicit set last expression value" );
 
-  Program->programMemory().setValueByName( Name, variable(Value), named::PresetScope );
+  Program->programMemory().setValueByName( Name, Value, named::PresetScope );
 }
 
 // -----------------------------------------------------

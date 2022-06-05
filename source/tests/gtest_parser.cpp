@@ -38,6 +38,39 @@ TEST( parser, xxxVariable )
 
 // ---------------------------------------------------------
 
+TEST( parser, xxxVariable_dict_1 )
+{
+  parser Parser;
+  Parser.exec( "dict = { .a = 1, .b = 2, .c = 3 };" );
+
+  EXPECT_EQ( parser::SuccesssErrorLine, Parser.errorLine() );
+  EXPECT_EQ( 3,  Parser.integerVariable("dict") );
+  EXPECT_EQ( 1, Parser.integerVariable("dict.a",0) );
+  EXPECT_EQ( 2, Parser.integerVariable("dict.b",0) );
+  EXPECT_EQ( 3, Parser.integerVariable("dict.c",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("dict.d",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("xxx.d",0) );
+}
+
+// ---------------------------------------------------------
+
+TEST( parser, xxxVariable_dict_2 )
+{
+  parser Parser;
+  Parser.exec( "dict = { .a = 1, .b = { .x = 5, .y = 6 }, .c = 3 };" );
+
+  EXPECT_EQ( parser::SuccesssErrorLine, Parser.errorLine() );
+  EXPECT_EQ( 3,  Parser.integerVariable("dict") );
+  EXPECT_EQ( 1, Parser.integerVariable("dict.a",0) );
+  EXPECT_EQ( 5, Parser.integerVariable("dict.b.x",0) );
+  EXPECT_EQ( 6, Parser.integerVariable("dict.b.y",0) );
+  EXPECT_EQ( 3, Parser.integerVariable("dict.c",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("dict.d",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("xxx.d",0) );
+}
+
+// ---------------------------------------------------------
+
 TEST( parser, isVariableExist )
 {
   parser Parser;
