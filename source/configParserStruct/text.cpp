@@ -305,10 +305,6 @@ std::string configParserStruct::text::toDebugString() const
 
 
   return Stream.str();
-    //for ( configParserStruct::text::const_iterator it = Text->begin(); it != Text->end(); ++it )
-  {
-   // std::cerr << std::setw(5) << it - Text.begin() << " " << *it << std::endl;
-  }
 }
 
 // =====================================================

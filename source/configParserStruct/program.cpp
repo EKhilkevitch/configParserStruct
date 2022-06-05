@@ -79,18 +79,31 @@ void configParserStruct::program::swap( program &Other )
 }
 
 // -----------------------------------------------------
+      
+void configParserStruct::program::detachAndClearTextIfNeed()
+{
+  if ( *TextRefCount > 1 )
+  {
+    *TextRefCount -= 1;
+
+    TextRefCount = new int(1);
+    Text = new text();
+  }
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::program::clear()
 {
   Memory.clear();
-  Text->clear();
+  detachAndClearTextIfNeed();
 }
 
 // -----------------------------------------------------
  
 void configParserStruct::program::build( const std::string &SourceCode )
 {
-  Text->clear();
+  detachAndClearTextIfNeed();
 
   mutexLocker Locker( &YaccParserMutex );
 

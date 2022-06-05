@@ -20,6 +20,9 @@ namespace configParserStruct
 
       memory Memory;
 
+    private:
+      void detachAndClearTextIfNeed();
+
     public:
       program();
       program( const program &Program );

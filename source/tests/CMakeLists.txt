@@ -9,6 +9,7 @@ if ( ENABLE_TESTS )
           gtest_lexinput.cpp
           gtest_variable.cpp
           gtest_program.cpp
+          gtest_parser.cpp
       )
 
   find_library( gtest  NAMES gtest )
