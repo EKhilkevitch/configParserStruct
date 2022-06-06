@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 #include <cassert>
 
 // =====================================================
@@ -199,7 +200,19 @@ configParserStruct::variable* configParserStruct::named::setValueByName( namedFr
 {
   assert( Frame != NULL );
 
-  return &( Frame->Map[ Name ] = Value );
+  variable *Result = &( Frame->Map[ Name ] = Value );
+
+  for ( std::map< const char*, variable* >::iterator it = Frame->ReferenceMap.begin(); it != Frame->ReferenceMap.end(); it++ )
+  {
+    if ( std::strcmp( it->first, Name.c_str() ) == 0 )
+    {
+      if ( it->second != Result )
+        Frame->ReferenceMap.erase(it);
+      break;
+    }
+  }
+
+  return Result;
 }
 
 // -----------------------------------------------------

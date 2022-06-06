@@ -240,5 +240,20 @@ TEST( parser, copy_2 )
   EXPECT_EQ( 1, Parser2.integerVariable("z",0) );
 }
 
+// ---------------------------------------------------------
+
+TEST( parser, xxxVariable_last )
+{
+  parser Parser;
+  Parser.build( "t < 0 ? 0 : A*exp(-t/s);" );
+  Parser.setVariable( "s", 3.0 );
+  Parser.setVariable( "A", 2.0 );
+  Parser.run();
+  Parser.setVariable( "t", 0.4 );
+  Parser.run();
+
+  EXPECT_EQ( 2*std::exp(-0.4/3.0), Parser.doubleVariable( parser::LastExpressionValueName ) ) << Parser.toDebugString();
+}
+
 // =========================================================
 

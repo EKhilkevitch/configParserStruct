@@ -44,7 +44,11 @@ void configParserStruct::text::clear()
   Strings.clear();
 
   for ( size_t i = 0; i < sizeOfText(); i++ )
-    commandPointer(i)->~command();
+  {
+    command *Command = commandPointer(i);
+    if ( ! isCommandPointerPlaceholder(Command) )
+      commandPointer(i)->~command();
+  }
   Text.clear();
 
   ParseTimeStatus.ErrorLine = SuccesssErrorLine;

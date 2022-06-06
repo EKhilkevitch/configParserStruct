@@ -628,6 +628,19 @@ TEST( program, thrdop_2 )
 
 // ---------------------------------------------------------
 
+TEST( program, thrdop_3 )
+{
+  program Program;
+
+  try
+  {
+    Program.build( "t < 0 ? " );
+    FAIL() << "No exception";
+  } catch ( const exception& ) {}
+}
+
+// ---------------------------------------------------------
+
 TEST( program, func_1 )
 {
   program Program;

@@ -139,6 +139,7 @@ void configParserStruct::program::build( const std::string &SourceCode )
 void configParserStruct::program::run()
 {
   Memory.clear( named::KeepPreset );
+  //std::cerr << "program::run mem is " << std::endl << Memory.toDebugString() << std::endl;
   while ( ! Memory.isHalted() )
   {
     const size_t InstructionPointer = Memory.instructionPointer();
