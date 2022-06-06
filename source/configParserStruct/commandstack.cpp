@@ -215,89 +215,16 @@ configParserStruct::pushInstructionRefCommand* configParserStruct::pushInstructi
 
 // =====================================================
 
-#if 0
-configParserStruct::pushCommand::pushCommand()
-{
-}
-
-// -----------------------------------------------------
-
-configParserStruct::pushCommand::pushCommand( const variable &Variable ) :
-  command( variable(Variable) )
-{
-}
-
-// -----------------------------------------------------
-
-configParserStruct::pushCommand::pushCommand( int Integer ) :
-  command( variable(Integer) )
-{
-  assert( sizeof(pushCommand) <= sizeof(command) );
-}
-
-// -----------------------------------------------------
-
-configParserStruct::pushCommand::pushCommand( double Real ) :
-  command( variable(Real) )
-{
-  assert( sizeof(pushCommand) <= sizeof(command) );
-}
-
-// -----------------------------------------------------
-
-configParserStruct::pushCommand::pushCommand( const char *Name, variable::stringType StringType ) :
-  command( variable(Name,StringType) )
-{
-}
-
-// -----------------------------------------------------
-      
-configParserStruct::pushCommand::pushCommand( size_t Index, variable::numberType NumberType ) :
-  command( variable(Index,NumberType) )
-{
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::pushCommand::exec( memory *Memory ) const
-{
-  assert( Memory != NULL );
-  Memory->pushToStack( argument() );
-  Memory->jumpToNextCommand();
-}
-
-// -----------------------------------------------------
-
-std::string configParserStruct::pushCommand::toString() const
-{
-  std::ostringstream Stream;
-  Stream << "PUSH " << argument();
-  return Stream.str();
-}
-
-// -----------------------------------------------------
-
-configParserStruct::pushCommand* configParserStruct::pushCommand::clone( void *Memory ) const
-{
-  if ( Memory == NULL )
-    return new pushCommand( argument() );
-  else
-    return new ( Memory ) pushCommand( argument() );
-}
-#endif
-
-// =====================================================
-
 void configParserStruct::assignCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
 
   const variable Value = Memory->popFromStack();
-  const variable Reference = Memory->popFromStack();
+  variable *Top = Memory->topStackValue();
   
-  assign( Memory, Reference.ref(), Value );
+  assign( Memory, Top->ref(), Value );
+  *Top = Value;
 
-  Memory->pushToStack( Value );
   Memory->jumpToNextCommand();
 }
 
