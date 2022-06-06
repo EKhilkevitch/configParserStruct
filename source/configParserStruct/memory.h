@@ -215,7 +215,8 @@ namespace configParserStruct
       void setHaltFlag();
       bool isHalted() const;
 
-      void clear();
+      void clear( named::clearMode Mode );
+
       std::string toDebugString() const;
   };
 

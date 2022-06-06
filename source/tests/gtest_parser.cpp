@@ -66,7 +66,27 @@ TEST( parser, xxxVariable_dict_2 )
   EXPECT_EQ( 6, Parser.integerVariable("dict.b.y",0) );
   EXPECT_EQ( 3, Parser.integerVariable("dict.c",0) );
   EXPECT_EQ( 0, Parser.integerVariable("dict.d",0) );
+  EXPECT_EQ( 9, Parser.integerVariable("dict.d",9) );
   EXPECT_EQ( 0, Parser.integerVariable("xxx.d",0) );
+}
+
+// ---------------------------------------------------------
+
+TEST( parser, dictKeys )
+{
+  parser Parser;
+  Parser.exec( "dict = { .a = 1, .b = { .x = 5, .y = 6 }, .c = 3 };" );
+
+  std::set<std::string> DictKeys = Parser.dictKeys( "dict" );
+  EXPECT_EQ( 3, DictKeys.size() );
+  EXPECT_EQ( 1, DictKeys.count("a") );
+  EXPECT_EQ( 1, DictKeys.count("b") );
+  EXPECT_EQ( 1, DictKeys.count("c") );
+  
+  DictKeys = Parser.dictKeys( "dict.b" );
+  EXPECT_EQ( 2, DictKeys.size() );
+  EXPECT_EQ( 1, DictKeys.count("x") );
+  EXPECT_EQ( 1, DictKeys.count("y") );
 }
 
 // ---------------------------------------------------------

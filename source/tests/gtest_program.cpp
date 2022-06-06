@@ -924,7 +924,7 @@ TEST( program, dict_4 )
   
   EXPECT_EQ( 4, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString();
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("dict",named::GlobalScope) );
-  EXPECT_EQ( "{ a => 4, b => 6, c => 9 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( "{ .a = 4, .b = 6, .c = 9 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
 }
 
 // ---------------------------------------------------------
@@ -936,7 +936,7 @@ TEST( program, dict_5 )
   Program.run();
   
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("dict",named::GlobalScope) );
-  EXPECT_EQ( "{ a => 4, b => 6, c => 7 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( "{ .a = 4, .b = 6, .c = 7 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
 }
 
 // ---------------------------------------------------------
@@ -948,7 +948,7 @@ TEST( program, dict_6 )
   Program.run();
   
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("dict",named::GlobalScope) );
-  EXPECT_EQ( "{ a => 1, b => 4 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( "{ .a = 1, .b = 4 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
 }
 
 // ---------------------------------------------------------

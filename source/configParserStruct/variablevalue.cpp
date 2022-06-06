@@ -478,18 +478,21 @@ configParserStruct::variable* configParserStruct::arrayVariableValue::setByRef( 
 // =====================================================
 
 const char *const configParserStruct::dictVariableValue::TypeName = "dict";
+const char *const configParserStruct::dictVariableValue::ArrayOfKeysName = ".+!KEYS!+.";
 
 // -----------------------------------------------------
 
 configParserStruct::dictVariableValue::dictVariableValue() :
-  Dict( new std::map< std::string, variable >() )
+  Dict( new std::map< std::string, variable >() ),
+  KeysArray( new variable( variable::ArrayCollection ) )
 {
 }
 
 // -----------------------------------------------------
       
 configParserStruct::dictVariableValue::dictVariableValue( const std::map< std::string, variable > &Values ) :
-  Dict( new std::map< std::string, variable >(Values) )
+  Dict( new std::map< std::string, variable >(Values) ),
+  KeysArray( new variable( variable::ArrayCollection ) )
 {
 }
 
@@ -498,6 +501,7 @@ configParserStruct::dictVariableValue::dictVariableValue( const std::map< std::s
 configParserStruct::dictVariableValue::~dictVariableValue()
 {
   delete Dict;
+  delete KeysArray;
 }
 
 // -----------------------------------------------------
@@ -551,7 +555,7 @@ std::string configParserStruct::dictVariableValue::string() const
   {
     if ( it != Dict->begin() )
       Stream << ", ";
-    Stream << it->first << " => " << it->second.string();
+    Stream << '.' << it->first << " = " << it->second.string();
   }
 
   Stream << " }";
@@ -564,6 +568,12 @@ configParserStruct::variable* configParserStruct::dictVariableValue::getByRef( c
 {
   const char *Key = Reference.asDictKey();
 
+  if ( std::strcmp( Key, ArrayOfKeysName ) == 0 )
+  {
+    updateKeysArray();
+    return KeysArray;
+  }
+
   return &(*Dict)[Key];
 }
 
@@ -574,6 +584,16 @@ configParserStruct::variable* configParserStruct::dictVariableValue::setByRef( c
   const char *Key = Reference.asDictKey();
 
   return &( (*Dict)[Key] = Variable );
+}
+
+// -----------------------------------------------------
+      
+void configParserStruct::dictVariableValue::updateKeysArray() const
+{
+  *KeysArray = variable( variable::ArrayCollection );
+
+  for ( std::map< std::string, variable >::const_iterator it = Dict->begin(); it != Dict->end(); ++it )
+    KeysArray->setByRef( reference( std::numeric_limits<size_t>::max(), reference::ArrayIndex ), variable( it->first.c_str() ) );
 }
 
 // =====================================================

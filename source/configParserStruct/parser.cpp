@@ -165,13 +165,10 @@ const configParserStruct::variable* configParserStruct::parser::findVariable( co
   const variable *Result = Program->programMemory().findValueByName(Name,named::GlobalScope);
   if ( Result == NULL )
   {
-    std::vector<const char*> ConstChars;
-    const reference Reference = referenceForName(Name,&ConstChars);
+    std::vector<char> NameChars( Name.begin(), Name.end() );
+    const reference Reference = referenceForName( &NameChars );
     if ( Reference.hasType( reference::None ) )
-    {
-      freeConstChars(&ConstChars);
       return NULL;
-    }
     
     Result = Program->programMemory().findValueByName( Reference.asGlobalName(), named::GlobalScope );
     const reference *Next = Reference.next();
@@ -182,7 +179,10 @@ const configParserStruct::variable* configParserStruct::parser::findVariable( co
       Next = Next->next();
     }
 
-    freeConstChars(&ConstChars);
+    if ( Result == NULL )
+      return NULL;
+    if ( Result->type() == undefVariableValue::TypeName )
+      return NULL;
     return Result;
   }
 
@@ -191,51 +191,36 @@ const configParserStruct::variable* configParserStruct::parser::findVariable( co
 
 // -----------------------------------------------------
       
-void configParserStruct::parser::freeConstChars( std::vector<const char*> *ConstChars )
+configParserStruct::reference configParserStruct::parser::referenceForName( std::vector<char> *NameChars )
 {
-  assert( ConstChars != NULL );
+  assert( NameChars != NULL );
 
-  for ( std::vector<const char*>::const_iterator it = ConstChars->begin(); it != ConstChars->end(); ++it )
-    delete [] *it;
-  ConstChars->clear();
-}
+  if ( NameChars->empty() || NameChars->back() != '\0' )
+    NameChars->push_back( '\0' );
 
-// -----------------------------------------------------
-      
-const char* configParserStruct::parser::stringFromInterval( std::string::const_iterator Begin, std::string::const_iterator End )
-{
-  char *Result = new char[ End - Begin + 1 ];
-  for ( std::string::const_iterator it = Begin; it != End; it++ )
-    Result[ it - Begin ] = *it;
-  Result[ End - Begin ] = '\0';
-  return Result;
-}
-
-// -----------------------------------------------------
-      
-configParserStruct::reference configParserStruct::parser::referenceForName( const std::string &Name, std::vector<const char*> *ConstChars )
-{
-  assert( ConstChars != NULL );
-  assert( Name != LastExpressionValueName );
+  assert( std::strcmp( &(*NameChars)[0], LastExpressionValueName ) != 0 );
 
   reference Reference;
 
-  std::string::const_iterator Begin = Name.begin();
-  for ( std::string::const_iterator it = Name.begin(); true; ++it )
+  char *Begin = &(*NameChars)[0];
+  char *Current = Begin;
+  while ( true )
   {
-    if ( it == Name.end() || *it == '.' )
+    bool IsLastChar = ( *Current == '\0' );
+    if ( *Current == '\0' || *Current == '.' )
     {
-      ConstChars->push_back( NULL );
-      ConstChars->back() = stringFromInterval( Begin, it );
+      *Current = '\0';
       if ( Reference.hasType(reference::None) )
-        Reference = reference( ConstChars->back(), reference::GlobalName );
+        Reference = reference( Begin, reference::GlobalName );
       else 
-        Reference.setAsTail( reference( ConstChars->back(), reference::DictKey ) );
-      Begin = it + 1;
+        Reference.setAsTail( reference( Begin, reference::DictKey ) );
+      Begin = Current + 1;
     }
 
-    if ( it == Name.end() )
+    if ( IsLastChar )
       break;
+
+    ++Current;
   }
 
   return Reference;
@@ -280,6 +265,31 @@ std::set<std::string> configParserStruct::parser::variables() const
 }
 
 // -----------------------------------------------------
+      
+std::set<std::string> configParserStruct::parser::dictKeys( const std::string &Name ) const
+{
+  const variable *Variable = findVariable(Name);
+
+  if ( Variable == NULL || Variable->type() != dictVariableValue::TypeName )
+    return std::set<std::string>();
+
+  const variable *KeysArray = Variable->getByRef( reference( dictVariableValue::ArrayOfKeysName, reference::DictKey ) );
+  assert( KeysArray != NULL );
+  
+  std::set<std::string> Result;
+
+  const int KeysArraySize = KeysArray->integer();
+  for ( int i = 0; i < KeysArraySize; i++ )
+  {
+    const variable *Key = KeysArray->getByRef( reference( static_cast<size_t>(i), reference::ArrayIndex ) );
+    assert( Key != NULL );
+    Result.insert( Key->string() );
+  }
+
+  return Result;
+}
+
+// -----------------------------------------------------
 
 int configParserStruct::parser::errorLine() const
 {
@@ -287,6 +297,14 @@ int configParserStruct::parser::errorLine() const
   if ( Line == text::SuccesssErrorLine )
     return SuccesssErrorLine;
   return Line;
+}
+
+// -----------------------------------------------------
+      
+std::string configParserStruct::parser::toDebugString() const
+{
+  return Program->programText().toDebugString() + '\n' +
+         Program->programMemory().toDebugString() + '\n';
 }
 
 // =====================================================

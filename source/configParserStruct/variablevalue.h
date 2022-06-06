@@ -183,17 +183,23 @@ namespace configParserStruct
       static const char *const TypeName;
   };
 
-
   // =====================================================
   
   class dictVariableValue : public variableValue
   {
+    public:
+      static const char *const ArrayOfKeysName;
+
     private:
       mutable std::map< std::string, variable > *Dict;
+      mutable variable *KeysArray;
 
     private:
       dictVariableValue( const dictVariableValue& );
       dictVariableValue& operator=( const dictVariableValue& );
+
+    private:
+      void updateKeysArray() const;
 
     private:
       explicit dictVariableValue( const std::map< std::string, variable > &Dict );

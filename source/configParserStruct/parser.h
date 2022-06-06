@@ -44,9 +44,7 @@ namespace configParserStruct
     private:
       const variable* findVariable( const std::string &Name ) const;
       void setVariable( const std::string &Name, const variable &Value );
-      static reference referenceForName( const std::string &Name, std::vector<const char*> *ConstChars );
-      static void freeConstChars( std::vector<const char*> *ConstChars );
-      static const char* stringFromInterval( std::string::const_iterator Begin, std::string::const_iterator End );
+      static reference referenceForName( std::vector<char> *Name );
 
     public:
       parser();
@@ -73,8 +71,11 @@ namespace configParserStruct
       int integerVariable( const std::string &VarName, int DefaultValue = 0 ) const;
 
       std::set<std::string> variables() const;
+      std::set<std::string> dictKeys( const std::string &Name ) const;
 
       int errorLine() const;
+
+      std::string toDebugString() const;
   };
 
   // =====================================================

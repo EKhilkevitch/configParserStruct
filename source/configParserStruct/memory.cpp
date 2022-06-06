@@ -846,10 +846,10 @@ bool configParserStruct::memory::isHalted() const
 
 // -----------------------------------------------------
       
-void configParserStruct::memory::clear()
+void configParserStruct::memory::clear( named::clearMode Mode )
 {
   Stack.clear();
-  Named.clear( named::KeepPreset );
+  Named.clear( Mode );
   Registers.reset();
 }
 

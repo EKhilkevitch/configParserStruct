@@ -88,6 +88,8 @@ void configParserStruct::program::detachAndClearTextIfNeed()
 
     TextRefCount = new int(1);
     Text = new text();
+  } else {
+    Text->clear();
   }
 }
 
@@ -95,7 +97,7 @@ void configParserStruct::program::detachAndClearTextIfNeed()
 
 void configParserStruct::program::clear()
 {
-  Memory.clear();
+  Memory.clear( named::ClearAll );
   detachAndClearTextIfNeed();
 }
 
@@ -136,7 +138,7 @@ void configParserStruct::program::build( const std::string &SourceCode )
 
 void configParserStruct::program::run()
 {
-  Memory.clear();
+  Memory.clear( named::KeepPreset );
   while ( ! Memory.isHalted() )
   {
     const size_t InstructionPointer = Memory.instructionPointer();

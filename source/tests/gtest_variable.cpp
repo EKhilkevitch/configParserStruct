@@ -2,6 +2,8 @@
 // =========================================================
 
 #include "configParserStruct/variable.h"
+#include "configParserStruct/variablevalue.h"
+#include "configParserStruct/reference.h"
 
 #include <gtest/gtest.h>
 
@@ -64,6 +66,22 @@ TEST( variable, copy )
   EXPECT_EQ( 5, Dst.integer() );
   EXPECT_EQ( 5.0, Dst.real() );
   EXPECT_EQ( "5", Dst.string() );
+}
+
+// ---------------------------------------------------------
+
+TEST( variable, dict_keys )
+{
+  variable Dict( variable::DictCollection );
+  Dict.setByRef( reference( "a", reference::DictKey ), variable( 1 ) );
+  Dict.setByRef( reference( "b", reference::DictKey ), variable( 3 ) );
+  Dict.setByRef( reference( "c", reference::DictKey ), variable( 5 ) );
+
+  EXPECT_EQ( "{ .a = 1, .b = 3, .c = 5 }", Dict.string() );
+
+  const variable *Keys = Dict.getByRef( reference( dictVariableValue::ArrayOfKeysName, reference::DictKey ) );
+  ASSERT_TRUE( Keys != NULL );
+  EXPECT_EQ( "[ a, b, c ]", Keys->string() );
 }
 
 // =========================================================
