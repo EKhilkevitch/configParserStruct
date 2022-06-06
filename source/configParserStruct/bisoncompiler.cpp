@@ -304,6 +304,7 @@ void CPSSPU_operatorOnStackTop( const char *OperatorType )
   CASE_OF_PUSH_COMMAND( "*",  mulCommand );
   CASE_OF_PUSH_COMMAND( "/",  divCommand );
   CASE_OF_PUSH_COMMAND( "%",  modCommand );
+  CASE_OF_PUSH_COMMAND( "U-", unminusCommand );
   
   CASE_OF_PUSH_COMMAND( "==", numEqCommand );
   CASE_OF_PUSH_COMMAND( "!=", numNeCommand );

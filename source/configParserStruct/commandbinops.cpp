@@ -17,15 +17,15 @@ void configParserStruct::addCommand::exec( memory *Memory ) const
   assert( Memory != NULL );
 
   const variable Arg1 = Memory->popFromStack();
-  const variable Arg2 = Memory->popFromStack();
+  variable *Arg2 = Memory->topStackValue();
 
-  if ( Arg1.type() == integerVariableValue::TypeName && Arg2.type() == integerVariableValue::TypeName )
+  if ( Arg1.type() == integerVariableValue::TypeName && Arg2->type() == integerVariableValue::TypeName )
   {
-    const variable Result( Arg1.integer() + Arg2.integer() );
-    Memory->pushToStack( Result );
+    const int ResultValue = Arg1.integer() + Arg2->integer();
+    *Arg2 = variable( ResultValue );
   } else {
-    const variable Result( Arg1.real() + Arg2.real() );
-    Memory->pushToStack( Result );
+    const double ResultValue = Arg1.real() + Arg2->real();
+    *Arg2 = variable( ResultValue );
   }
 
   Memory->jumpToNextCommand();
@@ -55,15 +55,15 @@ void configParserStruct::subCommand::exec( memory *Memory ) const
   assert( Memory != NULL );
 
   const variable Arg1 = Memory->popFromStack();
-  const variable Arg2 = Memory->popFromStack();
+  variable *Arg2 = Memory->topStackValue();
 
-  if ( Arg1.type() == integerVariableValue::TypeName && Arg2.type() == integerVariableValue::TypeName )
+  if ( Arg1.type() == integerVariableValue::TypeName && Arg2->type() == integerVariableValue::TypeName )
   {
-    const variable Result( Arg2.integer() - Arg1.integer() );
-    Memory->pushToStack( Result );
+    const int ResultValue = Arg2->integer() - Arg1.integer();
+    *Arg2 = variable( ResultValue );
   } else {
-    const variable Result( Arg2.real() - Arg1.real() );
-    Memory->pushToStack( Result );
+    const double ResultValue = Arg2->real() - Arg1.real();
+    *Arg2 = variable( ResultValue );
   }
 
   Memory->jumpToNextCommand();
@@ -93,15 +93,15 @@ void configParserStruct::mulCommand::exec( memory *Memory ) const
   assert( Memory != NULL );
 
   const variable Arg1 = Memory->popFromStack();
-  const variable Arg2 = Memory->popFromStack();
+  variable *Arg2 = Memory->topStackValue();
 
-  if ( Arg1.type() == integerVariableValue::TypeName && Arg2.type() == integerVariableValue::TypeName )
+  if ( Arg1.type() == integerVariableValue::TypeName && Arg2->type() == integerVariableValue::TypeName )
   {
-    const variable Result( Arg1.integer() * Arg2.integer() );
-    Memory->pushToStack( Result );
+    const int ResultValue = Arg1.integer() * Arg2->integer();
+    *Arg2 = variable(ResultValue);
   } else {
-    const variable Result( Arg1.real() * Arg2.real() );
-    Memory->pushToStack( Result );
+    const double ResultValue = Arg1.real() * Arg2->real();
+    *Arg2 = variable(ResultValue);
   }
 
   Memory->jumpToNextCommand();
@@ -131,15 +131,15 @@ void configParserStruct::divCommand::exec( memory *Memory ) const
   assert( Memory != NULL );
 
   const variable Arg1 = Memory->popFromStack();
-  const variable Arg2 = Memory->popFromStack();
+  variable *Arg2 = Memory->topStackValue();
 
-  if ( Arg1.type() == integerVariableValue::TypeName && Arg2.type() == integerVariableValue::TypeName && Arg1.integer() != 0 )
+  if ( Arg1.type() == integerVariableValue::TypeName && Arg2->type() == integerVariableValue::TypeName && Arg1.integer() != 0 )
   {
-    const variable Result( Arg2.integer() / Arg1.integer() );
-    Memory->pushToStack( Result );
+    const int ResultValue = Arg2->integer() / Arg1.integer();
+    *Arg2 = variable( ResultValue );
   } else {
-    const variable Result( Arg2.real() / Arg1.real() );
-    Memory->pushToStack( Result );
+    const double ResultValue = Arg2->real() / Arg1.real();
+    *Arg2 = variable( ResultValue );
   }
 
   Memory->jumpToNextCommand();
@@ -198,6 +198,41 @@ configParserStruct::modCommand* configParserStruct::modCommand::clone( void *Mem
     return new modCommand();
   else
     return new ( Memory ) modCommand();
+}
+
+// =====================================================
+
+void configParserStruct::unminusCommand::exec( memory *Memory ) const
+{
+  assert( Memory != NULL );
+
+  variable *Arg = Memory->topStackValue();
+
+  if ( Arg->type() == integerVariableValue::TypeName )
+  {
+    *Arg = variable( - Arg->integer() );
+  } else {
+    *Arg = variable( - Arg->real() );
+  }
+
+  Memory->jumpToNextCommand();
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::unminusCommand::toString() const
+{
+  return "UNARY MINUS";
+}
+
+// -----------------------------------------------------
+
+configParserStruct::unminusCommand* configParserStruct::unminusCommand::clone( void *Memory ) const
+{
+  if ( Memory == NULL )
+    return new unminusCommand();
+  else
+    return new ( Memory ) unminusCommand();
 }
 
 // =====================================================

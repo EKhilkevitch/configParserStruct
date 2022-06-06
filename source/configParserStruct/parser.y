@@ -152,9 +152,9 @@ exprMul        : exprMul '*' exprSign    { CPSSPU_operatorOnStackTop("*"); }
 	       ;
 
 exprSign       : exprAtom
-	       | '-' { CPSSPU_pushIntegerNumberToStack(0); } exprAtom { CPSSPU_operatorOnStackTop("-"); }
+	       | '-' exprAtom { CPSSPU_operatorOnStackTop("U-"); }
 	       | '+' exprAtom          
-               | '!' exprSign          { CPSSPU_operatorOnStackTop("!"); }
+               | '!' exprSign { CPSSPU_operatorOnStackTop("!"); }
 	       ;
 
 exprAtom       : idRef              { CPSSPU_replaceReferenceToValueOnStack(); } 

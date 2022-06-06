@@ -67,15 +67,13 @@ configParserStruct::reference::reference( const reference &Reference ) :
     Value.ConstChar = Copy;
   }
 
-  if ( Reference.Next != NULL )
+  try
   {
-    try
-    {
+    if ( Reference.Next != NULL )
       Next = new reference( *Reference.Next );
-    } catch ( ... ) {
-      delete [] Value.ConstChar;
-      throw;
-    }
+  } catch ( ... ) {
+    delete [] Value.ConstChar;
+    throw;
   }
 }
 
@@ -86,10 +84,53 @@ configParserStruct::reference& configParserStruct::reference::operator=( const r
   if ( &Reference == this )
     return *this;
 
+  if ( Type == DictKey || Next != NULL || Reference.Type == DictKey )
+  {
+    reference Copy(Reference);
+    swap( Copy );
+    return *this;
+  }
+
+  assert( Next == NULL );
+  if ( Reference.Next != NULL )
+    Next = new reference( *Reference.Next );
+  Type = Reference.Type;
+  Value = Reference.Value;
+  return *this;
+
+#if 0
   reference Copy(Reference);
   swap( Copy );
+  return *this;
+#endif
+
+#if 0
+  if ( Type == DictKey )
+  {
+    delete [] Value.ConstChar;
+    Value.ConstChar = NULL;
+    Type = None;
+  }
+
+  if ( Next != NULL )
+    delete Next;
+  Next = NULL;
+
+  Type = Reference.Type;
+  if ( Type == DictKey )
+  {
+    char *Char = new char[ std::strlen(Reference.Value.ConstChar) + 1 ];
+    std::strcpy( Char, Reference.Value.ConstChar );
+    Value.ConstChar = Char;
+  } else {
+    Value = Reference.Value;
+  }
+
+  if ( Reference.Next != NULL )
+    Next = new reference( *Reference.Next );
 
   return *this;
+#endif
 }
 
 // -----------------------------------------------------
@@ -98,7 +139,8 @@ configParserStruct::reference::~reference()
 {
   if ( Type == DictKey )
     delete [] Value.ConstChar;
-  delete Next;
+  if ( Next != NULL )
+    delete Next;
 }
 
 // -----------------------------------------------------

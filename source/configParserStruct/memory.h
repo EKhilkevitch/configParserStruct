@@ -20,7 +20,7 @@ namespace configParserStruct
   class buildInFunction;
 
   // =====================================================
- 
+  
   class named 
   {
     public:

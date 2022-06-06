@@ -362,9 +362,7 @@ configParserStruct::variable* configParserStruct::stack::valueByShift( size_t In
 
 configParserStruct::variable* configParserStruct::stack::top() const
 {
-  if ( Stack.empty() )
-    return NULL;
-
+  assert( ! Stack.empty() );
   return &Stack.back();
 }
 

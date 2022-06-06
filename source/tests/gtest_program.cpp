@@ -80,6 +80,39 @@ TEST( program, sub_1 )
 
 // ---------------------------------------------------------
 
+TEST( program, unminus_1 )
+{
+  program Program;
+  Program.build( "-4.5;" );
+  Program.run();
+
+  EXPECT_EQ( -4.5, Program.programMemory().lastResult().real() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, unminus_2 )
+{
+  program Program;
+  Program.build( "- ( -4.5 );" );
+  Program.run();
+
+  EXPECT_EQ( 4.5, Program.programMemory().lastResult().real() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, unminus_3 )
+{
+  program Program;
+  Program.build( "-( 1 + 2 );" );
+  Program.run();
+
+  EXPECT_EQ( -3, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
 TEST( program, add_mul_1 )
 {
   program Program;

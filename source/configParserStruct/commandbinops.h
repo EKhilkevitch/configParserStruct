@@ -62,6 +62,16 @@ namespace configParserStruct
 
   // =====================================================
   
+  class unminusCommand : public command
+  {
+    public:
+      void exec( memory *Memory ) const;
+      std::string toString() const;
+      unminusCommand* clone( void *Memory = NULL ) const;
+  };
+
+  // =====================================================
+  
   class boolAndCommand : public command
   {
     public:

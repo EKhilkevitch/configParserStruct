@@ -398,10 +398,10 @@ void configParserStruct::derefCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
 
-  const variable Reference = Memory->popFromStack();
-  const variable Value = extract( Memory, Reference.ref() );
+  variable *Top = Memory->topStackValue();
+  const variable Value = extract( Memory, Top->ref() );
 
-  Memory->pushToStack( Value );
+  *Top = Value;
   Memory->jumpToNextCommand();
 }
 
@@ -531,9 +531,8 @@ void configParserStruct::duptopCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
 
-  const variable Value = Memory->popFromStack();
-  Memory->pushToStack( Value );
-  Memory->pushToStack( Value );
+  const variable *Top = Memory->topStackValue();
+  Memory->pushToStack( *Top );
   Memory->jumpToNextCommand();
 }
 

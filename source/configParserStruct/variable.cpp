@@ -98,8 +98,8 @@ configParserStruct::variable::variable( const collectionType Type )
 configParserStruct::variable::variable( const variable &Variable ) 
 {
   const variableValue *OtherValue = Variable.variableValuePointer<variableValue>();
-  variableValue *Memory = variableValuePointer<variableValue>();
-  OtherValue->clone( Memory );
+  variableValue *CurrentMemory = variableValuePointer<variableValue>();
+  OtherValue->clone( CurrentMemory );
 }
 
 // -----------------------------------------------------
@@ -109,8 +109,24 @@ configParserStruct::variable& configParserStruct::variable::operator=( const var
   if ( &Variable == this )
     return *this;
 
+#if 0
   variable Other( Variable );
   Other.swap( *this );
+  return *this;
+#endif
+
+  const variableValue *OtherValue = Variable.variableValuePointer<variableValue>();
+  variableValue *ThisValue = variableValuePointer<variableValue>();
+
+  ThisValue->~variableValue();
+
+  try
+  {
+    OtherValue->clone(ThisValue);
+  } catch ( ... ) {
+    new (ThisValue) undefVariableValue();
+    throw;
+  }
   return *this;
 }
 
