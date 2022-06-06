@@ -79,7 +79,7 @@ configParserStruct::variable::variable( const collectionType Type )
   {
     case ArrayCollection:
       assert( sizeof(ValueMemory) >= sizeof(arrayVariableValue) );
-      new (Memory) arrayVariableValue(0);
+      new (Memory) arrayVariableValue();
       break;
     
     case DictCollection:

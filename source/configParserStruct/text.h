@@ -40,8 +40,9 @@ namespace configParserStruct
       } ParseTimeStatus;
 
     private:
-      command* commandPointer( size_t Index );
-      const command* commandPointer( size_t Index ) const;
+      inline size_t sizeOfText() const;
+      inline command* commandPointer( size_t Index );
+      inline const command* commandPointer( size_t Index ) const;
       static bool isCommandPointerPlaceholder( const command *Command );
 
     private:

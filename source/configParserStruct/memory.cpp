@@ -215,8 +215,11 @@ configParserStruct::variable* configParserStruct::named::setValueByReference( na
   if ( rit != Frame->ReferenceMap.end() )
   {
     variable *Pointer = const_cast<variable*>( rit->second );
-    *Pointer = Value;
-    return Pointer;
+    if ( Pointer != NULL )
+    {
+      *Pointer = Value;
+      return Pointer;
+    }
   }
   
   std::map< std::string, variable >::iterator sit = Frame->Map.find(Name);
@@ -263,6 +266,8 @@ configParserStruct::variable* configParserStruct::named::findValueByReference( c
     variable *Pointer = const_cast<variable*>( &( sit->second ) );
     Frame.ReferenceMap[Name] = Pointer;
     return Pointer;
+  } else {
+    Frame.ReferenceMap[Name] = NULL;
   }
   
   return NULL;
@@ -336,13 +341,10 @@ void configParserStruct::stack::push( const variable &Variable )
 
 const configParserStruct::variable configParserStruct::stack::pop()
 {
-  if ( Stack.empty() )
-    return variable();
+  assert( ! Stack.empty() );
 
-  variable Result;
-  Result.swap( Stack.back() );
+  variable Result = Stack.back();
   Stack.pop_back();
-
   return Result;
 }
 

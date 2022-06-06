@@ -24,7 +24,7 @@ namespace configParserStruct
   class variableValue
   {
     public:
-      virtual ~variableValue() = 0;
+      virtual ~variableValue() {};
 
       virtual variableValue* clone( void *Memory = NULL ) const = 0;
       virtual const char* type() const = 0;
@@ -156,17 +156,17 @@ namespace configParserStruct
   class arrayVariableValue : public variableValue
   {
     private:
-      mutable std::vector< variable > Array;
+      mutable std::vector< variable > *Array;
 
+    private:
+      explicit arrayVariableValue( const std::vector< variable > &Array );
+    
     private:
       arrayVariableValue( const arrayVariableValue& );
       arrayVariableValue& operator=( const arrayVariableValue& );
 
-    private:
-      explicit arrayVariableValue( const std::vector< variable > &Array );
-
     public:
-      explicit arrayVariableValue( size_t Size );
+      explicit arrayVariableValue();
       ~arrayVariableValue();
 
       arrayVariableValue* clone( void *Memory = NULL ) const;
@@ -200,8 +200,6 @@ namespace configParserStruct
 
     private:
       void updateKeysArray() const;
-
-    private:
       explicit dictVariableValue( const std::map< std::string, variable > &Dict );
 
     public:

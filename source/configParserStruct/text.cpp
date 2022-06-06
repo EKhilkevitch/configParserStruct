@@ -43,8 +43,7 @@ void configParserStruct::text::clear()
     delete [] Strings[i];
   Strings.clear();
 
-  const size_t TextSize = size();
-  for ( size_t i = 0; i < TextSize; i++ )
+  for ( size_t i = 0; i < sizeOfText(); i++ )
     commandPointer(i)->~command();
   Text.clear();
 
@@ -61,7 +60,7 @@ void configParserStruct::text::push( const command &Command )
 
   try
   {
-    Command.clone( commandPointer( size()-1 ) );
+    Command.clone( commandPointer( sizeOfText()-1 ) );
   } catch ( ... ) {
     Text.resize( Text.size() - sizeof(command) );
     throw;
@@ -73,7 +72,7 @@ void configParserStruct::text::push( const command &Command )
 void configParserStruct::text::pushPlaceholder()
 {
   Text.resize( Text.size() + sizeof(command), '\0' );
-  std::memset( static_cast<void*>( commandPointer( size()-1 ) ), PlaceholderByte, sizeof(command) );
+  std::memset( static_cast<void*>( commandPointer( sizeOfText()-1 ) ), PlaceholderByte, sizeof(command) );
 }
 
 // -----------------------------------------------------
@@ -92,7 +91,7 @@ void configParserStruct::text::replacePlaceholder( const command &Command )
       
 size_t configParserStruct::text::indexOfPlaceholder() const
 {
-  for ( ptrdiff_t i = static_cast<ptrdiff_t>(size()) - 1; i >= 0; i-- )
+  for ( ptrdiff_t i = static_cast<ptrdiff_t>(sizeOfText()) - 1; i >= 0; i-- )
   {
     const command *Pointer = commandPointer(i);
     if ( isCommandPointerPlaceholder(Pointer) )
@@ -126,7 +125,7 @@ void configParserStruct::text::replaceLastCommand( const command &Command )
   if ( empty() )
     return;
 
-  command *Pointer = commandPointer( size() - 1 );
+  command *Pointer = commandPointer( sizeOfText() - 1 );
   Pointer->~command();
 
   Command.clone(Pointer);
@@ -218,9 +217,7 @@ const configParserStruct::command* configParserStruct::text::commandPointer( siz
       
 const configParserStruct::command& configParserStruct::text::operator[]( size_t Index ) const
 {
-  if ( Index >= size() )
-    throw exception( "Instruction index out of ranges" );
-
+  assert( Index < sizeOfText() );
   return *commandPointer(Index);
 }
 
@@ -235,12 +232,19 @@ configParserStruct::text::const_iterator configParserStruct::text::begin() const
 
 configParserStruct::text::const_iterator configParserStruct::text::end() const
 {
-  return commandPointer( size() );
+  return commandPointer( sizeOfText() );
 }
 
 // -----------------------------------------------------
 
 size_t configParserStruct::text::size() const
+{
+  return sizeOfText();
+}
+
+// -----------------------------------------------------
+      
+size_t configParserStruct::text::sizeOfText() const
 {
   return Text.size() / sizeof(command);
 }
@@ -284,7 +288,7 @@ std::string configParserStruct::text::toDebugString() const
 {
   std::ostringstream Stream;
 
-  const size_t TextSize = size();
+  const size_t TextSize = sizeOfText();
   for ( size_t i = 0; i < TextSize; i++ )
   {
     Stream << std::setw(5) << i << " ";

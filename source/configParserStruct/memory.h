@@ -49,16 +49,16 @@ namespace configParserStruct
       std::list< namedFrame > Locals;
 
     private:
-      static variable* setValueByName( namedFrame *Frame, const std::string &Name, const variable &Value );
-      static variable* findValueByName( const namedFrame &Frame, const std::string &Name );
-      static variable* setValueByReference( namedFrame *Frame, const char *Name, const variable &Value );
-      static variable* findValueByReference( const namedFrame &Frame, const char *Name );
-      static void clear( namedFrame *Frame );
+      static inline variable* setValueByName( namedFrame *Frame, const std::string &Name, const variable &Value );
+      static inline variable* findValueByName( const namedFrame &Frame, const std::string &Name );
+      static inline variable* setValueByReference( namedFrame *Frame, const char *Name, const variable &Value );
+      static inline variable* findValueByReference( const namedFrame &Frame, const char *Name );
+      static inline void clear( namedFrame *Frame );
       static std::string toDebugString( const namedFrame &Frame, const std::string &Prefix );
       static void copy( namedFrame *To, const namedFrame &From );
 
-      const namedFrame* frameForScope( scope Scope ) const;
-      namedFrame* frameForScope( scope Scope );
+      inline const namedFrame* frameForScope( scope Scope ) const;
+      inline namedFrame* frameForScope( scope Scope );
 
     public:
       named();
@@ -70,11 +70,11 @@ namespace configParserStruct
       void pushLocal();
       void popLocal();
 
-      variable* setValueByName( const std::string &Name, const variable &Value, scope Scope );
-      variable* findValueByName( const std::string &Name, scope Scope ) const;
+      inline variable* setValueByName( const std::string &Name, const variable &Value, scope Scope );
+      inline variable* findValueByName( const std::string &Name, scope Scope ) const;
       
-      variable* setValueByReference( const char *Name, const variable &Value, scope Scope );
-      variable* findValueByReference( const char *Name, scope Scope ) const;
+      inline variable* setValueByReference( const char *Name, const variable &Value, scope Scope );
+      inline variable* findValueByReference( const char *Name, scope Scope ) const;
 
       void clear( clearMode Mode );
       std::string toDebugString() const;
@@ -91,15 +91,15 @@ namespace configParserStruct
       stack();
       void swap( stack &Other );
 
-      void push( const variable &Variable );
-      const variable pop();
+      inline void push( const variable &Variable );
+      inline const variable pop();
 
-      variable* valueByShift( size_t Index ) const;
-      variable* top() const;
+      inline variable* valueByShift( size_t Index ) const;
+      inline variable* top() const;
 
-      bool empty() const;
-      size_t size() const;
-      void truncate( size_t Size );
+      inline bool empty() const;
+      inline size_t size() const;
+      inline void truncate( size_t Size );
 
       void clear();
       std::string toDebugString() const;
@@ -121,12 +121,12 @@ namespace configParserStruct
 
       void swap( registers &Other );
       
-      void setLastResult( const variable &Variable );
-      const variable& lastResult() const;
+      inline void setLastResult( const variable &Variable );
+      inline const variable& lastResult() const;
       
-      void jumpToNextCommand();
-      void jumpToCommand( size_t Index );
-      size_t instructionPointer() const;
+      inline void jumpToNextCommand();
+      inline void jumpToCommand( size_t Index );
+      inline size_t instructionPointer() const;
 
       void setBaseStackPointer( size_t Size );
       size_t baseStackPointer() const;
@@ -164,8 +164,8 @@ namespace configParserStruct
       ~buildins();
       void swap( buildins &Other );
 
-      const buildInFunction* findFunctionByName( const std::string &Name ) const;
-      const buildInFunction* findFunctionByReference( const char *Name ) const;
+      inline const buildInFunction* findFunctionByName( const std::string &Name ) const;
+      inline const buildInFunction* findFunctionByReference( const char *Name ) const;
   };
 
   // =====================================================

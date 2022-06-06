@@ -15,12 +15,6 @@
 
 // =====================================================
 
-configParserStruct::variableValue::~variableValue()
-{
-}
-
-// -----------------------------------------------------
-      
 configParserStruct::reference configParserStruct::variableValue::ref() const
 {
   return reference();
@@ -373,15 +367,15 @@ const char *const configParserStruct::arrayVariableValue::TypeName = "array";
 
 // -----------------------------------------------------
 
-configParserStruct::arrayVariableValue::arrayVariableValue( size_t Size ) :
-  Array( Size )
+configParserStruct::arrayVariableValue::arrayVariableValue() :
+  Array( new std::vector<variable>() )
 {
 }
 
 // -----------------------------------------------------
       
 configParserStruct::arrayVariableValue::arrayVariableValue( const std::vector< variable > &Values ) :
-  Array( Values )
+  Array( new std::vector<variable>(Values) )
 {
 }
 
@@ -389,6 +383,7 @@ configParserStruct::arrayVariableValue::arrayVariableValue( const std::vector< v
 
 configParserStruct::arrayVariableValue::~arrayVariableValue()
 {
+  delete Array;
 }
 
 // -----------------------------------------------------
@@ -397,9 +392,9 @@ configParserStruct::arrayVariableValue* configParserStruct::arrayVariableValue::
 {
   if ( Memory != NULL )
   {
-    return new (Memory) arrayVariableValue(Array);
+    return new (Memory) arrayVariableValue(*Array);
   } else {
-    return new arrayVariableValue(Array);
+    return new arrayVariableValue(*Array);
   }
 }
 
@@ -414,7 +409,7 @@ const char* configParserStruct::arrayVariableValue::type() const
 
 int configParserStruct::arrayVariableValue::integer() const
 {
-  return static_cast<int>( Array.size() );
+  return static_cast<int>( Array->size() );
 }
 
 // -----------------------------------------------------
@@ -428,7 +423,7 @@ double configParserStruct::arrayVariableValue::real() const
 
 bool configParserStruct::arrayVariableValue::boolean() const
 {
-  return ! Array.empty();
+  return ! Array->empty();
 }
 
 // -----------------------------------------------------
@@ -437,11 +432,11 @@ std::string configParserStruct::arrayVariableValue::string() const
 {
   std::ostringstream Stream;
   Stream << "[ ";
-  for ( size_t i = 0; i < Array.size(); i++ )
+  for ( std::vector<variable>::const_iterator it = Array->begin(); it != Array->end(); ++it )
   {
-    if ( i > 0 )
+    if ( it != Array->begin() )
       Stream << ", ";
-    Stream << Array[i].string();
+    Stream << it->string();
   }
   Stream << " ]";
   return Stream.str();
@@ -453,10 +448,10 @@ configParserStruct::variable* configParserStruct::arrayVariableValue::getByRef( 
 {
   const size_t Index = Reference.asArrayIndex();
 
-  if ( Index >= Array.size() )
-    Array.resize( Index + 1 );
+  if ( Index >= Array->size() )
+    Array->resize( Index + 1 );
 
-  return &Array[Index];
+  return &(*Array)[Index];
 }
 
 // -----------------------------------------------------
@@ -466,13 +461,13 @@ configParserStruct::variable* configParserStruct::arrayVariableValue::setByRef( 
   size_t Index = Reference.asArrayIndex();
 
   if ( Index == std::numeric_limits<size_t>::max() )
-    Index = Array.size();
+    Index = Array->size();
 
-  if ( Index >= Array.size() )
-    Array.resize( Index + 1 );
+  if ( Index >= Array->size() )
+    Array->resize( Index + 1 );
 
-  Array[Index] = Variable;
-  return &Array[Index];
+  (*Array)[Index] = Variable;
+  return &(*Array)[Index];
 }
 
 // =====================================================
