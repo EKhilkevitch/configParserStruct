@@ -15,9 +15,16 @@
 
 // =====================================================
 
-configParserStruct::reference configParserStruct::variableValue::ref() const
+namespace
 {
-  return reference();
+  const configParserStruct::reference NoneReference;
+}
+
+// =====================================================
+
+const configParserStruct::reference& configParserStruct::variableValue::ref() const
+{
+  return NoneReference;
 }
 
 // -----------------------------------------------------
@@ -356,7 +363,7 @@ std::string configParserStruct::referenceVariableValue::string() const
 
 // -----------------------------------------------------
       
-configParserStruct::reference configParserStruct::referenceVariableValue::ref() const
+const configParserStruct::reference& configParserStruct::referenceVariableValue::ref() const
 {
   return Reference;
 }

@@ -34,7 +34,7 @@ namespace configParserStruct
       virtual std::string string() const = 0;
       virtual bool boolean() const = 0;
 
-      virtual reference ref() const;
+      virtual const reference& ref() const;
       virtual variable* getByRef( const reference &Reference ) const;
       virtual variable* setByRef( const reference &Reference, const variable &Variable );
   };
@@ -146,7 +146,7 @@ namespace configParserStruct
       std::string string() const;
       bool boolean() const;
 
-      reference ref() const;
+      const reference& ref() const;
       
       static const char *const TypeName;
   };

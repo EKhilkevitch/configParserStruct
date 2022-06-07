@@ -43,7 +43,6 @@ namespace configParserStruct
       std::string toString() const;
       jumpIfFalseCommand* clone( void *Memory = NULL ) const;
   }; 
-
   
   // =====================================================
 

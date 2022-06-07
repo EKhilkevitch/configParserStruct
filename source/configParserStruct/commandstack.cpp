@@ -404,9 +404,9 @@ void configParserStruct::joinrefCommand::exec( memory *Memory ) const
   assert( Memory != NULL );
 
   const variable Secondary = Memory->popFromStack();
-  const variable Base = Memory->popFromStack();
+  variable *Base = Memory->topStackValue();
 
-  reference Result = Base.ref();
+  reference Result = Base->ref();
   const type Type = static_cast<type>( argument().integer() );
 
   switch ( Type )
@@ -430,7 +430,7 @@ void configParserStruct::joinrefCommand::exec( memory *Memory ) const
       break;
   }
   
-  Memory->pushToStack( variable(Result) );
+  *Base = variable(Result);
   Memory->jumpToNextCommand();
 }
 

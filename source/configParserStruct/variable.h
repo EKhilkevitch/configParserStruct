@@ -55,7 +55,7 @@ namespace configParserStruct
       bool boolean() const;
       std::string string() const;
       
-      reference ref() const;
+      const reference& ref() const;
       variable* getByRef( const reference &Reference ) const;
       variable* setByRef( const reference &Reference, const variable &Variable );
 

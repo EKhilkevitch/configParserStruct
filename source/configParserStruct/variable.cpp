@@ -192,7 +192,7 @@ std::string configParserStruct::variable::string() const
 
 // -----------------------------------------------------
 
-configParserStruct::reference configParserStruct::variable::ref() const
+const configParserStruct::reference& configParserStruct::variable::ref() const
 {
   return variableValuePointer<variableValue>()->ref();
 }

@@ -180,16 +180,13 @@ void configParserStruct::callCommand::exec( memory *Memory ) const
 
   if ( Function == NULL )
   {
-    variable Result;
-
     const buildInFunction* BuildinFunction = Memory->findFunctionByReference( FunctionName );
-    if ( BuildinFunction != NULL )
-      Result = BuildinFunction->call( *Memory );
+    const variable Result = ( BuildinFunction != NULL ) ? BuildinFunction->call( *Memory ) : variable();
 
     Memory->truncateStack( Memory->baseStackPointer() );
-    const variable PrevStackSize = Memory->popFromStack();
-    Memory->setBaseStackPointer( PrevStackSize.ref().asStackPointer() );
-    Memory->pushToStack( Result );
+    variable *Top = Memory->topStackValue();
+    Memory->setBaseStackPointer( Top->ref().asStackPointer() );
+    *Top = Result;
     Memory->jumpToNextCommand();
     return;
   }
