@@ -94,10 +94,19 @@ namespace configParserStruct
  
   class derefCommand : public command
   {
+    public:
+      enum type
+      {
+        RefFromStack
+      };
+
     private:
+      explicit derefCommand( const variable &Variable );
       static variable extract( memory *Memory, const reference &Reference );
 
     public:
+      explicit derefCommand( const reference &Reference );
+      explicit derefCommand( type Type );
       void exec( memory *Memory ) const;
       std::string toString() const;
       derefCommand* clone( void *Memory = NULL ) const;

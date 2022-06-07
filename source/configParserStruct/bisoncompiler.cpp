@@ -9,8 +9,9 @@
 #include "configParserStruct/commandjump.h"
 #include "configParserStruct/commandstack.h"
 
-#include <cstring>
 #include <iostream>
+#include <typeinfo>
+#include <cstring>
 #include <cassert>
 
 // =====================================================
@@ -142,8 +143,15 @@ void CPSSPU_callFunctionWithArgsFromStack( const char *Name )
 
 void CPSSPU_pushVariableValueToStack( void ) 
 {
-  Text->push( configParserStruct::duptopCommand() );
-  Text->push( configParserStruct::derefCommand() );
+  const configParserStruct::command &LastCommand = (*Text)[ Text->size() - 1 ];
+  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) )
+  {
+    const configParserStruct::reference Reference = LastCommand.argument().ref();
+    Text->push( configParserStruct::derefCommand( Reference ) );
+  } else {
+    Text->push( configParserStruct::duptopCommand() );
+    Text->push( configParserStruct::derefCommand( configParserStruct::derefCommand::RefFromStack ) );
+  }
 }
 
 // -----------------------------------------------------
@@ -179,7 +187,19 @@ void CPSSPU_pushVariableGlobalReferenceToStack( const char *Name )
 void CPSSPU_replaceReferenceToValueOnStack( void ) 
 {
   assert( Text != NULL );
-  Text->push( configParserStruct::derefCommand() );
+
+  //std::cerr << "replace command " << typeid(LastCommand).name() << " arg " << LastCommand.argument() << std::endl;
+  //const configParserStruct::reference Reference = LastCommand.argument().ref();
+  //Text->replaceLastCommand( configParserStruct::derefCommand( Reference ) );
+
+  const configParserStruct::command &LastCommand = (*Text)[ Text->size() - 1 ];
+  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) )
+  {
+    const configParserStruct::reference Reference = LastCommand.argument().ref();
+    Text->replaceLastCommand( configParserStruct::derefCommand( Reference ) );
+  } else {
+    Text->push( configParserStruct::derefCommand( configParserStruct::derefCommand::RefFromStack ) );
+  }
 }
 
 // -----------------------------------------------------

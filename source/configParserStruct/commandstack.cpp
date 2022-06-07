@@ -320,15 +320,42 @@ configParserStruct::assignCommand* configParserStruct::assignCommand::clone( voi
 }
 
 // =====================================================
+      
+configParserStruct::derefCommand::derefCommand( const variable &Variable ) :
+  command(Variable)
+{
+}
+
+// -----------------------------------------------------
+
+configParserStruct::derefCommand::derefCommand( type Type ) :
+  command( variable( static_cast<int>(Type) ) )
+{
+}
+
+// -----------------------------------------------------
+      
+configParserStruct::derefCommand::derefCommand( const reference &Reference ) :
+  command( variable(Reference) )
+{
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::derefCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
 
-  variable *Top = Memory->topStackValue();
-  const variable Value = extract( Memory, Top->ref() );
-
-  *Top = Value;
+  const reference &ArgRef = argument().ref();
+  if ( ArgRef.hasType( reference::None ) )
+  {
+    variable *Top = Memory->topStackValue();
+    const variable Value = extract( Memory, Top->ref() );
+    *Top = Value;
+  } else {
+    const variable Value = extract( Memory, ArgRef );
+    Memory->pushToStack( Value );
+  }
   Memory->jumpToNextCommand();
 }
 
@@ -377,7 +404,12 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
 
 std::string configParserStruct::derefCommand::toString() const
 {
-  return "DEREF";
+  std::ostringstream Stream;
+  if ( argument().ref().hasType(reference::None) )
+    Stream << "DEREF FROM STACK";
+  else
+    Stream << "DEREF " << argument();
+  return Stream.str();
 }
 
 // -----------------------------------------------------
@@ -385,9 +417,9 @@ std::string configParserStruct::derefCommand::toString() const
 configParserStruct::derefCommand* configParserStruct::derefCommand::clone( void *Memory ) const
 {
   if ( Memory == NULL )
-    return new derefCommand();
+    return new derefCommand( argument() );
   else
-    return new ( Memory ) derefCommand();
+    return new ( Memory ) derefCommand( argument() );
 }
 
 // =====================================================

@@ -849,7 +849,7 @@ TEST( program, array_1 )
   Program.run();
   
   EXPECT_EQ( 0, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString();
-  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) ) << Program.programMemory().toDebugString() << "\n" << Program.programText().toDebugString();
   EXPECT_EQ( 0, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
 }
 
