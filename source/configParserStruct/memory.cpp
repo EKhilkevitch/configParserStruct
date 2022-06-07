@@ -15,21 +15,169 @@
 
 // =====================================================
 
+configParserStruct::named::namedFrame::namedFrame()
+{
+}
+
+// -----------------------------------------------------
+          
+configParserStruct::named::namedFrame::namedFrame( const namedFrame &Other ) :
+  Map( Other.Map )
+{
+  for ( std::map< const char*, variable* >::const_iterator it = Other.ReferenceMap.begin(); it != Other.ReferenceMap.end(); ++it )
+  {
+    variable *Pointer = &( Map[ it->first ] );
+    ReferenceMap[ it->first ] = Pointer;
+  }
+}
+
+// -----------------------------------------------------
+
+configParserStruct::named::namedFrame& configParserStruct::named::namedFrame::operator=( const namedFrame &Other )
+{
+  if ( &Other == this )
+    return *this;
+
+  namedFrame Copy(Other);
+  Copy.swap( *this );
+
+  return *this;
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::named::namedFrame::swap( namedFrame &Other )
+{
+  Map.swap( Other.Map );
+  ReferenceMap.swap( Other.ReferenceMap );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::named::namedFrame::clear()
+{
+  Map.clear();
+  ReferenceMap.clear();
+}
+
+// -----------------------------------------------------
+      
+configParserStruct::variable* configParserStruct::named::namedFrame::setValueByName( const std::string &Name, const variable &Value )
+{
+  variable *Result = &( Map[ Name ] = Value );
+
+  for ( std::map< const char*, variable* >::iterator it = ReferenceMap.begin(); it != ReferenceMap.end(); it++ )
+  {
+    if ( std::strcmp( it->first, Name.c_str() ) == 0 )
+    {
+      if ( it->second != Result )
+        ReferenceMap.erase(it);
+      break;
+    }
+  }
+
+  return Result;
+}
+
+// -----------------------------------------------------
+
+configParserStruct::variable* configParserStruct::named::namedFrame::setValueByReference( const char *Name, const variable &Value )
+{
+  if ( Name == NULL )
+    throw std::invalid_argument( "Name must be not NULL" );
+
+  std::map< const char*, variable* >::iterator rit = ReferenceMap.find(Name);
+  if ( rit != ReferenceMap.end() )
+  {
+    variable *Pointer = const_cast<variable*>( rit->second );
+    if ( Pointer != NULL )
+    {
+      *Pointer = Value;
+      return Pointer;
+    }
+  }
+  
+  std::map< std::string, variable >::iterator sit = Map.find(Name);
+  if ( sit != Map.end() )
+  {
+    variable *Pointer = &( sit->second );
+    ReferenceMap[Name] = Pointer;
+    *Pointer = Value;
+    return Pointer;
+  }
+
+  variable *Pointer = &( Map[ Name ] = Value );
+  ReferenceMap[Name] = Pointer;
+  return Pointer;
+}
+
+// -----------------------------------------------------
+
+configParserStruct::variable* configParserStruct::named::namedFrame::findValueByName( const std::string &Name ) const
+{
+  std::map< std::string, variable >::const_iterator it = Map.find(Name);
+  if ( it != Map.end() )
+    return const_cast<variable*>( &( it->second ) );
+  return NULL;
+}
+
+// -----------------------------------------------------
+
+configParserStruct::variable* configParserStruct::named::namedFrame::findValueByReference( const char *Name ) const
+{
+  if ( Name == NULL )
+    throw std::invalid_argument( "Name must be not NULL" );
+
+  std::map< const char*, variable* >::const_iterator rit = ReferenceMap.find(Name);
+  if ( rit != ReferenceMap.end() )
+  {
+    variable *Pointer = rit->second;
+    return Pointer;
+  }
+
+  std::map< std::string, variable >::const_iterator sit = Map.find(Name);
+  if ( sit != Map.end() )
+  {
+    variable *Pointer = const_cast<variable*>( &( sit->second ) );
+    ReferenceMap[Name] = Pointer;
+    return Pointer;
+  } else {
+    ReferenceMap[Name] = NULL;
+    return NULL;
+  }
+}
+
+// -----------------------------------------------------
+      
+std::string configParserStruct::named::namedFrame::toDebugString( const std::string &Prefix ) const
+{
+  std::ostringstream Stream;
+
+  if ( Map.empty() )
+    Stream << Prefix << " (empty)" << std::endl;
+
+  for ( std::map< std::string, variable >::const_iterator it = Map.begin(); it != Map.end(); ++it )
+    Stream << Prefix << " " << it->first << " = " << it->second << " (value ptr:" << &it->second << ")" << std::endl;
+  
+  for ( std::map< const char*, variable* >::const_iterator it = ReferenceMap.begin(); it != ReferenceMap.end(); ++it )
+    Stream << Prefix << " " << it->first << " (" << static_cast<const void*>( it->first ) << ")" << " = " << it->second << std::endl;
+
+  return Stream.str();
+}
+
+// -----------------------------------------------------
+
 configParserStruct::named::named()
 {
 }
 
 // -----------------------------------------------------
       
-configParserStruct::named::named( const named &Other )
+configParserStruct::named::named( const named &Other ) :
+  Preset( Other.Preset ),
+  Global( Other.Global ),
+  Locals( Other.Locals )
 {
-  copy( &Preset, Other.Preset );
-  copy( &Global, Other.Global );
-  for ( std::list< namedFrame >::const_iterator it = Other.Locals.begin(); it != Other.Locals.end(); ++it )
-  {
-    Locals.push_back( namedFrame() );
-    copy( &Locals.back(), *it );
-  }
 }
 
 // -----------------------------------------------------
@@ -48,10 +196,8 @@ configParserStruct::named& configParserStruct::named::operator=( const named &Ot
       
 void configParserStruct::named::swap( named &Other )
 {
-  Preset.Map.swap( Other.Preset.Map );
-  Preset.ReferenceMap.swap( Other.Preset.ReferenceMap );
-  Global.Map.swap( Other.Global.Map );
-  Global.ReferenceMap.swap( Other.Global.ReferenceMap );
+  Preset.swap( Other.Preset );
+  Global.swap( Other.Global );
   Locals.swap( Other.Locals );
 }
 
@@ -59,12 +205,12 @@ void configParserStruct::named::swap( named &Other )
 
 void configParserStruct::named::clear( clearMode Mode )
 {
-  clear( &Global );
+  Global.clear();
   Locals.clear();
   switch ( Mode )
   {
     case ClearAll:
-      clear( &Preset );
+      Preset.clear();
       break;
 
     case KeepPreset:
@@ -125,7 +271,8 @@ configParserStruct::named::namedFrame* configParserStruct::named::frameForScope(
 
 configParserStruct::variable* configParserStruct::named::setValueByName( const std::string &Name, const variable &Value, scope Scope )
 {
-  return setValueByName( frameForScope(Scope), Name, Value );
+  namedFrame *Frame = frameForScope(Scope);
+  return Frame->setValueByName( Name, Value );
 }
 
 // -----------------------------------------------------
@@ -136,12 +283,12 @@ configParserStruct::variable* configParserStruct::named::findValueByName( const 
   const namedFrame *Frame = NULL;
   
   Frame = frameForScope(Scope);
-  Result = findValueByName( *Frame, Name );
+  Result = Frame->findValueByName( Name );
 
   if ( Result == NULL && Frame == &Global )
   {
     Frame = frameForScope(PresetScope);
-    Result = findValueByName( *Frame, Name );
+    Result = Frame->findValueByName( Name );
   }
 
   return Result;
@@ -151,7 +298,8 @@ configParserStruct::variable* configParserStruct::named::findValueByName( const 
       
 configParserStruct::variable* configParserStruct::named::setValueByReference( const char *Name, const variable &Value, scope Scope )
 {
-  return setValueByReference( frameForScope(Scope), Name, Value );
+  namedFrame *Frame = frameForScope(Scope);
+  return Frame->setValueByReference( Name, Value );
 }
 
 // -----------------------------------------------------
@@ -162,12 +310,12 @@ configParserStruct::variable* configParserStruct::named::findValueByReference( c
   const namedFrame *Frame = NULL;
   
   Frame = frameForScope(Scope);
-  Result = findValueByReference( *Frame, Name );
+  Result = Frame->findValueByReference( Name );
 
   if ( Result == NULL && Frame == &Global )
   {
     Frame = frameForScope(PresetScope);
-    Result = findValueByReference( *Frame, Name );
+    Result = Frame->findValueByReference( Name );
   }
 
   return Result;
@@ -179,154 +327,19 @@ std::string configParserStruct::named::toDebugString() const
 {
   std::string Result;
 
-  Result += toDebugString( Preset, "Preset" );
-  Result += toDebugString( Global, "Global" );
+  Result += Preset.toDebugString( "Preset" );
+  Result += Global.toDebugString( "Global" );
 
   int Index = 0;
   for ( std::list< namedFrame >::const_iterator it = Locals.begin(); it != Locals.end(); ++it )
   {
     char NumberString[64];
     std::snprintf( NumberString, sizeof(NumberString), "Local %i", Index );
-    Result += toDebugString( *it, NumberString );
+    Result += it->toDebugString( NumberString );
     Index++;
   }
 
   return Result;
-}
-
-// -----------------------------------------------------
-      
-configParserStruct::variable* configParserStruct::named::setValueByName( namedFrame *Frame, const std::string &Name, const variable &Value )
-{
-  assert( Frame != NULL );
-
-  variable *Result = &( Frame->Map[ Name ] = Value );
-
-  for ( std::map< const char*, variable* >::iterator it = Frame->ReferenceMap.begin(); it != Frame->ReferenceMap.end(); it++ )
-  {
-    if ( std::strcmp( it->first, Name.c_str() ) == 0 )
-    {
-      if ( it->second != Result )
-        Frame->ReferenceMap.erase(it);
-      break;
-    }
-  }
-
-  return Result;
-}
-
-// -----------------------------------------------------
-
-configParserStruct::variable* configParserStruct::named::setValueByReference( namedFrame *Frame, const char *Name, const variable &Value )
-{
-  assert( Frame != NULL );
-
-  if ( Name == NULL )
-    throw std::invalid_argument( "Name must be not NULL" );
-
-  std::map< const char*, variable* >::iterator rit = Frame->ReferenceMap.find(Name);
-  if ( rit != Frame->ReferenceMap.end() )
-  {
-    variable *Pointer = const_cast<variable*>( rit->second );
-    if ( Pointer != NULL )
-    {
-      *Pointer = Value;
-      return Pointer;
-    }
-  }
-  
-  std::map< std::string, variable >::iterator sit = Frame->Map.find(Name);
-  if ( sit != Frame->Map.end() )
-  {
-    variable *Pointer = &( sit->second );
-    Frame->ReferenceMap[Name] = Pointer;
-    *Pointer = Value;
-    return Pointer;
-  }
-
-  variable *Pointer = &( Frame->Map[ Name ] = Value );
-  Frame->ReferenceMap[Name] = Pointer;
-  return Pointer;
-}
-
-// -----------------------------------------------------
-
-configParserStruct::variable* configParserStruct::named::findValueByName( const namedFrame &Frame, const std::string &Name ) 
-{
-  std::map< std::string, variable >::const_iterator it = Frame.Map.find(Name);
-  if ( it != Frame.Map.end() )
-    return const_cast<variable*>( &( it->second ) );
-  return NULL;
-}
-
-// -----------------------------------------------------
-
-configParserStruct::variable* configParserStruct::named::findValueByReference( const namedFrame &Frame, const char *Name ) 
-{
-  if ( Name == NULL )
-    throw std::invalid_argument( "Name must be not NULL" );
-
-  std::map< const char*, variable* >::const_iterator rit = Frame.ReferenceMap.find(Name);
-  if ( rit != Frame.ReferenceMap.end() )
-  {
-    variable *Pointer = rit->second;
-    return Pointer;
-  }
-
-  std::map< std::string, variable >::const_iterator sit = Frame.Map.find(Name);
-  if ( sit != Frame.Map.end() )
-  {
-    variable *Pointer = const_cast<variable*>( &( sit->second ) );
-    Frame.ReferenceMap[Name] = Pointer;
-    return Pointer;
-  } else {
-    Frame.ReferenceMap[Name] = NULL;
-  }
-  
-  return NULL;
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::named::clear( namedFrame *Frame )
-{
-  assert( Frame != NULL );
-  Frame->Map.clear();
-  Frame->ReferenceMap.clear();
-}
-
-// -----------------------------------------------------
-      
-void configParserStruct::named::copy( namedFrame *To, const namedFrame &From )
-{
-  assert( To != NULL );
-
-  To->Map = From.Map;
-
-  To->ReferenceMap.clear();
-  for ( std::map< const char*, variable* >::const_iterator it = From.ReferenceMap.begin(); it != From.ReferenceMap.end(); ++it )
-  {
-    variable *Pointer = &( To->Map[ it->first ] );
-    To->ReferenceMap[ it->first ] = Pointer;
-  }
-}
-
-// -----------------------------------------------------
-      
-std::string configParserStruct::named::toDebugString( const namedFrame &Frame, const std::string &Prefix ) 
-{
-  std::ostringstream Stream;
-
-  if ( Frame.Map.empty() )
-    Stream << Prefix << " (empty)" << std::endl;
-
-  for ( std::map< std::string, variable >::const_iterator it = Frame.Map.begin(); it != Frame.Map.end(); ++it )
-    Stream << Prefix << " " << it->first << " = " << it->second << " (value ptr:" << &it->second << ")" << std::endl;
-  
-  for ( std::map< const char*, variable* >::const_iterator it = Frame.ReferenceMap.begin(); it != Frame.ReferenceMap.end(); ++it )
-    Stream << Prefix << " " << it->first << " (" << static_cast<const void*>( it->first ) << ")" << " = " << it->second << std::endl;
-
-  return Stream.str();
 }
 
 // =====================================================

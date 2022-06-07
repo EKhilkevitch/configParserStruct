@@ -40,8 +40,26 @@ namespace configParserStruct
     private:
       struct namedFrame
       {
-        std::map< std::string, variable > Map;
-        mutable std::map< const char*, variable* > ReferenceMap;
+        private:
+          std::map< std::string, variable > Map;
+          mutable std::map< const char*, variable* > ReferenceMap;
+
+        private:
+
+        public:
+          namedFrame();
+          namedFrame( const namedFrame &Other );
+          namedFrame& operator=( const namedFrame &Other );
+
+          void swap( namedFrame &Other );
+
+          variable* setValueByName( const std::string &Name, const variable &Value );
+          variable* findValueByName( const std::string &Name ) const;
+          variable* setValueByReference( const char *Name, const variable &Value );
+          variable* findValueByReference( const char *Name ) const;
+
+          void clear();
+          std::string toDebugString( const std::string &Prefix ) const;
       };
 
       namedFrame Preset;
@@ -49,14 +67,6 @@ namespace configParserStruct
       std::list< namedFrame > Locals;
 
     private:
-      static inline variable* setValueByName( namedFrame *Frame, const std::string &Name, const variable &Value );
-      static inline variable* findValueByName( const namedFrame &Frame, const std::string &Name );
-      static inline variable* setValueByReference( namedFrame *Frame, const char *Name, const variable &Value );
-      static inline variable* findValueByReference( const namedFrame &Frame, const char *Name );
-      static inline void clear( namedFrame *Frame );
-      static std::string toDebugString( const namedFrame &Frame, const std::string &Prefix );
-      static void copy( namedFrame *To, const namedFrame &From );
-
       inline const namedFrame* frameForScope( scope Scope ) const;
       inline namedFrame* frameForScope( scope Scope );
 
