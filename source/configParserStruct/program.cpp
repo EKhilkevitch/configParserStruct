@@ -145,7 +145,7 @@ void configParserStruct::program::run()
     const size_t InstructionPointer = Memory.instructionPointer();
     const command &Command = (*Text)[InstructionPointer];
     Command.exec( &Memory );
-    //std::cerr << std::endl << Command << std::endl << Memory.toDebugString() << std::endl;
+   // std::cerr << std::endl << Command << std::endl << Memory.toDebugString() << std::endl;
   }
 }
 

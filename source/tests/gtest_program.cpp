@@ -861,7 +861,7 @@ TEST( program, array_2 )
   Program.build( "arr[2] = 5; x = arr[2];" );
   Program.run();
   
-  EXPECT_EQ( 5, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( 5, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString() << "\n" << Program.programText().toDebugString();
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("arr",named::GlobalScope) );
   EXPECT_EQ( 5, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();

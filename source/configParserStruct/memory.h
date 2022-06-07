@@ -6,6 +6,7 @@
 #include "configParserStruct/variable.h"
 
 #include <map>
+#include <utility>
 #include <vector>
 #include <list>
 #include <iosfwd>
@@ -41,10 +42,15 @@ namespace configParserStruct
       struct namedFrame
       {
         private:
-          std::map< std::string, variable > Map;
-          mutable std::map< const char*, variable* > ReferenceMap;
+          static const size_t ReferenceMapSize = 128;
 
         private:
+          std::map< std::string, variable > Map;
+          mutable std::vector< std::vector< std::pair<const char*,variable*> > > ReferenceMap;
+//          mutable std::map< const char*, variable* > ReferenceMap;
+
+        private:
+          inline static size_t indexOfPointer( const void *Pointer );
 
         public:
           namedFrame();

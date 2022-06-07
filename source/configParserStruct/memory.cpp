@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 #include <cstdio>
 #include <cmath>
 #include <cstring>
@@ -15,19 +16,25 @@
 
 // =====================================================
 
-configParserStruct::named::namedFrame::namedFrame()
+configParserStruct::named::namedFrame::namedFrame() :
+  ReferenceMap( ReferenceMapSize )
 {
 }
 
 // -----------------------------------------------------
           
 configParserStruct::named::namedFrame::namedFrame( const namedFrame &Other ) :
-  Map( Other.Map )
+  Map( Other.Map ),
+  ReferenceMap( ReferenceMapSize )
 {
-  for ( std::map< const char*, variable* >::const_iterator it = Other.ReferenceMap.begin(); it != Other.ReferenceMap.end(); ++it )
+  for ( std::vector< std::vector< std::pair<const char*,variable*> > >::const_iterator bit = Other.ReferenceMap.begin(); bit != Other.ReferenceMap.end(); ++bit )
   {
-    variable *Pointer = &( Map[ it->first ] );
-    ReferenceMap[ it->first ] = Pointer;
+    for ( std::vector< std::pair<const char*,variable*> >::const_iterator sit = bit->begin(); sit != bit->end(); ++sit )
+    {
+      const char *ConstChar = sit->first;
+      variable *Pointer = &( Map[ ConstChar ] );
+      ReferenceMap[ indexOfPointer(ConstChar) ].push_back( std::make_pair( ConstChar, Pointer ) );
+    }
   }
 }
 
@@ -45,6 +52,15 @@ configParserStruct::named::namedFrame& configParserStruct::named::namedFrame::op
 }
 
 // -----------------------------------------------------
+          
+size_t configParserStruct::named::namedFrame::indexOfPointer( const void *Pointer )
+{
+  size_t PointerAsNumber = reinterpret_cast<size_t>(Pointer);
+  PointerAsNumber = ( PointerAsNumber >> 4 );
+  return PointerAsNumber % ReferenceMapSize;
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::named::namedFrame::swap( namedFrame &Other )
 {
@@ -57,7 +73,8 @@ void configParserStruct::named::namedFrame::swap( namedFrame &Other )
 void configParserStruct::named::namedFrame::clear()
 {
   Map.clear();
-  ReferenceMap.clear();
+  for ( size_t i = 0; i < ReferenceMap.size(); i++ )
+    ReferenceMap[i].clear();
 }
 
 // -----------------------------------------------------
@@ -66,15 +83,34 @@ configParserStruct::variable* configParserStruct::named::namedFrame::setValueByN
 {
   variable *Result = &( Map[ Name ] = Value );
 
+  const char *NameString = Name.c_str();
+
+  for ( std::vector< std::vector< std::pair<const char*,variable*> > >::iterator bit = ReferenceMap.begin(); bit != ReferenceMap.end(); ++bit )
+  {
+    for ( std::vector< std::pair<const char*,variable*> >::iterator sit = bit->begin(); sit != bit->end(); sit++ )
+    {
+      if ( std::strcmp( sit->first, NameString ) == 0 )
+      {
+        bit->erase( sit );
+        goto End;
+      }
+    }
+  }
+
+End:
+
+#if 0
   for ( std::map< const char*, variable* >::iterator it = ReferenceMap.begin(); it != ReferenceMap.end(); it++ )
   {
-    if ( std::strcmp( it->first, Name.c_str() ) == 0 )
+    const char *ConstChar = it->first;
+    if ( std::strcmp( ConstChar, NameString ) == 0 )
     {
       if ( it->second != Result )
         ReferenceMap.erase(it);
       break;
     }
   }
+#endif
 
   return Result;
 }
@@ -86,14 +122,17 @@ configParserStruct::variable* configParserStruct::named::namedFrame::setValueByR
   if ( Name == NULL )
     throw std::invalid_argument( "Name must be not NULL" );
 
-  std::map< const char*, variable* >::iterator rit = ReferenceMap.find(Name);
-  if ( rit != ReferenceMap.end() )
+  const size_t RIndex = indexOfPointer(Name);
+  std::vector< std::pair<const char*,variable*> >::iterator FoundRefMap = ReferenceMap[RIndex].end();
+  for ( std::vector< std::pair<const char*,variable*> >::iterator si = ReferenceMap[RIndex].begin(); si != ReferenceMap[RIndex].end(); si++ ) 
   {
-    variable *Pointer = const_cast<variable*>( rit->second );
-    if ( Pointer != NULL )
+    if ( si->first == Name )
     {
-      *Pointer = Value;
-      return Pointer;
+      FoundRefMap = si;
+      if ( si->second == NULL )
+        break;
+      *si->second = Value;
+      return si->second;
     }
   }
   
@@ -101,14 +140,17 @@ configParserStruct::variable* configParserStruct::named::namedFrame::setValueByR
   if ( sit != Map.end() )
   {
     variable *Pointer = &( sit->second );
-    ReferenceMap[Name] = Pointer;
+    ReferenceMap[RIndex].push_back( std::make_pair(Name,Pointer) );
     *Pointer = Value;
     return Pointer;
+  } else {
+    variable *Pointer = &( Map[ Name ] = Value );
+    if ( FoundRefMap == ReferenceMap[RIndex].end() ) 
+      ReferenceMap[RIndex].push_back( std::make_pair(Name,Pointer) );
+    else
+      FoundRefMap->second = Pointer;
+    return Pointer;
   }
-
-  variable *Pointer = &( Map[ Name ] = Value );
-  ReferenceMap[Name] = Pointer;
-  return Pointer;
 }
 
 // -----------------------------------------------------
@@ -128,21 +170,21 @@ configParserStruct::variable* configParserStruct::named::namedFrame::findValueBy
   if ( Name == NULL )
     throw std::invalid_argument( "Name must be not NULL" );
 
-  std::map< const char*, variable* >::const_iterator rit = ReferenceMap.find(Name);
-  if ( rit != ReferenceMap.end() )
+  const size_t RIndex = indexOfPointer(Name);
+  for ( std::vector< std::pair<const char*,variable*> >::const_iterator si = ReferenceMap[RIndex].begin(); si != ReferenceMap[RIndex].end(); si++ ) 
   {
-    variable *Pointer = rit->second;
-    return Pointer;
+    if ( si->first == Name )
+      return si->second;
   }
 
   std::map< std::string, variable >::const_iterator sit = Map.find(Name);
   if ( sit != Map.end() )
   {
     variable *Pointer = const_cast<variable*>( &( sit->second ) );
-    ReferenceMap[Name] = Pointer;
+    ReferenceMap[RIndex].push_back( std::make_pair(Name,Pointer) );
     return Pointer;
   } else {
-    ReferenceMap[Name] = NULL;
+    ReferenceMap[RIndex].push_back( std::make_pair(Name,static_cast<variable*>(NULL)) );
     return NULL;
   }
 }
@@ -158,9 +200,15 @@ std::string configParserStruct::named::namedFrame::toDebugString( const std::str
 
   for ( std::map< std::string, variable >::const_iterator it = Map.begin(); it != Map.end(); ++it )
     Stream << Prefix << " " << it->first << " = " << it->second << " (value ptr:" << &it->second << ")" << std::endl;
-  
-  for ( std::map< const char*, variable* >::const_iterator it = ReferenceMap.begin(); it != ReferenceMap.end(); ++it )
-    Stream << Prefix << " " << it->first << " (" << static_cast<const void*>( it->first ) << ")" << " = " << it->second << std::endl;
+ 
+
+  for ( std::vector< std::vector< std::pair<const char*,variable*> > >::const_iterator bit = ReferenceMap.begin(); bit != ReferenceMap.end(); ++bit )
+  {
+    for ( std::vector< std::pair<const char*,variable*> >::const_iterator sit = bit->begin(); sit != bit->end(); sit++ )
+    {
+      Stream << Prefix << " " << std::setw(3) << ( bit - ReferenceMap.begin() ) << " " << sit->first << " (" << static_cast<const void*>( sit->first ) << ")" << " = " << sit->second << std::endl;
+    }
+  }
 
   return Stream.str();
 }
