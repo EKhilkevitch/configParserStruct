@@ -134,7 +134,7 @@ namespace configParserStruct
       void setUseBaseStackPointer( bool Set );
 
       void setHaltFlag();
-      bool isHalted() const;
+      inline bool isHalted() const;
       
       void reset();
       std::string toDebugString() const;

@@ -21,10 +21,13 @@ DELIM                   [ \t\v\r\f]
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <limits.h>
 #include <assert.h>
 
+#if __unix__
 extern int fileno( FILE* );
+#endif
 
 extern void     CPSSPU_lexResetLineNumber( void );
 extern size_t   CPSSPU_lexCurrentLineNumber( void ); 
