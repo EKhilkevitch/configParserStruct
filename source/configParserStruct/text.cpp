@@ -39,10 +39,6 @@ configParserStruct::text::~text()
       
 void configParserStruct::text::clear()
 {
-  for ( size_t i = 0; i < Strings.size(); i++ )
-    delete [] Strings[i];
-  Strings.clear();
-
   for ( size_t i = 0; i < sizeOfText(); i++ )
   {
     command *Command = commandPointer(i);
@@ -50,6 +46,7 @@ void configParserStruct::text::clear()
       commandPointer(i)->~command();
   }
   Text.clear();
+  Strings.clear();
 
   ParseTimeStatus.ErrorLine = SuccesssErrorLine;
   ParseTimeStatus.FunctionLevel = 0;
@@ -144,14 +141,13 @@ const char* configParserStruct::text::constStringRef( const char *String )
 
   for ( ptrdiff_t i = static_cast<ptrdiff_t>(Strings.size()) - 1; i >= 0; i-- )
   {
-    if ( std::strcmp( Strings[i], String ) == 0 )
-      return Strings[i];
+    if ( std::strcmp( &Strings[i][0], String ) == 0 )
+      return &Strings[i][0];
   }
 
-  Strings.reserve( Strings.size() + 1 );
-  Strings.push_back( new char[ std::strlen(String) + 1 ] );
-  std::strcpy( Strings.back(), String );
-  return Strings.back();
+  Strings.push_back( std::vector<char>( std::strlen(String) + 1 ) );
+  std::strcpy( &(Strings.back()[0]), String );
+  return &(Strings.back()[0]);
 }
 
 // -----------------------------------------------------

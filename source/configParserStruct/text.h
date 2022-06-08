@@ -30,7 +30,7 @@ namespace configParserStruct
 
     private:
       std::vector< char > Text;
-      std::vector< char* > Strings;
+      std::vector< std::vector<char> > Strings;
 
       struct parseTimeStatus
       {
