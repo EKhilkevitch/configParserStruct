@@ -509,10 +509,8 @@ std::string configParserStruct::stack::toDebugString() const
 configParserStruct::registers::registers() :
   InstructionPointer( 0 ),
   BaseStackPointer( 0 ),
-  UseBaseStackPointer(),
   HaltFlag( false )
 {
-  UseBaseStackPointer.push_back( true );
 }
 
 // -----------------------------------------------------
@@ -550,29 +548,6 @@ void configParserStruct::registers::setBaseStackPointer( size_t Size )
 size_t configParserStruct::registers::baseStackPointer() const
 {
   return BaseStackPointer;
-}
-
-// -----------------------------------------------------
-      
-bool configParserStruct::registers::useBaseStackPointer() const
-{
-  assert( ! UseBaseStackPointer.empty() );
-  return UseBaseStackPointer.back();
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::registers::pushUseBaseStackPointer( bool Set )
-{
-  UseBaseStackPointer.push_back( Set );
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::registers::popUseBaseStackPointer()
-{
-  assert( ! UseBaseStackPointer.empty() );
-  UseBaseStackPointer.pop_back();
 }
 
 // -----------------------------------------------------
@@ -616,8 +591,6 @@ void configParserStruct::registers::reset()
 {
   InstructionPointer = 0;
   BaseStackPointer = 0;
-  UseBaseStackPointer.clear();
-  UseBaseStackPointer.push_back( true );
   HaltFlag = false;
   LastResult = variable();
 }
@@ -629,7 +602,6 @@ std::string configParserStruct::registers::toDebugString() const
   std::ostringstream Stream;
   Stream << "IP = " << InstructionPointer << std::endl;
   Stream << "BASE SP = " << BaseStackPointer << std::endl;
-  Stream << "USE BASE SP = " << ( UseBaseStackPointer.empty() ? true : UseBaseStackPointer.back() ) << " (size of stack " << UseBaseStackPointer.size() << ")" << std::endl;
   Stream << "HALT = " << HaltFlag << std::endl;
   Stream << "LAST = " << LastResult << std::endl;
   return Stream.str();
@@ -837,27 +809,6 @@ void configParserStruct::memory::setBaseStackPointer( size_t Size )
 size_t configParserStruct::memory::baseStackPointer() const
 {
   return Registers.baseStackPointer();
-}
-
-// -----------------------------------------------------
-      
-bool configParserStruct::memory::useBaseStackPointer() const
-{
-  return Registers.useBaseStackPointer();
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::memory::pushUseBaseStackPointer( bool Set )
-{
-  Registers.pushUseBaseStackPointer( Set );
-}
-
-// -----------------------------------------------------
-
-void configParserStruct::memory::popUseBaseStackPointer()
-{
-  Registers.popUseBaseStackPointer();
 }
 
 // -----------------------------------------------------
