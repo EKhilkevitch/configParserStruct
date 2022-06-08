@@ -127,7 +127,8 @@ void configParserStruct::text::replaceLastCommand( const command &Command )
     return;
 
   command *Pointer = commandPointer( sizeOfText() - 1 );
-  Pointer->~command();
+  if ( ! isCommandPointerPlaceholder(Pointer) )
+    Pointer->~command();
 
   Command.clone(Pointer);
 }
@@ -306,7 +307,6 @@ std::string configParserStruct::text::toDebugString() const
   for ( std::set< const char* >::const_iterator it = ParseTimeStatus.Variables.begin(); it != ParseTimeStatus.Variables.end(); ++it )
     Stream << *it << " ";
   Stream << "}" << std::endl;
-
 
   return Stream.str();
 }
