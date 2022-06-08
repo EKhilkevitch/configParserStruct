@@ -28,6 +28,7 @@ namespace configParserStruct
         GlobalName,
         LocalName,
         ArgumentIndex,
+        ArgumentsCount,
         ArrayIndex,
         DictKey,
         InstructionPointer,
@@ -63,6 +64,7 @@ namespace configParserStruct
       const char* asLocalName() const;
       const char* asDictKey() const;
       size_t asArrayIndex() const;
+      size_t asArgumentsCount() const;
       size_t asArgumentIndex() const;
       size_t asInstructionPointer() const;
       size_t asStackPointer() const;

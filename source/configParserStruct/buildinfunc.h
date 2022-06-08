@@ -20,7 +20,7 @@ namespace configParserStruct
   {
     protected:
       static size_t countOfArguments( const memory &Memory );
-      static const variable& argumentValue( const memory &Memory, size_t Index );
+      static const variable& argumentValue( const memory &Memory, size_t Index, size_t ArgsCount );
 
     public:
       virtual variable call( const memory &Memory ) const = 0; 

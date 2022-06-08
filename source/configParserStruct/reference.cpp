@@ -46,7 +46,8 @@ configParserStruct::reference::reference( size_t V, type T ) :
   Next(NULL)
 {
   assert( Type == ArrayIndex || 
-          Type == ArgumentIndex || 
+          Type == ArgumentIndex ||
+          Type == ArgumentsCount ||
           Type == InstructionPointer || 
           Type == StackPointer );
 
@@ -233,6 +234,16 @@ size_t configParserStruct::reference::asArgumentIndex() const
 
 // -----------------------------------------------------
       
+size_t configParserStruct::reference::asArgumentsCount() const
+{
+  if ( Type != ArgumentsCount )
+    throw exception( "Invalid reference type (ArgumentsCount)" );
+
+  return Value.SizeT;
+}
+
+// -----------------------------------------------------
+      
 size_t configParserStruct::reference::asInstructionPointer() const
 {
   if ( Type != InstructionPointer )
@@ -281,6 +292,10 @@ std::string configParserStruct::reference::toDebugString() const
 
     case ArgumentIndex:
       Stream << "ArgumentIndex (" << Value.SizeT << ")";
+      break;
+
+    case ArgumentsCount:
+      Stream << "ArgumentCount (" << Value.SizeT << ")";
       break;
 
     case InstructionPointer:

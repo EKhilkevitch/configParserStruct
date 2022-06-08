@@ -171,28 +171,28 @@ void configParserStruct::callCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
   
-  variable *ArgsCount = Memory->findStackValueByShift( Memory->baseStackPointer() );
-  *ArgsCount = variable( static_cast<int>( Memory->stackSize() - Memory->baseStackPointer() - 1 ) );
-
   const char *FunctionName = argument().ref().asGlobalName();
   const variable *Function = Memory->findValueByReference( FunctionName, named::GlobalScope );
-  Memory->setUseBaseStackPointer(true);
 
   if ( Function == NULL )
   {
     const buildInFunction* BuildinFunction = Memory->findFunctionByReference( FunctionName );
+  
+    size_t PrevStackSize = Memory->baseStackPointer();
+    Memory->setBaseStackPointer( Memory->stackSize() + 1 );
     const variable Result = ( BuildinFunction != NULL ) ? BuildinFunction->call( *Memory ) : variable();
-
-    Memory->truncateStack( Memory->baseStackPointer() );
+    Memory->setBaseStackPointer( PrevStackSize );
+  
+    const size_t ArgsCount = Memory->topStackValue()->ref().asArgumentsCount();
+    Memory->truncateStack( Memory->stackSize() - ArgsCount - 1 );
     variable *Top = Memory->topStackValue();
-    Memory->setBaseStackPointer( Top->ref().asStackPointer() );
     *Top = Result;
     Memory->jumpToNextCommand();
     return;
   }
-  
 
   Memory->pushToStack( variable( reference( Memory->instructionPointer(), reference::InstructionPointer ) ) );
+  Memory->setBaseStackPointer( Memory->stackSize() );
   Memory->pushLocalNamedFrame();
   Memory->jumpToCommand( Function->ref().asInstructionPointer() );
 }
@@ -224,8 +224,8 @@ void configParserStruct::returnCommand::exec( memory *Memory ) const
 
   const variable RetValue = Memory->popFromStack();
   const variable InstructionPointer = Memory->popFromStack();
-
-  Memory->truncateStack( Memory->baseStackPointer() );
+  const size_t ArgsCount = Memory->topStackValue()->ref().asArgumentsCount();
+  Memory->truncateStack( Memory->stackSize() - ArgsCount - 1 );
   const variable PrevStackSize = Memory->popFromStack();
 
   Memory->setBaseStackPointer( PrevStackSize.ref().asStackPointer() );

@@ -447,9 +447,7 @@ const configParserStruct::variable configParserStruct::stack::pop()
       
 configParserStruct::variable* configParserStruct::stack::valueByShift( size_t Index ) const
 {
-  if ( Index >= Stack.size() )
-    return NULL;
-
+  assert( Index < Stack.size() );
   return &Stack[Index];
 }
 
@@ -511,9 +509,10 @@ std::string configParserStruct::stack::toDebugString() const
 configParserStruct::registers::registers() :
   InstructionPointer( 0 ),
   BaseStackPointer( 0 ),
-  UseBaseStackPointer( true ),
+  UseBaseStackPointer(),
   HaltFlag( false )
 {
+  UseBaseStackPointer.push_back( true );
 }
 
 // -----------------------------------------------------
@@ -557,14 +556,23 @@ size_t configParserStruct::registers::baseStackPointer() const
       
 bool configParserStruct::registers::useBaseStackPointer() const
 {
-  return UseBaseStackPointer;
+  assert( ! UseBaseStackPointer.empty() );
+  return UseBaseStackPointer.back();
 }
 
 // -----------------------------------------------------
 
-void configParserStruct::registers::setUseBaseStackPointer( bool Set )
+void configParserStruct::registers::pushUseBaseStackPointer( bool Set )
 {
-  UseBaseStackPointer = Set;
+  UseBaseStackPointer.push_back( Set );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::registers::popUseBaseStackPointer()
+{
+  assert( ! UseBaseStackPointer.empty() );
+  UseBaseStackPointer.pop_back();
 }
 
 // -----------------------------------------------------
@@ -608,7 +616,8 @@ void configParserStruct::registers::reset()
 {
   InstructionPointer = 0;
   BaseStackPointer = 0;
-  UseBaseStackPointer = true;
+  UseBaseStackPointer.clear();
+  UseBaseStackPointer.push_back( true );
   HaltFlag = false;
   LastResult = variable();
 }
@@ -620,7 +629,7 @@ std::string configParserStruct::registers::toDebugString() const
   std::ostringstream Stream;
   Stream << "IP = " << InstructionPointer << std::endl;
   Stream << "BASE SP = " << BaseStackPointer << std::endl;
-  Stream << "USE BASE SP = " << UseBaseStackPointer << std::endl;
+  Stream << "USE BASE SP = " << ( UseBaseStackPointer.empty() ? true : UseBaseStackPointer.back() ) << " (size of stack " << UseBaseStackPointer.size() << ")" << std::endl;
   Stream << "HALT = " << HaltFlag << std::endl;
   Stream << "LAST = " << LastResult << std::endl;
   return Stream.str();
@@ -839,9 +848,16 @@ bool configParserStruct::memory::useBaseStackPointer() const
 
 // -----------------------------------------------------
 
-void configParserStruct::memory::setUseBaseStackPointer( bool Set )
+void configParserStruct::memory::pushUseBaseStackPointer( bool Set )
 {
-  Registers.setUseBaseStackPointer( Set );
+  Registers.pushUseBaseStackPointer( Set );
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::memory::popUseBaseStackPointer()
+{
+  Registers.popUseBaseStackPointer();
 }
 
 // -----------------------------------------------------

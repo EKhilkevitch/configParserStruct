@@ -371,7 +371,15 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
   } else if ( Reference.hasType( reference::GlobalName ) ) {
     Value = Memory->findValueByReference( Reference.asGlobalName(), named::GlobalScope );
   } else if ( Reference.hasType( reference::ArgumentIndex ) ) {
-    size_t PrevStackSize = Memory->baseStackPointer();
+    const size_t BaseStackPointer = Memory->baseStackPointer();
+    const size_t ArgsCount = Memory->findStackValueByShift( BaseStackPointer - 2 )->ref().asArgumentsCount();
+    const size_t Index = Reference.asArgumentIndex();
+    if ( Index == 0 )
+      return variable( static_cast<int>(ArgsCount) );
+    if ( Index > ArgsCount )
+      return variable();
+    Value = Memory->findStackValueByShift( BaseStackPointer - ArgsCount - 3 + Index );
+#if 0
     if ( ! Memory->useBaseStackPointer() )
     {
       const variable *SavedStackPointer = Memory->findStackValueByShift( PrevStackSize - 1 );
@@ -385,6 +393,7 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
     if ( Index > ArgsCount )
       return variable();
     Value = Memory->findStackValueByShift( PrevStackSize + Index );
+#endif
   }
 
   const reference *Next = Reference.next();
@@ -398,6 +407,24 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
     return variable();
 
   return *Value;
+}
+
+// -----------------------------------------------------
+      
+size_t configParserStruct::derefCommand::extractArgsCount( const memory &Memory )
+{
+  const size_t BaseStackPointer = Memory.baseStackPointer();
+  const size_t ArgsCount = Memory.findStackValueByShift( BaseStackPointer - 2 )->ref().asArgumentsCount();
+  return ArgsCount;
+}
+
+// -----------------------------------------------------
+
+const configParserStruct::variable& configParserStruct::derefCommand::extractArgValue( const memory &Memory, size_t Index, size_t ArgsCount )
+{
+  const size_t BaseStackPointer = Memory.baseStackPointer();
+  assert( Index < ArgsCount );
+  return *Memory.findStackValueByShift( BaseStackPointer - ArgsCount - 2 + Index );
 }
 
 // -----------------------------------------------------
@@ -548,9 +575,9 @@ void configParserStruct::pushStackSizeCommand::exec( memory *Memory ) const
 
   const size_t PrevBaseStackPointer = Memory->baseStackPointer();
   Memory->pushToStack( variable( reference( PrevBaseStackPointer, reference::StackPointer ) ) );
-  Memory->setBaseStackPointer( Memory->stackSize() );
-  Memory->setUseBaseStackPointer( false );
-  Memory->pushToStack( variable() );
+//  Memory->setBaseStackPointer( Memory->stackSize() );
+//  Memory->pushUseBaseStackPointer( false );
+//  Memory->pushToStack( variable() );
   Memory->jumpToNextCommand();
 }
 
@@ -569,6 +596,48 @@ configParserStruct::pushStackSizeCommand* configParserStruct::pushStackSizeComma
     return new pushStackSizeCommand();
   else
     return new ( Memory ) pushStackSizeCommand();
+}
+
+// =====================================================
+
+configParserStruct::pushArgsCountCommand::pushArgsCountCommand( const variable &Variable ) :
+  command(Variable)
+{
+}
+
+// -----------------------------------------------------
+
+configParserStruct::pushArgsCountCommand::pushArgsCountCommand( size_t Count ) :
+  command( variable( reference( Count, reference::ArgumentsCount ) ) )
+{
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::pushArgsCountCommand::exec( memory *Memory ) const
+{
+  assert( Memory != NULL );
+  Memory->pushToStack( argument() );
+  Memory->jumpToNextCommand();
+}
+
+// -----------------------------------------------------
+
+std::string configParserStruct::pushArgsCountCommand::toString() const
+{
+  std::ostringstream Stream;
+  Stream << "PUSH AC " << argument();
+  return Stream.str();
+}
+
+// -----------------------------------------------------
+
+configParserStruct::pushArgsCountCommand* configParserStruct::pushArgsCountCommand::clone( void *Memory ) const
+{
+  if ( Memory == NULL )
+    return new pushArgsCountCommand( argument() );
+  else
+    return new ( Memory ) pushArgsCountCommand( argument() );
 }
 
 // =====================================================

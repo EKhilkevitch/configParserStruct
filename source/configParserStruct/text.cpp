@@ -173,6 +173,37 @@ void configParserStruct::text::parseTimeDecFunctionLevel()
 }
 
 // -----------------------------------------------------
+      
+void configParserStruct::text::parseTimePushCallArgs()
+{
+  ParseTimeStatus.CallArgsCount.push_back(0);
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::text::parseTimeIncCallArgs()
+{
+  assert( ! ParseTimeStatus.CallArgsCount.empty() );
+  ParseTimeStatus.CallArgsCount.back() += 1;
+}
+
+// -----------------------------------------------------
+
+size_t configParserStruct::text::parseTimeCountOfCallArgs() const
+{
+  assert( ! ParseTimeStatus.CallArgsCount.empty() );
+  return ParseTimeStatus.CallArgsCount.back();
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::text::parseTimePopCallArgs()
+{
+  assert( ! ParseTimeStatus.CallArgsCount.empty() );
+  ParseTimeStatus.CallArgsCount.pop_back();
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::text::addToVariablesSet( const char *Name, bool Force )
 {

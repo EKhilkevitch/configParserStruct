@@ -131,7 +131,7 @@ namespace configParserStruct
     private:
       size_t InstructionPointer;
       size_t BaseStackPointer;
-      bool UseBaseStackPointer;
+      std::vector<bool> UseBaseStackPointer;
       bool HaltFlag;
       variable LastResult;
 
@@ -147,10 +147,11 @@ namespace configParserStruct
       inline void jumpToCommand( size_t Index );
       inline size_t instructionPointer() const;
 
-      void setBaseStackPointer( size_t Size );
-      size_t baseStackPointer() const;
-      bool useBaseStackPointer() const;
-      void setUseBaseStackPointer( bool Set );
+      inline void setBaseStackPointer( size_t Size );
+      inline size_t baseStackPointer() const;
+      inline void pushUseBaseStackPointer( bool Set );
+      inline void popUseBaseStackPointer();
+      inline bool useBaseStackPointer() const;
 
       void setHaltFlag();
       inline bool isHalted() const;
@@ -216,7 +217,8 @@ namespace configParserStruct
       void setBaseStackPointer( size_t Size );
       size_t baseStackPointer() const;
       bool useBaseStackPointer() const;
-      void setUseBaseStackPointer( bool Set );
+      void pushUseBaseStackPointer( bool Set );
+      void popUseBaseStackPointer();
       void pushLocalNamedFrame();
       void popLocalNamedFrame();
 

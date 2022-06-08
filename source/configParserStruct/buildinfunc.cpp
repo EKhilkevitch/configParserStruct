@@ -4,6 +4,7 @@
 #include "configParserStruct/buildinfunc.h"
 #include "configParserStruct/variable.h"
 #include "configParserStruct/reference.h"
+#include "configParserStruct/commandstack.h"
 #include "configParserStruct/memory.h"
 
 #include <stdexcept>
@@ -21,32 +22,14 @@ configParserStruct::buildInFunction::~buildInFunction()
       
 size_t configParserStruct::buildInFunction::countOfArguments( const memory &Memory )
 {
-  size_t PrevStackSize = Memory.baseStackPointer();
-  if ( ! Memory.useBaseStackPointer() )
-  {
-    const variable *SavedStackPointer = Memory.findStackValueByShift( PrevStackSize - 1 );
-    if ( SavedStackPointer != NULL )
-      PrevStackSize = SavedStackPointer->ref().asStackPointer();
-  }
- 
-  return static_cast<size_t>( Memory.findStackValueByShift( PrevStackSize )->integer() );
+  return derefCommand::extractArgsCount(Memory);
 }
 
 // -----------------------------------------------------
       
-const configParserStruct::variable& configParserStruct::buildInFunction::argumentValue( const memory &Memory, size_t Index )
+const configParserStruct::variable& configParserStruct::buildInFunction::argumentValue( const memory &Memory, size_t Index, size_t ArgsCount )
 {
-  assert( Index < countOfArguments(Memory) );
-
-  size_t PrevStackSize = Memory.baseStackPointer();
-  if ( ! Memory.useBaseStackPointer() )
-  {
-    const variable *SavedStackPointer = Memory.findStackValueByShift( PrevStackSize - 1 );
-    if ( SavedStackPointer != NULL )
-      PrevStackSize = SavedStackPointer->ref().asStackPointer();
-  }
-
-  return *Memory.findStackValueByShift( PrevStackSize + Index + 1 );
+  return derefCommand::extractArgValue( Memory, Index, ArgsCount );
 }
 
 // =====================================================
@@ -76,10 +59,11 @@ configParserStruct::oneargMathBuildInFunction::oneargMathBuildInFunction( functi
       
 configParserStruct::variable configParserStruct::oneargMathBuildInFunction::call( const memory &Memory ) const
 {
-  if ( countOfArguments(Memory) < 1 )
+  const size_t ArgsCount = countOfArguments(Memory);
+  if ( ArgsCount < 1 )
     return variable();
 
-  const double Argument = argumentValue( Memory, 0 ).real();
+  const double Argument = argumentValue( Memory, 0, ArgsCount ).real();
   const double Result = Function( Argument );
   
   return variable( Result );
@@ -98,11 +82,12 @@ configParserStruct::twoargMathBuildInFunction::twoargMathBuildInFunction( functi
       
 configParserStruct::variable configParserStruct::twoargMathBuildInFunction::call( const memory &Memory ) const
 {
-  if ( countOfArguments(Memory) < 2 )
+  const size_t ArgsCount = countOfArguments(Memory);
+  if ( ArgsCount < 2 )
     return variable();
 
-  const double Argument1 = argumentValue( Memory, 0 ).real();
-  const double Argument2 = argumentValue( Memory, 1 ).real();
+  const double Argument1 = argumentValue( Memory, 0, ArgsCount ).real();
+  const double Argument2 = argumentValue( Memory, 1, ArgsCount ).real();
   const double Result = Function( Argument1, Argument2 );
   
   return variable( Result );
@@ -112,41 +97,40 @@ configParserStruct::variable configParserStruct::twoargMathBuildInFunction::call
 
 configParserStruct::variable configParserStruct::printBuildInFunction::call( const memory &Memory ) const
 {
-  const size_t CountOfArguments = countOfArguments(Memory);
-
-  for ( size_t i = 0; i < CountOfArguments; i++ )
+  const size_t ArgsCount = countOfArguments(Memory);
+  for ( size_t i = 0; i < ArgsCount; i++ )
   {
-    const variable &Arg = argumentValue( Memory, i );
+    const variable &Arg = argumentValue( Memory, i, ArgsCount );
     std::fprintf( stdout, "%s", Arg.string().c_str() );
   }
 
-  return variable( static_cast<int>(CountOfArguments) );
+  return variable( static_cast<int>(ArgsCount) );
 }
 
 // =====================================================
 
 configParserStruct::variable configParserStruct::printlnBuildInFunction::call( const memory &Memory ) const
 {
-  const size_t CountOfArguments = countOfArguments(Memory);
-
-  for ( size_t i = 0; i < CountOfArguments; i++ )
+  const size_t ArgsCount = countOfArguments(Memory);
+  for ( size_t i = 0; i < ArgsCount; i++ )
   {
-    const variable &Arg = argumentValue( Memory, i );
+    const variable &Arg = argumentValue( Memory, i, ArgsCount );
     std::fprintf( stdout, "%s", Arg.string().c_str() );
   }
   std::fprintf( stdout, "\n" );
 
-  return variable( static_cast<int>(CountOfArguments) );
+  return variable( static_cast<int>(ArgsCount) );
 }
 
 // =====================================================
 
 configParserStruct::variable configParserStruct::envBuildInFunction::call( const memory &Memory ) const
 {
-  if ( countOfArguments(Memory) < 1 )
+  const size_t ArgsCount = countOfArguments(Memory);
+  if ( ArgsCount < 1 )
     return variable();
 
-  const std::string Argument = argumentValue( Memory, 0 ).string();
+  const std::string Argument = argumentValue( Memory, 0, ArgsCount ).string();
   const char *EnvValue = std::getenv( Argument.c_str() );
   
   if ( EnvValue == NULL )

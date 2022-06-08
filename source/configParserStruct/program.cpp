@@ -140,13 +140,14 @@ void configParserStruct::program::build( const std::string &SourceCode )
 void configParserStruct::program::run()
 {
   Memory.clear( named::KeepPreset );
-  //std::cerr << "program::run mem is " << std::endl << Memory.toDebugString() << std::endl;
+//  std::cerr << Text->toDebugString() << std::endl;
+//  std::cerr << "program::run mem is " << std::endl << Memory.toDebugString() << std::endl;
   while ( ! Memory.isHalted() )
   {
     const size_t InstructionPointer = Memory.instructionPointer();
     const command &Command = (*Text)[InstructionPointer];
     Command.exec( &Memory );
-   // std::cerr << std::endl << Command << std::endl << Memory.toDebugString() << std::endl;
+//    std::cerr << std::endl << Command << std::endl << Memory.toDebugString() << std::endl;
   }
 }
 

@@ -121,12 +121,16 @@ void CPSSPU_endOfProgram( void )
 
 void CPSSPU_prepareToFunctionCall( void ) 
 {
+  Text->parseTimePushCallArgs();
   Text->push( configParserStruct::pushStackSizeCommand() );
 }
 
 // -----------------------------------------------------
 
-void CPSSPU_pushFunctionArgument( void ) {}
+void CPSSPU_pushFunctionArgument( void ) 
+{
+  Text->parseTimeIncCallArgs();
+}
 
 // -----------------------------------------------------
 
@@ -136,7 +140,9 @@ void CPSSPU_callFunctionWithArgsFromStack( const char *Name )
   assert( Text != NULL );
 
   const char *FixedName = Text->constStringRef(Name);
+  Text->push( configParserStruct::pushArgsCountCommand( Text->parseTimeCountOfCallArgs() ) );
   Text->push( configParserStruct::callCommand(FixedName) );
+  Text->parseTimePopCallArgs();
 }
 
 // -----------------------------------------------------

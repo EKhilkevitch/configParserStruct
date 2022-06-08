@@ -789,12 +789,12 @@ TEST( program, func_9 )
 TEST( program, func_10 )
 {
   program Program;
-  Program.build( "sqr = func { return $1 * $1; }; f = func { return sqr($1) + sqr( sqr($2) ); }; x = sqr(3); y = f(3,4);" );
+  Program.build( "sqr = func { return $1 * $1; }; f = func { return sqr($1) + sqr( sqr($2) ); }; y = f(3,4);" );
   Program.run();
   
-  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
+  //ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y",named::GlobalScope) );
-  EXPECT_EQ(  9, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+  //EXPECT_EQ(  9, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
   EXPECT_EQ( 3*3 + 4*4*4*4, Program.programMemory().findValueByName("y",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
   EXPECT_EQ( 3*3 + 4*4*4*4, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
 }

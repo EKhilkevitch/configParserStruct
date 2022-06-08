@@ -36,6 +36,7 @@ namespace configParserStruct
       {
         int ErrorLine;
         int FunctionLevel;
+        std::vector< size_t > CallArgsCount;
         std::set< const char* > Variables;
       } ParseTimeStatus;
 
@@ -63,6 +64,11 @@ namespace configParserStruct
 
       void parseTimeIncFunctionLevel();
       void parseTimeDecFunctionLevel();
+      void parseTimePushCallArgs();
+      void parseTimeIncCallArgs();
+      size_t parseTimeCountOfCallArgs() const;
+      void parseTimePopCallArgs();
+
       void addToVariablesSet( const char *Name, bool Force = false );
       void eraseFromVariablesSet( const char *Name );
 

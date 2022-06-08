@@ -110,6 +110,9 @@ namespace configParserStruct
       void exec( memory *Memory ) const;
       std::string toString() const;
       derefCommand* clone( void *Memory = NULL ) const;
+
+      static size_t extractArgsCount( const memory &Memory );
+      static const variable& extractArgValue( const memory &Memory, size_t Index, size_t ArgsCount );
   };
 
   // =====================================================
@@ -158,6 +161,20 @@ namespace configParserStruct
       void exec( memory *Memory ) const;
       std::string toString() const;
       pushStackSizeCommand* clone( void *Memory = NULL ) const;  
+  };
+
+  // =====================================================
+  
+  class pushArgsCountCommand : public command
+  {
+    private:
+      explicit pushArgsCountCommand( const variable &Variable );
+
+    public:
+      explicit pushArgsCountCommand( size_t Count );
+      void exec( memory *Memory ) const;
+      std::string toString() const;
+      pushArgsCountCommand* clone( void *Memory = NULL ) const;  
   };
 
   // =====================================================
