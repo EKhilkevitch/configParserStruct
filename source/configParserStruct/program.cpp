@@ -106,6 +106,7 @@ void configParserStruct::program::clear()
 void configParserStruct::program::build( const std::string &SourceCode )
 {
   detachAndClearTextIfNeed();
+  Memory.clear( named::ClearConstStrings );
 
   mutexLocker Locker( &YaccParserMutex );
 

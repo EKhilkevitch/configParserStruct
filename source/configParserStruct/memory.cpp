@@ -32,7 +32,10 @@ configParserStruct::named::namedFrame::namedFrame( const namedFrame &Other ) :
     for ( std::vector< std::pair<const char*,variable*> >::const_iterator sit = bit->begin(); sit != bit->end(); ++sit )
     {
       const char *ConstChar = sit->first;
-      variable *Pointer = &( Map[ ConstChar ] );
+      variable *Pointer = NULL;
+      std::map< std::string, variable >::iterator mit = Map.find( ConstChar );
+      if ( mit != Map.end() )
+        Pointer = &( mit->second );
       ReferenceMap[ indexOfPointer(ConstChar) ].push_back( std::make_pair( ConstChar, Pointer ) );
     }
   }
@@ -78,6 +81,22 @@ void configParserStruct::named::namedFrame::clear()
 }
 
 // -----------------------------------------------------
+          
+void configParserStruct::named::namedFrame::clearReferenceMap()
+{
+  for ( size_t i = 0; i < ReferenceMap.size(); i++ )
+    ReferenceMap[i].clear();
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::named::namedFrame::joinFrom( const namedFrame &Frame )
+{
+  for ( std::map< std::string, variable >::const_iterator mit = Frame.Map.begin(); mit != Frame.Map.end(); ++mit )
+    setValueByName( mit->first, mit->second );
+}
+
+// -----------------------------------------------------
       
 configParserStruct::variable* configParserStruct::named::namedFrame::setValueByName( const std::string &Name, const variable &Value )
 {
@@ -99,19 +118,6 @@ configParserStruct::variable* configParserStruct::named::namedFrame::setValueByN
 
 End:
 
-#if 0
-  for ( std::map< const char*, variable* >::iterator it = ReferenceMap.begin(); it != ReferenceMap.end(); it++ )
-  {
-    const char *ConstChar = it->first;
-    if ( std::strcmp( ConstChar, NameString ) == 0 )
-    {
-      if ( it->second != Result )
-        ReferenceMap.erase(it);
-      break;
-    }
-  }
-#endif
-
   return Result;
 }
 
@@ -128,29 +134,35 @@ configParserStruct::variable* configParserStruct::named::namedFrame::setValueByR
   {
     if ( si->first == Name )
     {
-      FoundRefMap = si;
-      if ( si->second == NULL )
+      if ( si->second != NULL )
+      {
+        *si->second = Value;
+        return si->second;
+      } else {
+        FoundRefMap = si;
         break;
-      *si->second = Value;
-      return si->second;
+      }
     }
   }
   
   std::map< std::string, variable >::iterator sit = Map.find(Name);
+  variable *Pointer = NULL;
   if ( sit != Map.end() )
   {
-    variable *Pointer = &( sit->second );
-    ReferenceMap[RIndex].push_back( std::make_pair(Name,Pointer) );
+    Pointer = &( sit->second );
     *Pointer = Value;
-    return Pointer;
   } else {
-    variable *Pointer = &( Map[ Name ] = Value );
-    if ( FoundRefMap == ReferenceMap[RIndex].end() ) 
-      ReferenceMap[RIndex].push_back( std::make_pair(Name,Pointer) );
-    else
-      FoundRefMap->second = Pointer;
-    return Pointer;
+    Pointer = &( Map[ Name ] = Value );
   }
+   
+  assert( Pointer != NULL );
+
+  if ( FoundRefMap == ReferenceMap[RIndex].end() ) 
+    ReferenceMap[RIndex].push_back( std::make_pair(Name,Pointer) );
+  else
+    FoundRefMap->second = Pointer;
+
+  return Pointer;
 }
 
 // -----------------------------------------------------
@@ -253,15 +265,24 @@ void configParserStruct::named::swap( named &Other )
 
 void configParserStruct::named::clear( clearMode Mode )
 {
-  Global.clear();
-  Locals.clear();
   switch ( Mode )
   {
     case ClearAll:
+      Global.clear();
+      Locals.clear();
       Preset.clear();
       break;
 
     case KeepPreset:
+      Global.clear();
+      Locals.clear();
+      break;
+
+    case ClearConstStrings:
+      Global.clearReferenceMap();
+      Preset.clearReferenceMap();
+      for ( std::list< namedFrame >::iterator it = Locals.begin(); it != Locals.end(); ++it )
+        it->clearReferenceMap();
       break;
 
     default:
@@ -619,7 +640,7 @@ configParserStruct::buildins::buildins()
   {
     initMap();
   } catch ( ... ) {
-    clear();
+    deleteMap();
     throw;
   }
 }
@@ -638,10 +659,12 @@ configParserStruct::buildins::buildins( const buildins &Other )
       ReferenceMap[ it->first ] = Pointer;
     }
   } catch ( ... ) {
-    clear();
+    deleteMap();
     throw;
   }
 }
+
+// -----------------------------------------------------
       
 configParserStruct::buildins& configParserStruct::buildins::operator=( const buildins &Other )
 {
@@ -658,7 +681,7 @@ configParserStruct::buildins& configParserStruct::buildins::operator=( const bui
 
 configParserStruct::buildins::~buildins()
 {
-  clear();
+  deleteMap();
 }
 
 // -----------------------------------------------------
@@ -701,13 +724,28 @@ void configParserStruct::buildins::initMap()
 
 // -----------------------------------------------------
       
-void configParserStruct::buildins::clear()
+void configParserStruct::buildins::deleteMap()
 {
   for ( std::map< std::string, const buildInFunction* >::iterator it = Map.begin(); it != Map.end(); ++it )
     delete it->second;
 
   Map.clear();
   ReferenceMap.clear();
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::buildins::clear( named::clearMode Mode )
+{
+  switch ( Mode )
+  {
+    case named::ClearConstStrings:
+      ReferenceMap.clear();
+      break;
+
+    default:
+      break;
+  }
 }
 
 // -----------------------------------------------------
@@ -924,6 +962,7 @@ void configParserStruct::memory::clear( named::clearMode Mode )
 {
   Stack.clear();
   Named.clear( Mode );
+  Buildins.clear( Mode );
   Registers.reset();
 }
 

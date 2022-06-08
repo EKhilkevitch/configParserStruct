@@ -35,7 +35,8 @@ namespace configParserStruct
       enum clearMode
       {
         ClearAll,
-        KeepPreset
+        KeepPreset,
+        ClearConstStrings
       };
 
     private:
@@ -58,6 +59,7 @@ namespace configParserStruct
           namedFrame& operator=( const namedFrame &Other );
 
           void swap( namedFrame &Other );
+          void joinFrom( const namedFrame &Frame );
 
           variable* setValueByName( const std::string &Name, const variable &Value );
           variable* findValueByName( const std::string &Name ) const;
@@ -65,6 +67,7 @@ namespace configParserStruct
           variable* findValueByReference( const char *Name ) const;
 
           void clear();
+          void clearReferenceMap();
           std::string toDebugString( const std::string &Prefix ) const;
       };
 
@@ -171,7 +174,7 @@ namespace configParserStruct
 
     private:
       void initMap();
-      void clear();
+      void deleteMap();
 
     public:
       buildins();
@@ -179,6 +182,7 @@ namespace configParserStruct
       buildins& operator=( const buildins &Other );
       ~buildins();
       void swap( buildins &Other );
+      void clear( named::clearMode Mode );
 
       inline const buildInFunction* findFunctionByName( const std::string &Name ) const;
       inline const buildInFunction* findFunctionByReference( const char *Name ) const;

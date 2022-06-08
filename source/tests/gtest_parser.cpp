@@ -180,6 +180,23 @@ TEST( parser, setVariable_afterBuild )
 
 // ---------------------------------------------------------
 
+TEST( parser, setVariable_afterRun )
+{
+  parser Parser;
+  Parser.build( "a = 3 * 4; b = b + 1; c = exp(2.5);" );
+  Parser.setVariable( "a", 3 );
+  Parser.setVariable( "b", 4.5 );
+  Parser.setVariable( "z", 1 );
+  Parser.run();
+  Parser.setVariable( "z", 2 );
+  
+  EXPECT_EQ( 12, Parser.integerVariable("a",0) );
+  EXPECT_EQ( 5.5, Parser.doubleVariable("b",0) );
+  EXPECT_EQ( 2, Parser.integerVariable("z",0) );
+}
+
+// ---------------------------------------------------------
+
 TEST( parser, run_twice )
 {
   parser Parser;
@@ -248,8 +265,12 @@ TEST( parser, xxxVariable_last )
   Parser.build( "t < 0 ? 0 : A*exp(-t/s);" );
   Parser.setVariable( "s", 3.0 );
   Parser.setVariable( "A", 2.0 );
+//  std::cerr << "first:" << std::endl;
+//  std::cerr << Parser.toDebugString() << std::endl;
   Parser.run();
   Parser.setVariable( "t", 0.4 );
+//  std::cerr << "second:" << std::endl;
+//  std::cerr << Parser.toDebugString() << std::endl;
   Parser.run();
 
   EXPECT_EQ( 2*std::exp(-0.4/3.0), Parser.doubleVariable( parser::LastExpressionValueName ) ) << Parser.toDebugString();

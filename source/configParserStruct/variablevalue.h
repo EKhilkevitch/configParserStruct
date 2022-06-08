@@ -156,7 +156,7 @@ namespace configParserStruct
   class arrayVariableValue : public variableValue
   {
     private:
-      mutable std::vector< variable > *Array;
+      mutable std::vector< variable > Array;
 
     private:
       explicit arrayVariableValue( const std::vector< variable > &Array );
