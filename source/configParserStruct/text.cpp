@@ -320,6 +320,8 @@ std::string configParserStruct::text::toDebugString() const
 {
   std::ostringstream Stream;
 
+  Stream << "Text:" << std::endl;
+
   const size_t TextSize = sizeOfText();
   for ( size_t i = 0; i < TextSize; i++ )
   {

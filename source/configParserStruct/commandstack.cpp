@@ -374,13 +374,13 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
     const size_t BaseStackPointer = Memory->baseStackPointer();
     if ( BaseStackPointer == 0 )
       return variable();
-    const size_t ArgsCount = Memory->findStackValueByShift( BaseStackPointer - 2 )->ref().asArgumentsCount();
+    const size_t ArgsCount = Memory->findStackValueByShift( BaseStackPointer - 2U )->ref().asArgumentsCount();
     const size_t Index = Reference.asArgumentIndex();
     if ( Index == 0 )
       return variable( static_cast<int>(ArgsCount) );
     if ( Index > ArgsCount )
       return variable();
-    Value = Memory->findStackValueByShift( BaseStackPointer - ArgsCount - 3 + Index );
+    Value = Memory->findStackValueByShift( BaseStackPointer - ArgsCount - 3U + Index );
   }
 
   const reference *Next = Reference.next();
@@ -401,7 +401,7 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
 size_t configParserStruct::derefCommand::extractArgsCount( const memory &Memory )
 {
   const size_t BaseStackPointer = Memory.baseStackPointer();
-  const size_t ArgsCount = Memory.findStackValueByShift( BaseStackPointer - 2 )->ref().asArgumentsCount();
+  const size_t ArgsCount = Memory.findStackValueByShift( BaseStackPointer - 2U )->ref().asArgumentsCount();
   return ArgsCount;
 }
 
@@ -411,7 +411,7 @@ const configParserStruct::variable& configParserStruct::derefCommand::extractArg
 {
   const size_t BaseStackPointer = Memory.baseStackPointer();
   assert( Index < ArgsCount );
-  return *Memory.findStackValueByShift( BaseStackPointer - ArgsCount - 2 + Index );
+  return *Memory.findStackValueByShift( BaseStackPointer - ArgsCount - 2U + Index );
 }
 
 // -----------------------------------------------------

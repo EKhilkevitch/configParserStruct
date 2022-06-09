@@ -130,8 +130,8 @@ void configParserStruct::program::build( const std::string &SourceCode )
   
   if ( ParseResult != 0 || Text->isError() )
   {
-    char ErrorString[ 128 ] = { '\0' };
-    std::snprintf( ErrorString, sizeof(ErrorString)-1, "Parser error at line %i", Text->errorLine() );
+    char ErrorString[ 128 ];
+    std::sprintf( ErrorString, "Parser error at line %i", Text->errorLine() );
     throw exception( ErrorString );
   }
 }

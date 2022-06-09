@@ -75,7 +75,7 @@ int main( int argc, char *argv[] )
   {
     Parser.build( FileContent );
     Parser.run();
-    std::fprintf( stdout, "%s\n", Parser.toDebugString().c_str() );
+    std::fprintf( stdout, "\n%s\n", Parser.toDebugString().c_str() );
     std::fflush( stdout );
   } catch ( std::exception &Exception ) {
     die( Exception.what() );

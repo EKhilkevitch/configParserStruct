@@ -402,8 +402,8 @@ std::string configParserStruct::named::toDebugString() const
   int Index = 0;
   for ( std::list< namedFrame >::const_iterator it = Locals.begin(); it != Locals.end(); ++it )
   {
-    char NumberString[64];
-    std::snprintf( NumberString, sizeof(NumberString), "Local %i", Index );
+    char NumberString[32];
+    std::sprintf( NumberString, "Local %i", Index );
     Result += it->toDebugString( NumberString );
     Index++;
   }

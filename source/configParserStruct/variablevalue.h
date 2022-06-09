@@ -99,7 +99,6 @@ namespace configParserStruct
       static const char *const TypeName;
   };
 
-
   // =====================================================
   
   class stringVariableValue : public variableValue
