@@ -4,6 +4,7 @@
 // =====================================================
 
 #include <string>
+#include <vector>
 #include <iosfwd>
 
 // =====================================================
@@ -27,9 +28,17 @@ namespace configParserStruct
       };
 
     private:
+
+#define SIZEMAX( A, B ) ( (A) > (B) ? (A) : (B) )
       struct valueMemory
       {
-        char _[ 4*sizeof(void*) ];
+        char _[ sizeof(void*) + 
+          SIZEMAX( sizeof(int), 
+            SIZEMAX( sizeof(double), 
+              SIZEMAX( sizeof(std::vector<variable>), 
+                SIZEMAX( sizeof(size_t) + sizeof(void*) + sizeof(void*), sizeof(void*) )
+            ) ) )
+              ];
       } ValueMemory;
 
     private:

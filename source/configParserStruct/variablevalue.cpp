@@ -153,7 +153,7 @@ bool configParserStruct::integerVariableValue::boolean() const
 
 std::string configParserStruct::integerVariableValue::string() const
 {
-  char String[ 32 ];
+  char String[ 64 ];
   std::sprintf( String, "%i", Value );
   return String;
 }
@@ -213,7 +213,7 @@ bool configParserStruct::realVariableValue::boolean() const
 
 std::string configParserStruct::realVariableValue::string() const
 {
-  char String[ 32 ];
+  char String[ 64 ];
   std::sprintf( String, "%g", Value );
   return String;
 }
