@@ -24,6 +24,39 @@ TEST( program, empty )
 
 // ---------------------------------------------------------
 
+TEST( program, lastResult_1 )
+{
+  program Program;
+  Program.build( "3;" );
+  Program.run();
+
+  EXPECT_EQ( 3, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, lastResult_2 )
+{
+  program Program;
+  Program.build( "3.7;" );
+  Program.run();
+
+  EXPECT_EQ( 3.7, Program.programMemory().lastResult().real() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, lastResult_3 )
+{
+  program Program;
+  Program.build( "'abc def';" );
+  Program.run();
+
+  EXPECT_EQ( "abc def", Program.programMemory().lastResult().string() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
 TEST( program, add_1 )
 {
   program Program;
@@ -481,6 +514,25 @@ TEST( program, assign_2 )
 
 // ---------------------------------------------------------
 
+TEST( program, assign_3 )
+{
+  program Program;
+  Program.build( "a = 'a\nb'; b = 'a\t'; c =  \"str\"; d = 'a\\nb';" );
+  Program.run();
+
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("a",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("b",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("c",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("d",named::GlobalScope) );
+  
+  EXPECT_EQ( "a\nb", Program.programMemory().findValueByName("a",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( "a\t",  Program.programMemory().findValueByName("b",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( "str",  Program.programMemory().findValueByName("c",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( "a\nb", Program.programMemory().findValueByName("d",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
 TEST( program, assign_add_1 )
 {
   program Program;
@@ -686,7 +738,7 @@ TEST( program, func_3 )
 TEST( program, func_4 )
 {
   program Program;
-  Program.build( "f = func { return $0 * 100; }; x = f(2,5,3);" );
+  Program.build( "f = func { return $0 * 100; }; x = f(2,5,3.1);" );
   Program.run();
   
   EXPECT_EQ( 300, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString();
@@ -709,7 +761,6 @@ TEST( program, func_local_1 )
   EXPECT_EQ( 3, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
   EXPECT_EQ( 5, Program.programMemory().findValueByName("y",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
 }
-
 
 // ---------------------------------------------------------
 
@@ -774,6 +825,31 @@ TEST( program, func_8 )
 TEST( program, func_9 )
 {
   program Program;
+  Program.build( "sqr = func { return $1 * $1; }; f = func { return sqr($1) + sqr( sqr($2) ); }; y = f(3,4);" );
+  Program.run();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y",named::GlobalScope) );
+  EXPECT_EQ( 3*3 + 4*4*4*4, Program.programMemory().findValueByName("y",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( 3*3 + 4*4*4*4, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, func_wrong_1 )
+{
+  program Program;
+  Program.build( "x = $3;" );
+  Program.run();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
+  EXPECT_EQ( 0, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, func_wrong_2 )
+{
+  program Program;
   Program.build( "x = 98; y = f(10);" );
   Program.run();
   
@@ -786,17 +862,38 @@ TEST( program, func_9 )
 
 // ---------------------------------------------------------
 
-TEST( program, func_10 )
+TEST( program, func_wrong_3 )
 {
   program Program;
-  Program.build( "sqr = func { return $1 * $1; }; f = func { return sqr($1) + sqr( sqr($2) ); }; y = f(3,4);" );
+  Program.build( "x = 42; y = x();" );
   Program.run();
   
-  //ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y",named::GlobalScope) );
-  //EXPECT_EQ(  9, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
-  EXPECT_EQ( 3*3 + 4*4*4*4, Program.programMemory().findValueByName("y",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
-  EXPECT_EQ( 3*3 + 4*4*4*4, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
+  EXPECT_EQ( 42, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ(  0, Program.programMemory().findValueByName("y",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, func_wrong_4 )
+{
+  program Program;
+  Program.build( "f = func { return $1*1.5 + $2 + $3; }; f(2);" );
+  Program.run();
+  
+  EXPECT_EQ( 3.0, Program.programMemory().lastResult().real() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, func_wrong_5 )
+{
+  program Program;
+  Program.build( "x = 3; return 5;" );
+  Program.run();
+  
+  EXPECT_EQ( 3, Program.programMemory().lastResult().integer() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
 }
 
 // ---------------------------------------------------------
@@ -844,15 +941,17 @@ TEST( program, func_buildin_1 )
 TEST( program, func_buildin_2 )
 {
   program Program;
-  Program.build( " A = abs(-3); S = sqr(4); P = pow( 3, 4 ); println( \"println 3^4 = \", P );" );
+  Program.build( " A = abs(-3); S = sqr(4); P = pow( 3, 4 ); M = max(3,4); println( \"println 3^4 = \", P );" );
   Program.run();
 
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("A",named::GlobalScope) );
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("S",named::GlobalScope) );
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("P",named::GlobalScope) );
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("M",named::GlobalScope) );
   EXPECT_EQ( std::fabs(-3), Program.programMemory().findValueByName("A",named::GlobalScope)->real() ) << Program.programMemory().toDebugString();
   EXPECT_EQ( 4.0*4.0, Program.programMemory().findValueByName("S",named::GlobalScope)->real() ) << Program.programMemory().toDebugString();
   EXPECT_EQ( std::pow(3.0,4.0), Program.programMemory().findValueByName("P",named::GlobalScope)->real() ) << Program.programMemory().toDebugString();
+  EXPECT_EQ( 4.0, Program.programMemory().findValueByName("M",named::GlobalScope)->real() ) << Program.programMemory().toDebugString();
 }
 
 // ---------------------------------------------------------
@@ -1010,6 +1109,18 @@ TEST( program, dict_6 )
   
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("dict",named::GlobalScope) );
   EXPECT_EQ( "{ .a = 1, .b = 4 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, dict_7 )
+{
+  program Program;
+  Program.build( "dict.a = 1; dict.b = dict.a + 2; dict.c = 4; dict.c += 5;" );
+  Program.run();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("dict",named::GlobalScope) );
+  EXPECT_EQ( "{ .a = 1, .b = 3, .c = 9 }", Program.programMemory().findValueByName("dict",named::GlobalScope)->string() ) << Program.programMemory().toDebugString();
 }
 
 // ---------------------------------------------------------

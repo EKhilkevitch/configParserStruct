@@ -149,7 +149,7 @@ namespace configParserStruct
       inline void setBaseStackPointer( size_t Size );
       inline size_t baseStackPointer() const;
 
-      void setHaltFlag();
+      inline void setHaltFlag();
       inline bool isHalted() const;
       
       void reset();
@@ -212,9 +212,6 @@ namespace configParserStruct
       
       void setBaseStackPointer( size_t Size );
       size_t baseStackPointer() const;
-      bool useBaseStackPointer() const;
-      void pushUseBaseStackPointer( bool Set );
-      void popUseBaseStackPointer();
       void pushLocalNamedFrame();
       void popLocalNamedFrame();
 

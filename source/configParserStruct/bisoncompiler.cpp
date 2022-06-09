@@ -194,10 +194,6 @@ void CPSSPU_replaceReferenceToValueOnStack( void )
 {
   assert( Text != NULL );
 
-  //std::cerr << "replace command " << typeid(LastCommand).name() << " arg " << LastCommand.argument() << std::endl;
-  //const configParserStruct::reference Reference = LastCommand.argument().ref();
-  //Text->replaceLastCommand( configParserStruct::derefCommand( Reference ) );
-
   const configParserStruct::command &LastCommand = (*Text)[ Text->size() - 1 ];
   if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) )
   {

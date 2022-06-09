@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
+#include <cassert>
 
 // =====================================================
 
@@ -149,6 +150,9 @@ void configParserStruct::program::run()
     Command.exec( &Memory );
 //    std::cerr << std::endl << Command << std::endl << Memory.toDebugString() << std::endl;
   }
+
+  assert( Memory.stackSize() == 0 );
+  assert( Memory.baseStackPointer() == 0 );
 }
 
 // -----------------------------------------------------

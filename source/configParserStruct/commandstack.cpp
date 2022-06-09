@@ -372,6 +372,8 @@ configParserStruct::variable configParserStruct::derefCommand::extract( memory *
     Value = Memory->findValueByReference( Reference.asGlobalName(), named::GlobalScope );
   } else if ( Reference.hasType( reference::ArgumentIndex ) ) {
     const size_t BaseStackPointer = Memory->baseStackPointer();
+    if ( BaseStackPointer == 0 )
+      return variable();
     const size_t ArgsCount = Memory->findStackValueByShift( BaseStackPointer - 2 )->ref().asArgumentsCount();
     const size_t Index = Reference.asArgumentIndex();
     if ( Index == 0 )
@@ -558,8 +560,8 @@ void configParserStruct::pushStackSizeCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
 
-  const size_t PrevBaseStackPointer = Memory->baseStackPointer();
-  Memory->pushToStack( variable( reference( PrevBaseStackPointer, reference::StackPointer ) ) );
+  const size_t BaseStackPointer = Memory->baseStackPointer();
+  Memory->pushToStack( variable( reference( BaseStackPointer, reference::StackPointer ) ) );
   Memory->jumpToNextCommand();
 }
 

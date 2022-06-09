@@ -191,10 +191,22 @@ void configParserStruct::callCommand::exec( memory *Memory ) const
     return;
   }
 
+  const reference &FunctionReference = Function->ref();
+
+  if ( ! FunctionReference.hasType(reference::InstructionPointer) )
+  {
+    const size_t ArgsCount = Memory->topStackValue()->ref().asArgumentsCount();
+    Memory->truncateStack( Memory->stackSize() - ArgsCount - 1 );
+    variable *Top = Memory->topStackValue();
+    *Top = variable();
+    Memory->jumpToNextCommand();
+    return;
+  }
+
   Memory->pushToStack( variable( reference( Memory->instructionPointer(), reference::InstructionPointer ) ) );
   Memory->setBaseStackPointer( Memory->stackSize() );
   Memory->pushLocalNamedFrame();
-  Memory->jumpToCommand( Function->ref().asInstructionPointer() );
+  Memory->jumpToCommand( FunctionReference.asInstructionPointer() );
 }
 
 // -----------------------------------------------------
@@ -221,6 +233,13 @@ configParserStruct::callCommand* configParserStruct::callCommand::clone( void *M
 void configParserStruct::returnCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
+
+  if ( Memory->baseStackPointer() == 0 )
+  {
+    Memory->popFromStack();
+    Memory->jumpToNextCommand();
+    return;
+  }
 
   const variable RetValue = Memory->popFromStack();
   const variable InstructionPointer = Memory->popFromStack();

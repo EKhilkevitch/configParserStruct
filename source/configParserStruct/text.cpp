@@ -334,6 +334,7 @@ std::string configParserStruct::text::toDebugString() const
 
   Stream << "ErrorLine = " << ParseTimeStatus.ErrorLine << std::endl;
   Stream << "FunctionLevel = " << ParseTimeStatus.FunctionLevel << std::endl;
+  Stream << "CallArgsCount stack size = " << ParseTimeStatus.CallArgsCount.size() << std::endl;
   Stream << "Variables = { ";
   for ( std::set< const char* >::const_iterator it = ParseTimeStatus.Variables.begin(); it != ParseTimeStatus.Variables.end(); ++it )
     Stream << *it << " ";
