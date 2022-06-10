@@ -477,8 +477,12 @@ size_t configParserStruct::stack::size() const
 
 void configParserStruct::stack::truncate( size_t Size )
 {
-  if ( Size < Stack.size() )
-    Stack.resize(Size);
+  if ( Size >= Stack.size() )
+    return;
+
+  std::vector<variable>::iterator EraseBegin = Stack.begin() + Size;
+  std::vector<variable>::iterator EraseEnd = Stack.end();
+  Stack.erase( EraseBegin, EraseEnd );
 }
 
 // -----------------------------------------------------

@@ -79,13 +79,12 @@ void configParserStruct::jumpIfFalseCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
   
-  const variable Instruction = argument();
   const variable Value = Memory->popFromStack();
   if ( Value.boolean() )
   {
     Memory->jumpToNextCommand();
   } else {
-    Memory->jumpToCommand( Instruction.ref().asInstructionPointer() );
+    Memory->jumpToCommand( argument().ref().asInstructionPointer() );
   }
 }
 
