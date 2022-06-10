@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 
 // =====================================================
 
@@ -53,14 +54,10 @@ configParserStruct::undefVariableValue::undefVariableValue()
 
 // -----------------------------------------------------
       
-configParserStruct::undefVariableValue* configParserStruct::undefVariableValue::clone( void *Memory ) const
+void configParserStruct::undefVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) undefVariableValue();
-  } else {
-    return new undefVariableValue();
-  }
+  assert( Memory != NULL );
+  new (Memory) undefVariableValue();
 }
 
 // -----------------------------------------------------
@@ -111,14 +108,10 @@ configParserStruct::integerVariableValue::integerVariableValue( int V ) :
      
 // -----------------------------------------------------
 
-configParserStruct::integerVariableValue* configParserStruct::integerVariableValue::clone( void *Memory ) const
+void configParserStruct::integerVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) integerVariableValue(Value);
-  } else {
-    return new integerVariableValue(Value);
-  }
+  assert( Memory != NULL );
+  new (Memory) integerVariableValue(Value);
 }
 
 // -----------------------------------------------------
@@ -171,14 +164,10 @@ configParserStruct::realVariableValue::realVariableValue( double V ) :
      
 // -----------------------------------------------------
 
-configParserStruct::realVariableValue* configParserStruct::realVariableValue::clone( void *Memory ) const
+void configParserStruct::realVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) realVariableValue(Value);
-  } else {
-    return new realVariableValue(Value);
-  }
+  assert( Memory != NULL );
+  new (Memory) realVariableValue(Value);
 }
 
 // -----------------------------------------------------
@@ -242,14 +231,10 @@ configParserStruct::stringVariableValue::~stringVariableValue()
 
 // -----------------------------------------------------
 
-configParserStruct::stringVariableValue* configParserStruct::stringVariableValue::clone( void *Memory ) const
+void configParserStruct::stringVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) stringVariableValue(Value);
-  } else {
-    return new stringVariableValue(Value);
-  }
+  assert( Memory != NULL );
+  new (Memory) stringVariableValue(Value);
 }
 
 // -----------------------------------------------------
@@ -316,14 +301,10 @@ configParserStruct::referenceVariableValue::referenceVariableValue( size_t Value
 
 // -----------------------------------------------------
 
-configParserStruct::referenceVariableValue* configParserStruct::referenceVariableValue::clone( void *Memory ) const
+void configParserStruct::referenceVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) referenceVariableValue(Reference);
-  } else {
-    return new referenceVariableValue(Reference);
-  }
+  assert( Memory != NULL );
+  new (Memory) referenceVariableValue(Reference);
 }
 
 // -----------------------------------------------------
@@ -393,14 +374,10 @@ configParserStruct::arrayVariableValue::~arrayVariableValue()
 
 // -----------------------------------------------------
 
-configParserStruct::arrayVariableValue* configParserStruct::arrayVariableValue::clone( void *Memory ) const
+void configParserStruct::arrayVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) arrayVariableValue(Array);
-  } else {
-    return new arrayVariableValue(Array);
-  }
+  assert( Memory != NULL );
+  new (Memory) arrayVariableValue(Array);
 }
 
 // -----------------------------------------------------
@@ -506,14 +483,10 @@ configParserStruct::dictVariableValue::~dictVariableValue()
 
 // -----------------------------------------------------
 
-configParserStruct::dictVariableValue* configParserStruct::dictVariableValue::clone( void *Memory ) const
+void configParserStruct::dictVariableValue::clone( void *Memory ) const
 {
-  if ( Memory != NULL )
-  {
-    return new (Memory) dictVariableValue(*Dict);
-  } else {
-    return new dictVariableValue(*Dict);
-  }
+  assert( Memory != NULL );
+  new (Memory) dictVariableValue(*Dict);
 }
 
 // -----------------------------------------------------
