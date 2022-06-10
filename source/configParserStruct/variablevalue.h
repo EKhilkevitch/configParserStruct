@@ -26,7 +26,7 @@ namespace configParserStruct
     public:
       virtual ~variableValue() {};
 
-      virtual variableValue* clone( void *Memory = NULL ) const = 0;
+      virtual void clone( void *Memory = NULL ) const = 0;
       virtual const char* type() const = 0;
 
       virtual int integer() const = 0;
@@ -46,7 +46,7 @@ namespace configParserStruct
     public:
       undefVariableValue();
       
-      undefVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -67,7 +67,7 @@ namespace configParserStruct
     public:
       explicit integerVariableValue( int Value );
      
-      integerVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -88,7 +88,7 @@ namespace configParserStruct
     public:
       explicit realVariableValue( double Value );
      
-      realVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -114,7 +114,7 @@ namespace configParserStruct
       explicit stringVariableValue( const char *Value );
       ~stringVariableValue();
      
-      stringVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -137,7 +137,7 @@ namespace configParserStruct
       explicit referenceVariableValue( const char *Value, reference::type Type );
       explicit referenceVariableValue( size_t Value, reference::type Type );
 
-      referenceVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -168,7 +168,7 @@ namespace configParserStruct
       explicit arrayVariableValue();
       ~arrayVariableValue();
 
-      arrayVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -205,7 +205,7 @@ namespace configParserStruct
       dictVariableValue();
       ~dictVariableValue();
 
-      dictVariableValue* clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;

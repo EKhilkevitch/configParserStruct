@@ -44,6 +44,17 @@ TEST( variable, real )
 
 // ---------------------------------------------------------
 
+TEST( variable, string )
+{
+  variable Variable("abc");
+
+  EXPECT_EQ( 0, Variable.integer() );
+  EXPECT_EQ( 0, Variable.real() );
+  EXPECT_EQ( "abc", Variable.string() );
+}
+
+// ---------------------------------------------------------
+
 TEST( variable, constructCopy )
 {
   variable Src(5);
