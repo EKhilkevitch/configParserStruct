@@ -368,8 +368,8 @@ void CPSSPU_setStructParserError( void )
 {
   assert( Text != NULL );
 
-  int LineNumber = CPSSPU_lexCurrentLineNumber();
-  Text->setErrorLine( LineNumber );
+  size_t LineNumber = CPSSPU_lexCurrentLineNumber();
+  Text->setErrorLine( (int)LineNumber );
 }
 
 // =====================================================

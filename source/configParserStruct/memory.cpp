@@ -637,6 +637,7 @@ configParserStruct::buildins::buildins( const buildins &Other )
   try
   {
     initMap();
+    assert( Map.size() == Other.Map.size() );
 
     for ( std::map< const char*, const buildInFunction* >::const_iterator it = Other.ReferenceMap.begin(); it != Other.ReferenceMap.end(); ++it )
     {
