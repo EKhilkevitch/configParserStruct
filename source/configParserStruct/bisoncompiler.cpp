@@ -10,7 +10,6 @@
 #include "configParserStruct/commandstack.h"
 
 #include <iostream>
-#include <typeinfo>
 #include <cstring>
 #include <cassert>
 
@@ -75,7 +74,7 @@ void CPSSPU_beginOfNewFunctionAssignName( void )
   assert( Text->size() >= 1 );
 
   const configParserStruct::command &LastCommand = (*Text)[ Text->size() - 1 ];
-  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) )
+  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) != NULL )
   {
     const configParserStruct::reference Reference = LastCommand.argument().ref();
     Text->replaceLastCommand( configParserStruct::pushGlobalDataRefCommand( Reference.asLocalName() ) );
@@ -150,7 +149,7 @@ void CPSSPU_callFunctionWithArgsFromStack( const char *Name )
 void CPSSPU_pushVariableValueToStack( void ) 
 {
   const configParserStruct::command &LastCommand = (*Text)[ Text->size() - 1 ];
-  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) )
+  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) != NULL )
   {
     const configParserStruct::reference Reference = LastCommand.argument().ref();
     Text->push( configParserStruct::derefCommand( Reference ) );
@@ -195,7 +194,7 @@ void CPSSPU_replaceReferenceToValueOnStack( void )
   assert( Text != NULL );
 
   const configParserStruct::command &LastCommand = (*Text)[ Text->size() - 1 ];
-  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) )
+  if ( dynamic_cast< const configParserStruct::pushLocalDataRefCommand* >( &LastCommand ) != NULL )
   {
     const configParserStruct::reference Reference = LastCommand.argument().ref();
     Text->replaceLastCommand( configParserStruct::derefCommand( Reference ) );
@@ -369,7 +368,7 @@ void CPSSPU_setStructParserError( void )
   assert( Text != NULL );
 
   size_t LineNumber = CPSSPU_lexCurrentLineNumber();
-  Text->setErrorLine( (int)LineNumber );
+  Text->setErrorLine( static_cast<int>(LineNumber) );
 }
 
 // =====================================================

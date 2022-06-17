@@ -430,6 +430,9 @@ configParserStruct::variable* configParserStruct::arrayVariableValue::getByRef( 
 {
   const size_t Index = Reference.asArrayIndex();
 
+  if ( Index == std::numeric_limits<size_t>::max() )
+    return NULL;
+
   if ( Index >= Array.size() )
     Array.resize( Index + 1 );
 
