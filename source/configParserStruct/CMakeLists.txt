@@ -12,10 +12,12 @@ find_package( BISON )
 if ( WIN32 )
   set( BISON_FLAGS "--name-prefix=CPSSPU_ -v" )
   set( FLAX_FLAGS "-PCPSSPU_" )
-  if ( BISON_EXECUTABLE MATCHES "win_programs" )
+  message( "BISON_EXECUTABLE = ${BISON_EXECUTABLE}" )
+  message( "FLEX_EXECUTABLE = ${FLEX_EXECUTABLE}" )
+  if ( BISON_EXECUTABLE MATCHES "win_programs" OR BISON_EXECUTABLE MATCHES "unix/wbin/" )
     set( ENV{BISON_SIMPLE} "${PROJECT_SOURCE_DIR}/../../win_programs/bison.simple" )
     set( ENV{BISON_HAIRY} "${PROJECT_SOURCE_DIR}/../../win_programs/bison.hairy" )
-    message( "Set SIMPLE = $ENV{BISON_SIMPLE}, HAIRY = $ENV{BISON_HAIRY}" )
+    #message( "Set SIMPLE = $ENV{BISON_SIMPLE}, HAIRY = $ENV{BISON_HAIRY}" )
   endif()
 endif()
 
@@ -50,6 +52,15 @@ set( configparser_source_files
      bisoncompiler.cpp
    )
 
+if ( UNIX )
+  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -std=c89 -ansi -pedantic") 
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++98" )
+endif()
+
+if ( UNIX )
+  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs" )
+endif()
+
 add_library( configParserStruct ${LIBRARY_TYPE} ${configparser_source_files} )
 target_include_directories( configParserStruct PRIVATE "${PROJECT_SOURCE_DIR}/.." )
 target_include_directories( configParserStruct PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/.." )
@@ -59,13 +70,6 @@ if ( WIN32 )
 endif()
 
 if ( UNIX )
-  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs" )
+  target_compile_definitions( configParserStruct PRIVATE "-D_POSIX_C_SOURCE=1" )
 endif()
-
-if ( UNIX )
-  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -std=c89 -ansi -pedantic") 
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++98" )
-endif()
-
-
 
