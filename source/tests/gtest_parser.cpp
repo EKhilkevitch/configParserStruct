@@ -133,7 +133,7 @@ TEST( parser, variables )
 
 // ---------------------------------------------------------
 
-TEST( parser, fail )
+TEST( parser, fail_1 )
 {
   parser Parser;
 
@@ -144,6 +144,37 @@ TEST( parser, fail )
   } catch ( const exception &Exception ) {
     EXPECT_EQ( 3, Parser.errorLine() );
   }
+}
+
+// ---------------------------------------------------------
+
+TEST( parser, fail_2 )
+{
+  parser Parser;
+
+  EXPECT_EQ( 0, Parser.integerVariable("a",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("b",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("c",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("d",0) );
+  EXPECT_EQ( 0, Parser.doubleVariable( parser::LastExpressionValueName ) );
+
+  try
+  {
+    Parser.build( "a = 3 * 4;\nb = a + 1;\nc = exp(2.5) +;\nd = 3;" );
+    FAIL() << "No exception";
+  } catch ( const exception &Exception ) {}
+
+  try
+  {
+    Parser.run();
+    FAIL() << "No exception";
+  } catch ( const exception &Exception ) {}
+  
+  EXPECT_EQ( 0, Parser.integerVariable("a",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("b",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("c",0) );
+  EXPECT_EQ( 0, Parser.integerVariable("d",0) );
+  EXPECT_EQ( 0, Parser.doubleVariable( parser::LastExpressionValueName ) );
 }
 
 // ---------------------------------------------------------
