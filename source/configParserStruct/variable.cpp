@@ -11,9 +11,16 @@
 
 // =====================================================
 
+namespace
+{
+  template <bool S> struct static_assert_test { char Array[ S ? 1 : -1 ]; };
+}
+
+// =====================================================
+
 configParserStruct::variable::variable() 
 {
-  assert( sizeof(ValueMemory) >= sizeof(undefVariableValue) );
+  static_assert_test< sizeof(ValueMemory) >= sizeof(undefVariableValue) >();
 
   undefVariableValue *Memory = variableValuePointer<undefVariableValue>();
   new (Memory) undefVariableValue();
@@ -23,7 +30,7 @@ configParserStruct::variable::variable()
 
 configParserStruct::variable::variable( int Integer ) 
 {
-  assert( sizeof(ValueMemory) >= sizeof(integerVariableValue) );
+  static_assert_test< sizeof(ValueMemory) >= sizeof(integerVariableValue) >();
 
   integerVariableValue *Memory = variableValuePointer<integerVariableValue>();
   new (Memory) integerVariableValue(Integer);
@@ -33,7 +40,7 @@ configParserStruct::variable::variable( int Integer )
 
 configParserStruct::variable::variable( double Real ) 
 {
-  assert( sizeof(ValueMemory) >= sizeof(realVariableValue) );
+  static_assert_test< sizeof(ValueMemory) >= sizeof(realVariableValue) >();
 
   realVariableValue *Memory = variableValuePointer<realVariableValue>();
   new (Memory) realVariableValue(Real);
@@ -43,7 +50,7 @@ configParserStruct::variable::variable( double Real )
 
 configParserStruct::variable::variable( const char *String ) 
 {
-  assert( sizeof(ValueMemory) >= sizeof(stringVariableValue) );
+  static_assert_test< sizeof(ValueMemory) >= sizeof(stringVariableValue) >();
 
   stringVariableValue *Memory = variableValuePointer<stringVariableValue>();
   new (Memory) stringVariableValue(String);
@@ -53,7 +60,7 @@ configParserStruct::variable::variable( const char *String )
 
 configParserStruct::variable::variable( const std::string &String ) 
 {
-  assert( sizeof(ValueMemory) >= sizeof(stringVariableValue) );
+  static_assert_test< sizeof(ValueMemory) >= sizeof(stringVariableValue) >();
 
   stringVariableValue *Memory = variableValuePointer<stringVariableValue>();
   new (Memory) stringVariableValue(String.c_str());
@@ -63,7 +70,7 @@ configParserStruct::variable::variable( const std::string &String )
       
 configParserStruct::variable::variable( const reference &Reference )
 {
-  assert( sizeof(ValueMemory) >= sizeof(referenceVariableValue) );
+  static_assert_test< sizeof(ValueMemory) >= sizeof(referenceVariableValue) >();
       
   void *Memory = variableValuePointer<variableValue>();
   new (Memory) referenceVariableValue(Reference);
@@ -78,17 +85,18 @@ configParserStruct::variable::variable( const collectionType Type )
   switch ( Type )
   {
     case ArrayCollection:
-      assert( sizeof(ValueMemory) >= sizeof(arrayVariableValue) );
+      static_assert_test< sizeof(ValueMemory) >= sizeof(arrayVariableValue) >();
       new (Memory) arrayVariableValue();
       break;
     
     case DictCollection:
-      assert( sizeof(ValueMemory) >= sizeof(dictVariableValue) );
+      static_assert_test< sizeof(ValueMemory) >= sizeof(dictVariableValue) >();
       new (Memory) dictVariableValue();
       break;
 
     default:
       assert( false );
+      new (Memory) undefVariableValue();
       break;
   }
 }

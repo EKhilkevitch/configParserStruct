@@ -40,6 +40,7 @@ namespace configParserStruct
             ) ) )
               ];
       } ValueMemory;
+#undef SIZEMAX
 
     private:
       template < class T > inline T* variableValuePointer();
