@@ -3,7 +3,7 @@
 
 // =====================================================
 
-#include "configParserStruct/command.h"
+//#include "configParserStruct/command.h"
 
 #include <vector>
 #include <set>
@@ -14,6 +14,10 @@
 namespace configParserStruct
 {
   
+  // =====================================================
+  
+  class command;
+
   // =====================================================
 
   class text

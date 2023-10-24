@@ -47,6 +47,7 @@ set( configparser_source_files
      buildinfunc.cpp
      text.cpp
      memory.cpp
+     optimizer.cpp
      program.cpp
      lexinput.c
      bisoncompiler.cpp

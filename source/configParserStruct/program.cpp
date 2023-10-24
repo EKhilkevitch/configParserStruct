@@ -5,6 +5,8 @@
 #include "configParserStruct/bisoncompiler.h"
 #include "configParserStruct/lexinput.h"
 #include "configParserStruct/exception.h"
+#include "configParserStruct/command.h"
+#include "configParserStruct/optimizer.h"
 #include "configParserStruct/mutex.h"
 
 #include <algorithm>
@@ -86,11 +88,23 @@ void configParserStruct::program::detachAndClearTextIfNeed()
   if ( *TextRefCount > 1 )
   {
     *TextRefCount -= 1;
-
     TextRefCount = new int(1);
     Text = new text();
   } else {
     Text->clear();
+  }
+}
+
+// -----------------------------------------------------
+      
+void configParserStruct::program::detachAndCopyTextIfNeed()
+{
+  if ( *TextRefCount > 1 )
+  {
+    text *SrcText = Text;
+    *TextRefCount -= 1;
+    TextRefCount = new int(1);
+    Text = new text(*SrcText);
   }
 }
 
@@ -134,6 +148,19 @@ void configParserStruct::program::build( const std::string &SourceCode )
     std::sprintf( ErrorString, "Parser error at line %i", Text->errorLine() );
     throw exception( ErrorString );
   }
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::program::optimize()
+{
+  if ( Text->isError() )
+    throw exception( "Program built with errors" );
+
+  detachAndCopyTextIfNeed();
+
+  optimizer Optimizer;
+  Optimizer( Text );
 }
 
 // -----------------------------------------------------

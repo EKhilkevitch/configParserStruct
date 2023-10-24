@@ -22,6 +22,7 @@ namespace configParserStruct
 
     private:
       void detachAndClearTextIfNeed();
+      void detachAndCopyTextIfNeed();
 
     public:
       program();
@@ -32,6 +33,7 @@ namespace configParserStruct
 
       void clear();
       void build( const std::string &SourceCode );
+      void optimize();
       void run();
 
       const text& programText() const;

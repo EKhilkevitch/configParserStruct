@@ -2,11 +2,14 @@
 // =====================================================
 
 #include "configParserStruct/text.h"
+#include "configParserStruct/command.h"
+#include "configParserStruct/reference.h"
 #include "configParserStruct/exception.h"
 
 #include <limits>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 #include <cstring>
 #include <cstddef>
 #include <cassert>
@@ -30,6 +33,43 @@ configParserStruct::text::text()
 
 // -----------------------------------------------------
 
+configParserStruct::text::text( const text &Other ) :
+  Strings( Other.Strings )
+{
+  ParseTimeStatus.ErrorLine = Other.ParseTimeStatus.ErrorLine;
+  ParseTimeStatus.FunctionLevel = Other.ParseTimeStatus.FunctionLevel;
+  ParseTimeStatus.CallArgsCount = Other.ParseTimeStatus.CallArgsCount;
+
+  for ( std::set< const char* >::const_iterator it = Other.ParseTimeStatus.Variables.begin(); it != Other.ParseTimeStatus.Variables.end(); ++it )
+    addToVariablesSet( *it, true );
+
+  Text.resize( Other.Text.size(), '\0' );
+  for ( size_t i = 0; i < Other.sizeOfText(); i++ )
+  {
+    const command &Command = Other[i];
+    const variable &Argument = Command.argument();
+    const reference &Reference = Argument.ref();
+    if ( Reference.hasType( reference::GlobalName ) )
+    {
+      const char *ConstString = constStringRef(Reference.asGlobalName());
+      const variable Argument( reference( ConstString, reference::GlobalName ) );
+      Command.cloneWithArgument( Argument, commandPointer(i) );
+    } else if ( Reference.hasType( reference::LocalName ) ) {
+      const char *ConstString = constStringRef(Reference.asLocalName());
+      const variable Argument( reference( ConstString, reference::LocalName ) );
+      Command.cloneWithArgument( Argument, commandPointer(i) );
+    } else if ( Reference.hasType( reference::DictKey ) ) {
+      const char *ConstString = constStringRef(Reference.asDictKey());
+      const variable Argument( reference( ConstString, reference::DictKey ) );
+      Command.cloneWithArgument( Argument, commandPointer(i) );
+    } else {
+      Command.clone( commandPointer(i) );
+    }
+  }
+}
+
+// -----------------------------------------------------
+
 configParserStruct::text::~text()
 {
   clear();
@@ -45,6 +85,13 @@ void configParserStruct::text::clear()
     if ( ! isCommandPointerPlaceholder(Command) )
       commandPointer(i)->~command();
   }
+
+#if ! NDEBUG
+  std::fill( Text.begin(), Text.end(), 0xCC );
+  for ( std::vector< std::vector<char> >::iterator it = Strings.begin(); it != Strings.end(); ++it )
+    std::fill( it->begin(), it->end(), 0xCC );
+#endif
+
   Text.clear();
   Strings.clear();
 
@@ -339,7 +386,11 @@ std::string configParserStruct::text::toDebugString() const
   Stream << "CallArgsCount stack size = " << ParseTimeStatus.CallArgsCount.size() << std::endl;
   Stream << "Variables = { ";
   for ( std::set< const char* >::const_iterator it = ParseTimeStatus.Variables.begin(); it != ParseTimeStatus.Variables.end(); ++it )
-    Stream << *it << " ";
+    Stream << "\"" << *it << "\" ";
+  Stream << "}" << std::endl;
+  Stream << "Strings = { ";
+  for ( std::vector< std::vector<char> >::const_iterator it = Strings.begin(); it != Strings.end(); ++it )
+    Stream << "(\"" << &(*it)[0] << "\"" << " - " << static_cast<const void*>(&(*it)[0]) << ") ";
   Stream << "}" << std::endl;
 
   return Stream.str();

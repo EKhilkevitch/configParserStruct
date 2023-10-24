@@ -33,6 +33,16 @@ const configParserStruct::variable& configParserStruct::command::argument() cons
   return Argument;
 }
 
+// -----------------------------------------------------
+      
+configParserStruct::command* configParserStruct::command::cloneWithArgument( const variable &Variable, void *Memory ) const
+{
+  command *Clone = clone( Memory );
+  assert( Clone != NULL );
+  Clone->Argument = Variable;
+  return Clone;
+}
+
 // =====================================================
 
 std::ostream& configParserStruct::operator<<( std::ostream &Stream, const command &Command )

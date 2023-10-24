@@ -275,11 +275,11 @@ std::string configParserStruct::reference::toDebugString() const
       break;
 
     case LocalName:
-      Stream << "LocalName (" << Value.ConstChar << ")";
+      Stream << "LocalName (" << Value.ConstChar << " - " << static_cast<const void*>(Value.ConstChar) << ")";
       break;
 
     case GlobalName:
-      Stream << "GlobalName (" << Value.ConstChar << ")";
+      Stream << "GlobalName (" << Value.ConstChar << " - " << static_cast<const void*>(Value.ConstChar) << ")";
       break;
     
     case ArrayIndex:
@@ -287,7 +287,7 @@ std::string configParserStruct::reference::toDebugString() const
       break;
     
     case DictKey:
-      Stream << "DictKey (" << Value.ConstChar << ")";
+      Stream << "DictKey (" << Value.ConstChar << " - " << static_cast<const void*>(Value.ConstChar) << ")";
       break;
 
     case ArgumentIndex:

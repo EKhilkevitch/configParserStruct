@@ -3,6 +3,7 @@
 
 #include "configParserStruct/program.h"
 #include "configParserStruct/exception.h"
+#include "configParserStruct/command.h"
 
 #include <iostream>
 #include <cmath>
@@ -1252,6 +1253,22 @@ TEST( program, setValueByName_1 )
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("b",named::GlobalScope) );
   EXPECT_EQ( 3, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
   EXPECT_EQ( 6, Program.programMemory().findValueByName("b",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString() << Program.programText().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, copy )
+{
+  program Program;
+  Program.build( "x = 1; struct.field = 3;" );
+
+  const text Copy = Program.programText();
+
+  /* Проверить что в копии все ссылки ведут на память в том же тексте, что и оригинал */
+  
+  //std::cout << Program.programText().toDebugString() << std::endl; 
+  //std::cout << Copy.toDebugString() << std::endl; 
+
 }
 
 // =========================================================
