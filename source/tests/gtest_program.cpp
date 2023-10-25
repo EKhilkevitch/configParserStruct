@@ -1277,9 +1277,9 @@ TEST( program, optimize_assign )
 {
   program Program;
   Program.build( "x = 3; y = x; z = 5 + 6;" );
-  std::cout << "Before optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  //std::cout << "Before optimization:\n" << Program.programText().toDebugString() << std::endl; 
   Program.optimize();
-  std::cout << "After optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  //std::cout << "After optimization:\n" << Program.programText().toDebugString() << std::endl; 
   Program.run();
   
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
@@ -1298,9 +1298,9 @@ TEST( program, optimize_unminus )
 {
   program Program;
   Program.build( "x = 1; y1 = -2; y2 = -3.5; if ( y1 < 0 ) { z  = 3; } else { z = 4; }" );
-  std::cout << "Before optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  //std::cout << "Before optimization:\n" << Program.programText().toDebugString() << std::endl; 
   Program.optimize();
-  std::cout << "After optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  //std::cout << "After optimization:\n" << Program.programText().toDebugString() << std::endl; 
   Program.run();
   
   ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y1",named::GlobalScope) );
