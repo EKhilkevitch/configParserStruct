@@ -4,6 +4,7 @@
 #include "configParserStruct/commandstack.h"
 #include "configParserStruct/memory.h"
 #include "configParserStruct/reference.h"
+#include "configParserStruct/variablevalue.h"
 
 #include <sstream>
 #include <cassert>
@@ -214,16 +215,36 @@ configParserStruct::pushInstructionRefCommand* configParserStruct::pushInstructi
 }
 
 // =====================================================
+      
+configParserStruct::assignCommand::assignCommand()
+{
+}
+
+// -----------------------------------------------------
+
+configParserStruct::assignCommand::assignCommand( const variable &Variable ) :
+  command(Variable)
+{
+}
+
+// -----------------------------------------------------
 
 void configParserStruct::assignCommand::exec( memory *Memory ) const
 {
   assert( Memory != NULL );
 
-  const variable Value = Memory->popFromStack();
-  variable *Top = Memory->topStackValue();
-  
-  assign( Memory, Top->ref(), Value );
-  *Top = Value;
+  const variable &Argument = argument();
+  if ( Argument.type() == undefVariableValue::TypeName )
+  {
+    const variable Value = Memory->popFromStack();
+    variable *Top = Memory->topStackValue();
+    assign( Memory, Top->ref(), Value );
+    *Top = Value;
+  } else {
+    variable *Top = Memory->topStackValue();
+    assign( Memory, Top->ref(), Argument );
+    *Top = Argument;
+  }
 
   Memory->jumpToNextCommand();
 }
@@ -306,7 +327,14 @@ configParserStruct::variable configParserStruct::assignCommand::createEmpty( con
 
 std::string configParserStruct::assignCommand::toString() const
 {
-  return "ASSIGN";
+  std::ostringstream Stream;
+
+  if ( argument().type() == undefVariableValue::TypeName )
+    Stream << "ASSIGN";
+  else
+    Stream << "ASSIGN " << argument();
+
+  return Stream.str();
 }
 
 // -----------------------------------------------------
@@ -314,9 +342,9 @@ std::string configParserStruct::assignCommand::toString() const
 configParserStruct::assignCommand* configParserStruct::assignCommand::clone( void *Memory ) const
 {
   if ( Memory == NULL )
-    return new assignCommand();
+    return new assignCommand( argument() );
   else
-    return new ( Memory ) assignCommand();
+    return new ( Memory ) assignCommand( argument() );
 }
 
 // =====================================================

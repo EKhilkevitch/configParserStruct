@@ -58,6 +58,7 @@ namespace configParserStruct
       enum variableType variableType( const std::string &Name ) const;
 
       void build( const std::string &ConfigText );
+      void optimize();
       void run();
       
       void reset();

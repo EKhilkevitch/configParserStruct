@@ -85,6 +85,9 @@ namespace configParserStruct
       static variable createEmpty( const reference &Reference );
 
     public:
+      assignCommand();
+      explicit assignCommand( const variable &Variable );
+
       void exec( memory *Memory ) const;
       std::string toString() const;
       assignCommand* clone( void *Memory = NULL ) const;

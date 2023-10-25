@@ -65,6 +65,7 @@ void configParserStruct::parser::swap( parser &Other )
 void configParserStruct::parser::exec( const std::string &Text )
 {
   build( Text );
+  optimize();
   run();
 }
 
@@ -73,6 +74,13 @@ void configParserStruct::parser::exec( const std::string &Text )
 void configParserStruct::parser::build( const std::string &Text )
 {
   Program->build(Text);
+}
+
+// -----------------------------------------------------
+
+void configParserStruct::parser::optimize()
+{
+  Program->optimize();
 }
 
 // -----------------------------------------------------

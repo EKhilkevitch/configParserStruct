@@ -1271,5 +1271,47 @@ TEST( program, copy )
 
 }
 
+// ---------------------------------------------------------
+
+TEST( program, optimize_assign )
+{
+  program Program;
+  Program.build( "x = 3; y = x; z = 5 + 6;" );
+  std::cout << "Before optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  Program.optimize();
+  std::cout << "After optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  Program.run();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("x",named::GlobalScope) );
+  EXPECT_EQ( 3, Program.programMemory().findValueByName("x",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y",named::GlobalScope) );
+  EXPECT_EQ( 3, Program.programMemory().findValueByName("y",named::GlobalScope)->real() ) << Program.programMemory().toDebugString();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("z",named::GlobalScope) );
+  EXPECT_EQ( 5+6, Program.programMemory().findValueByName("z",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+}
+
+// ---------------------------------------------------------
+
+TEST( program, optimize_unminus )
+{
+  program Program;
+  Program.build( "x = 1; y1 = -2; y2 = -3.5; if ( y1 < 0 ) { z  = 3; } else { z = 4; }" );
+  std::cout << "Before optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  Program.optimize();
+  std::cout << "After optimization:\n" << Program.programText().toDebugString() << std::endl; 
+  Program.run();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y1",named::GlobalScope) );
+  EXPECT_EQ( -2, Program.programMemory().findValueByName("y1",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("y2",named::GlobalScope) );
+  EXPECT_EQ( -3.5, Program.programMemory().findValueByName("y2",named::GlobalScope)->real() ) << Program.programMemory().toDebugString();
+  
+  ASSERT_TRUE( NULL != Program.programMemory().findValueByName("z",named::GlobalScope) );
+  EXPECT_EQ( 3, Program.programMemory().findValueByName("z",named::GlobalScope)->integer() ) << Program.programMemory().toDebugString();
+}
+
 // =========================================================
 

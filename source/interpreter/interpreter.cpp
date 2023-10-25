@@ -67,14 +67,13 @@ int main( int argc, char *argv[] )
 {
   FILE *File = openInputFile( argc == 2 ? argv[1] : "" );
 
-  std::string FileContent = readFileContent( File );
+  const std::string FileContent = readFileContent( File );
 
   configParserStruct::parser Parser;
 
   try
   {
-    Parser.build( FileContent );
-    Parser.run();
+    Parser.exec( FileContent );
     std::fprintf( stdout, "\n%s\n", Parser.toDebugString().c_str() );
     std::fflush( stdout );
   } catch ( std::exception &Exception ) {

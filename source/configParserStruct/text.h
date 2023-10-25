@@ -63,6 +63,7 @@ namespace configParserStruct
       void replacePlaceholder( const command &Command );
       size_t indexOfPlaceholder() const;
       void replaceLastCommand( const command &Command );
+      void replaceCommand( size_t Index, const command &Command );
       const char *constStringRef( const char *String );
       void setErrorLine( int Line );
 

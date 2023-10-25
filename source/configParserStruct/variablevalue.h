@@ -46,7 +46,7 @@ namespace configParserStruct
     public:
       undefVariableValue();
       
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -67,7 +67,7 @@ namespace configParserStruct
     public:
       explicit integerVariableValue( int Value );
      
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -88,7 +88,7 @@ namespace configParserStruct
     public:
       explicit realVariableValue( double Value );
      
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -114,7 +114,7 @@ namespace configParserStruct
       explicit stringVariableValue( const char *Value );
       ~stringVariableValue();
      
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -137,7 +137,7 @@ namespace configParserStruct
       explicit referenceVariableValue( const char *Value, reference::type Type );
       explicit referenceVariableValue( size_t Value, reference::type Type );
 
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -168,7 +168,7 @@ namespace configParserStruct
       explicit arrayVariableValue();
       ~arrayVariableValue();
 
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;
@@ -205,7 +205,7 @@ namespace configParserStruct
       dictVariableValue();
       ~dictVariableValue();
 
-      virtual void clone( void *Memory = NULL ) const;
+      void clone( void *Memory = NULL ) const;
       const char* type() const;
 
       int integer() const;

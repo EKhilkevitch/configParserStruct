@@ -173,11 +173,19 @@ void configParserStruct::text::replaceLastCommand( const command &Command )
   if ( empty() )
     return;
 
-  command *Pointer = commandPointer( sizeOfText() - 1 );
+  replaceCommand( sizeOfText()-1, Command );
+}
+
+// -----------------------------------------------------
+      
+void configParserStruct::text::replaceCommand( size_t Index, const command &NewCommand )
+{
+  assert( Index < sizeOfText() );
+
+  command *Pointer = commandPointer(Index);
   if ( ! isCommandPointerPlaceholder(Pointer) )
     Pointer->~command();
-
-  Command.clone(Pointer);
+  NewCommand.clone(Pointer);
 }
 
 // -----------------------------------------------------

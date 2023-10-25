@@ -14,6 +14,7 @@ namespace configParserStruct
   // =====================================================
   
   class text;
+  class command;
 
   // =====================================================
  
@@ -31,6 +32,9 @@ namespace configParserStruct
 
     private:
       static std::vector< jumpCommandInfo > jumpCommands( const text &Text );
+      static void optimizeUminus( text *Text );
+      static void optimizeAssign( text *Text );
+      static const command* nextEffectiveCommand( const text &Text, size_t *Index );
 
     public:
       optimizer();
