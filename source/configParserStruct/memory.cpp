@@ -189,6 +189,8 @@ configParserStruct::variable* configParserStruct::named::namedFrame::findValueBy
       return si->second;
   }
 
+//  std::cerr << "namedFrame::findValueByReference: \"" << Name << "\", " << static_cast<const void*>(Name) << " not found in ReferenceMap, this is " << this << std::endl;
+
   std::map< std::string, variable >::const_iterator sit = Map.find(Name);
   if ( sit != Map.end() )
   {
@@ -197,6 +199,7 @@ configParserStruct::variable* configParserStruct::named::namedFrame::findValueBy
     return Pointer;
   } else {
     ReferenceMap[RIndex].push_back( std::make_pair(Name,static_cast<variable*>(NULL)) );
+//    std::cerr << "namedFrame::findValueByReference: \"" << Name << "\", add NULL to ReferenceMap, this is " << this << std::endl;
     return NULL;
   }
 }
