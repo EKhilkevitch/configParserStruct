@@ -54,7 +54,7 @@ set( configparser_source_files
    )
 
 if ( UNIX )
-  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -std=c89 -ansi -pedantic") 
+  set( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -Wextra -pedantic -ansi -std=c89") 
   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++98" )
 endif()
 
