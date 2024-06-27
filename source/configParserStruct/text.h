@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <set>
+#include <string>
 #include <iosfwd>
 
 // =====================================================
