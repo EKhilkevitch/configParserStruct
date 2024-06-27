@@ -1,5 +1,4 @@
 
-cmake_minimum_required( VERSION 2.6 )
 project( selfTest ) 
 
 set ( interp_source_files
